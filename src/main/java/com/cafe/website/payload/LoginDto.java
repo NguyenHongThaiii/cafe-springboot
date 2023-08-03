@@ -1,6 +1,7 @@
 package com.cafe.website.payload;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,8 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 public class LoginDto {
+	@NotNull
 	private String email;
+	@NotNull
 	private String password;
 }
