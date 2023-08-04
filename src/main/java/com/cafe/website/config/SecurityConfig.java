@@ -13,25 +13,28 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 import com.cafe.website.security.JwtAuthenticationEntryPoint;
 import com.cafe.website.security.JwtAuthenticationFilter;
 
 @Configuration
 @EnableMethodSecurity
+
 public class SecurityConfig {
 
 //	private UserDetailsService userDetailsService;
 
 	private JwtAuthenticationEntryPoint authenticationEntryPoint;
-
 	private JwtAuthenticationFilter authenticationFilter;
+	private LogoutHandler logoutHandler;
 
 	public SecurityConfig(JwtAuthenticationEntryPoint authenticationEntryPoint,
-			JwtAuthenticationFilter authenticationFilter) {
+			JwtAuthenticationFilter authenticationFilter, LogoutHandler logoutHandler) {
 //		this.userDetailsService = userDetailsService;
 		this.authenticationEntryPoint = authenticationEntryPoint;
 		this.authenticationFilter = authenticationFilter;
+		this.logoutHandler = logoutHandler;
 	}
 
 	@Bean
@@ -51,8 +54,9 @@ public class SecurityConfig {
 						.requestMatchers("/api/v1/auth/**").permitAll().anyRequest().authenticated())
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.logout((logout) -> logout.logoutUrl("/api/v1/auth/logout").logoutSuccessHandler(
-						(request, response, authentication) -> SecurityContextHolder.clearContext()));
+				.logout((logout) -> logout.logoutUrl("/api/v1/auth/logout").addLogoutHandler(logoutHandler)
+						.logoutSuccessHandler(
+								(request, response, authentication) -> SecurityContextHolder.clearContext()));
 
 		http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
 		;

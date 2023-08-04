@@ -29,16 +29,18 @@ public class AuthServiceImp implements AuthService {
 	private PasswordEncoder passwordEncoder;
 	private JwtTokenProvider jwtTokenProvider;
 	private TokenRepository tokenRepository;
+	private LogoutService logoutService;
 
 	public AuthServiceImp(AuthenticationManager authenticationManager, UserRepository userRepository,
 			RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider,
-			TokenRepository tokenRepository) {
+			TokenRepository tokenRepository, LogoutService logoutService) {
 		this.authenticationManager = authenticationManager;
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.jwtTokenProvider = jwtTokenProvider;
 		this.tokenRepository = tokenRepository;
+		this.logoutService = logoutService;
 	}
 
 	@Override
@@ -49,7 +51,7 @@ public class AuthServiceImp implements AuthService {
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String token = jwtTokenProvider.generateToken(authentication);
-		
+
 //		save token to db and revoke all previous tokens
 		User user = userRepository.findByEmail(loginDto.getEmail()).orElseThrow();
 		revokeAllUserTokens(user);
@@ -58,6 +60,7 @@ public class AuthServiceImp implements AuthService {
 		return token;
 	}
 
+	
 	@Override
 	public String refreshToken(HttpServletRequest request, HttpServletResponse response) {
 		// TODO Auto-generated method stub
@@ -65,13 +68,12 @@ public class AuthServiceImp implements AuthService {
 	}
 
 	private void saveUserToken(User user, String jwtToken) {
-		Token token = Token.builder().user(user).token(jwtToken).tokenType(TokenType.BEARER).expired(false).revoked(false)
-				.build();
+		Token token = Token.builder().user(user).token(jwtToken).tokenType(TokenType.BEARER).expired(false)
+				.revoked(false).build();
 		token.setStatus(1);
 		tokenRepository.save(token);
 	}
 
-	
 	private void revokeAllUserTokens(User user) {
 		var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
 		if (validUserTokens.isEmpty())
