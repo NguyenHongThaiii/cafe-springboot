@@ -13,6 +13,7 @@ import com.cafe.website.service.AuthService;
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -24,7 +25,7 @@ public class AuthController {
 	}
 
 	@PostMapping(value = { "/login", "/signin" })
-	public ResponseEntity<JWTAuthResponse> login(@RequestBody LoginDto loginDto) {
+	public ResponseEntity<JWTAuthResponse> login(@Valid @RequestBody  LoginDto loginDto) {
 		System.out.print(loginDto.toString());
 		String token = authService.login(loginDto);
 
@@ -34,6 +35,7 @@ public class AuthController {
 	}
 
 // trial
+	
 	@PostMapping("/refresh-token")
 	public ResponseEntity<JWTAuthResponse> refreshToken(HttpServletRequest request, HttpServletResponse response)
 			throws IOException {

@@ -1,6 +1,6 @@
 package com.cafe.website.entity;
 
-import java.util.Set;
+import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -30,30 +30,30 @@ public class Product extends BaseEntity {
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "products_purposes", joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "purpose_id", referencedColumnName = "id"))
-	private Set<Purpose> purposes;
+	private List<Purpose> purposes;
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "products_areas", joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "area_id", referencedColumnName = "id"))
-	private Set<Area> areas;
+	private List<Area> areas;
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "products_kinds", joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "kind_id", referencedColumnName = "id"))
-	private Set<Kind> kinds;
+	private List<Kind> kinds;
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "products_conveniences", joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "convenience_id", referencedColumnName = "id"))
-	private Set<Convenience> conveniences;
+	private List<Convenience> conveniences;
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private Set<Review> reviews;
+	private List<Review> reviews;
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private Set<ProductSchedule> schedules;
+	private List<ProductSchedule> schedules;
 
-	private Set<Integer> prices;
-	private byte outstanding;
-	private Set<String> listMenu;
-	private Set<Integer> coordinates;
+	private String prices;
+	private boolean outstanding;
+	private String listMenu;
+	private String coordinates;
 	private String email;
 	private String facebook;
 }

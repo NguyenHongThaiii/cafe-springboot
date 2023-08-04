@@ -1,6 +1,6 @@
 package com.cafe.website.entity;
 
-import java.util.Set;
+import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -33,10 +33,10 @@ public class Review  extends BaseEntity{
 	private Rating rating;
 	
 	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<Comment> comments;
+	private List<Comment> comments;
 	
 
-	private Set<String> listImages;
+	private List<String> listImages;
 	private String content;
 	private int favorite;
 	

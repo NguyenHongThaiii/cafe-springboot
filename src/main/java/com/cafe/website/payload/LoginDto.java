@@ -1,6 +1,7 @@
 package com.cafe.website.payload;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,8 +14,11 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 public class LoginDto {
-	@NotNull
-	private String email;
-	@NotNull
+    @NotEmpty(message = "Name should not be null or empty" )
+    @Size(min = 6, max = 20)
+    private String email;
+    
+    @NotEmpty(message = "Name should not be null or empty" )
+    @Size(min = 6, max = 20)
 	private String password;
 }
