@@ -16,6 +16,6 @@ import lombok.Setter;
 @Table(name = "roles")
 @Entity
 public class Role extends BaseEntity {
-	private String role;
+	private String name;
 
 }

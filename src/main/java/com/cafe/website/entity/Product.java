@@ -50,7 +50,8 @@ public class Product extends BaseEntity {
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<ProductSchedule> schedules;
 
-	private String prices;
+	private int priceMin;
+	private int priceMax;
 	private boolean outstanding;
 	private String listMenu;
 	private String coordinates;

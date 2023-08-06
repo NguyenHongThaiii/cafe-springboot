@@ -37,7 +37,7 @@ public class Review  extends BaseEntity{
 	
 
 	private List<String> listImages;
-	private String content;
+	private String name;
 	private int favorite;
 	
 }

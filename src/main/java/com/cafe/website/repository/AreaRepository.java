@@ -1,9 +1,14 @@
 package com.cafe.website.repository;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.cafe.website.entity.Area;
 
 public interface AreaRepository extends JpaRepository<Area, Integer> {
-	
+
+	Slice<Area> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
+
 }

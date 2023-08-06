@@ -3,6 +3,7 @@ package com.cafe.website.entity;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -22,10 +23,13 @@ import lombok.Setter;
 @Table(name = "users")
 @Entity
 public class User extends BaseEntity {
-	private String username;
+//	private String username;
+	
+	private String name;
 	private String address;
 	private String avartar;
 	private String phone;
+	@Column(unique = true)
 	private String email;
 	private String password;
 

@@ -24,7 +24,7 @@ import lombok.Setter;
 public class Token extends BaseEntity {
 
 	@Column(unique = true)
-	public String token;
+	public String name;
 
 	@Enumerated(EnumType.STRING)
 	@Builder.Default

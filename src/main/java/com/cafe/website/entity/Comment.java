@@ -19,7 +19,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "comments")
 public class Comment extends BaseEntity {
-	private String content;
+	private String name;
 	private int favorite;
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
