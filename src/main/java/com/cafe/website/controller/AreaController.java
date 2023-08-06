@@ -28,6 +28,7 @@ public class AreaController {
 		this.areaService = areaService;
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping("")
 	public ResponseEntity<List<AreaDTO>> getListAreas(@RequestParam(defaultValue = "5") int limit,
 			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false, defaultValue = "") String name,

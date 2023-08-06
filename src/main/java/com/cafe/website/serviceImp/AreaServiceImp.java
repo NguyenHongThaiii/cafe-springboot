@@ -38,7 +38,6 @@ public class AreaServiceImp implements AreaService {
 		List<String> sortByList = new ArrayList<String>();
 		List<AreaDTO> listAreaDto;
 		List<Area> listArea;
-
 		if (!StringUtils.isEmpty(sortBy))
 			sortByList = Arrays.asList(sortBy.split(","));
 

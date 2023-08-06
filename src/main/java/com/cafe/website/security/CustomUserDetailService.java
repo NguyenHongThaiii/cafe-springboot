@@ -33,7 +33,7 @@ public class CustomUserDetailService implements UserDetailsService {
 		User user;
 		if (email.contains("@")) { // Nếu truyền vào là email
 			user = userRepository.findByEmail(email)
-					.orElseThrow(() -> new ResourceNotFoundException("Area", "area", 123));
+					.orElseThrow(() ->  new UsernameNotFoundException("User not found with username: " + email));
 		} else { // Nếu truyền vào là email
 			logger.info(email);
 

@@ -18,14 +18,14 @@ public class BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	
-    @Column(nullable = false, columnDefinition = "int default 1")
-    private int status = 1;
-    
-    
+
+	@Column(nullable = false, columnDefinition = "int default 1")
+	private int status;
+
 	@CreationTimestamp
 	private Long createdAt;
 
 	@UpdateTimestamp
 	private Long updatedAt;
+
 }

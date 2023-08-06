@@ -22,6 +22,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import com.cafe.website.payload.ErrorDetails;
 
 import io.jsonwebtoken.security.SignatureException;
+import org.springframework.security.core.AuthenticationException;
 
 @ControllerAdvice
 public class GlobalAPIException extends ResponseEntityExceptionHandler {
@@ -70,7 +71,6 @@ public class GlobalAPIException extends ResponseEntityExceptionHandler {
 
 		return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
 	}
-	
 
 	// argument not valid exceptions
 	@Override
@@ -113,6 +113,15 @@ public class GlobalAPIException extends ResponseEntityExceptionHandler {
 
 		ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(),
 				webRequest.getDescription(false));
+		return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
+	}
+
+	// AuthenticationException exceptions
+	@ExceptionHandler(AuthenticationException.class)
+	public ResponseEntity<ErrorDetails> handleAccessDeniedException(AuthenticationException exception,
+			WebRequest webRequest) {
+
+		ErrorDetails errorDetails = new ErrorDetails(new Date(), "123123", webRequest.getDescription(false));
 		return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
 	}
 
