@@ -12,13 +12,13 @@ import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.info.License;
 
 @SpringBootApplication
-@OpenAPIDefinition(info = @Info(title = "Cafe Blog Swagger APIs", description = "Cafe Blog Swagger APIs Documentation", version = "v1.0", contact = @Contact(name = "Thaipeii", email = "thaipeiidev@gmail.com",url="12"), license = @License(name = "Apache 2.0"
+@OpenAPIDefinition(info = @Info(title = "Cafe Blog Swagger APIs", description = "Cafe Blog Swagger APIs Documentation", version = "v1.0", contact = @Contact(name = "Thaipeii", email = "thaipeiidev@gmail.com", url = "12"), license = @License(name = "Apache 2.0"
 
 )), externalDocs = @ExternalDocumentation(description = "Cafe Blog Documentation", url = "12")
 
 )
 public class WebsiteApplication {
-	
+
 	@Bean
 	public ModelMapper modelMapper() {
 		return new ModelMapper();

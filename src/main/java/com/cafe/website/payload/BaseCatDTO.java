@@ -1,16 +1,47 @@
 package com.cafe.website.payload;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Setter
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
 public class BaseCatDTO extends BaseEntityDTO {
 	private String name;
 	private String slug;
 	private String image;
+
+	public BaseCatDTO(int id, int status, Long createdAt, Long updatedAt, String name, String slug, String image) {
+		super(id, status, createdAt, updatedAt);
+		this.name = name;
+		this.slug = slug;
+		this.image = image;
+	}
+
+	public BaseCatDTO(int id, int status, Long createdAt, Long updatedAt) {
+		super(id, status, createdAt, updatedAt);
+	}
+
+	public BaseCatDTO() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getSlug() {
+		return slug;
+	}
+
+	public void setSlug(String slug) {
+		this.slug = slug;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
 }

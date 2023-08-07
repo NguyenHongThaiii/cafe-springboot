@@ -30,18 +30,16 @@ public class AuthServiceImp implements AuthService {
 	private PasswordEncoder passwordEncoder;
 	private JwtTokenProvider jwtTokenProvider;
 	private TokenRepository tokenRepository;
-	private LogoutService logoutService;
 
 	public AuthServiceImp(AuthenticationManager authenticationManager, UserRepository userRepository,
 			RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider,
-			TokenRepository tokenRepository, LogoutService logoutService) {
+			TokenRepository tokenRepository) {
 		this.authenticationManager = authenticationManager;
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.jwtTokenProvider = jwtTokenProvider;
 		this.tokenRepository = tokenRepository;
-		this.logoutService = logoutService;
 	}
 
 	@Override
@@ -57,7 +55,7 @@ public class AuthServiceImp implements AuthService {
 		User user = userRepository.findByEmail(loginDto.getEmail())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "user", 123));
 		revokeAllUserTokens(user);
-		saveUserToken(user, token);	
+		saveUserToken(user, token);
 
 		return token;
 	}
@@ -69,9 +67,16 @@ public class AuthServiceImp implements AuthService {
 	}
 
 	private void saveUserToken(User user, String jwtToken) {
-		Token token = Token.builder().user(user).name(jwtToken).tokenType(TokenType.BEARER).expired(false)
-				.revoked(false).build();
+		Token token = new Token();
+		token.setUser(user);
+		token.setName(jwtToken);
+		token.setTokenType(TokenType.BEARER);
+		token.setExpired(false);
+		token.setRevoked(false);
 		token.setStatus(1);
+//				Token.builder().user(user).name(jwtToken).tokenType(TokenType.BEARER).expired(false)
+//				.revoked(false).build();
+//		token.setStatus(1);
 		tokenRepository.save(token);
 	}
 

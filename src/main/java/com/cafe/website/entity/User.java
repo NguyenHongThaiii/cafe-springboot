@@ -11,20 +11,11 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "users")
 @Entity
 public class User extends BaseEntity {
-//	private String username;
-	
+
 	private String name;
 	private String address;
 	private String avartar;
@@ -46,4 +37,109 @@ public class User extends BaseEntity {
 
 	@OneToMany(mappedBy = "user")
 	private List<Token> tokens;
+
+	public User(int id, int status, Long createdAt, Long updatedAt, String name, String address, String avartar,
+			String phone, String email, String password, List<Product> listProductSaved, List<Role> roles,
+			List<Review> reviews, List<Token> tokens) {
+		super(id, status, createdAt, updatedAt);
+		this.name = name;
+		this.address = address;
+		this.avartar = avartar;
+		this.phone = phone;
+		this.email = email;
+		this.password = password;
+		this.listProductSaved = listProductSaved;
+		this.roles = roles;
+		this.reviews = reviews;
+		this.tokens = tokens;
+	}
+
+	public User(int id, int status, Long createdAt, Long updatedAt) {
+		super(id, status, createdAt, updatedAt);
+	}
+
+	public User() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getAvartar() {
+		return avartar;
+	}
+
+	public void setAvartar(String avartar) {
+		this.avartar = avartar;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public List<Product> getListProductSaved() {
+		return listProductSaved;
+	}
+
+	public void setListProductSaved(List<Product> listProductSaved) {
+		this.listProductSaved = listProductSaved;
+	}
+
+	public List<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
+	}
+
+	public List<Review> getReviews() {
+		return reviews;
+	}
+
+	public void setReviews(List<Review> reviews) {
+		this.reviews = reviews;
+	}
+
+	public List<Token> getTokens() {
+		return tokens;
+	}
+
+	public void setTokens(List<Token> tokens) {
+		this.tokens = tokens;
+	}
+
 }

@@ -12,4 +12,8 @@ public class MapperUtils {
 	public static <T, U> U mapToEntity(T dto, Class<U> entityClass) {
 		return mapper.map(dto, entityClass);
 	}
+
+	public static <T, U> void mapToEntity(T dto, U entity) {
+		mapper.map(dto, entity);
+	}
 }

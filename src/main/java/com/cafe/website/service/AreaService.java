@@ -12,7 +12,7 @@ public interface AreaService {
 
 	AreaDTO createArea(AreaDTO areaDto);
 
-	AreaDTO updateArea(int id, AreaDTO areaDto);
+	AreaDTO updateArea(int id,  AreaDTO areaDto);
 
 	void deleteArea(int id);
 }

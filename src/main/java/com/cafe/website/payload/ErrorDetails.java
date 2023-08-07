@@ -13,7 +13,8 @@ public class ErrorDetails {
         this.details = details;
     }
 
-    public Date getTimestamp() {
+
+	public Date getTimestamp() {
         return timestamp;
     }
 

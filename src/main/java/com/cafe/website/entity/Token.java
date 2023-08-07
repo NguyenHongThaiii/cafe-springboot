@@ -9,18 +9,12 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.Table;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
+@Table(name = "Token")
 public class Token extends BaseEntity {
 
 	@Column(unique = true)
@@ -36,4 +30,71 @@ public class Token extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	public User user;
+
+	public Token(String name, TokenType tokenType, boolean revoked, boolean expired, User user) {
+		this.name = name;
+		this.tokenType = tokenType;
+		this.revoked = revoked;
+		this.expired = expired;
+		this.user = user;
+	}
+
+	public Token(int id, int status, Long createdAt, Long updatedAt) {
+		super(id, status, createdAt, updatedAt);
+	}
+
+	public Token() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public TokenType getTokenType() {
+		return tokenType;
+	}
+
+	public void setTokenType(TokenType tokenType) {
+		this.tokenType = tokenType;
+	}
+
+	public boolean isRevoked() {
+		return revoked;
+	}
+
+	public void setRevoked(boolean revoked) {
+		this.revoked = revoked;
+	}
+
+	public boolean isExpired() {
+		return expired;
+	}
+
+	public void setExpired(boolean expired) {
+		this.expired = expired;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Token(int id, int status, Long createdAt, Long updatedAt, String name, TokenType tokenType, boolean revoked,
+			boolean expired, User user) {
+		super(id, status, createdAt, updatedAt);
+		this.name = name;
+		this.tokenType = tokenType;
+		this.revoked = revoked;
+		this.expired = expired;
+		this.user = user;
+	}
+
 }

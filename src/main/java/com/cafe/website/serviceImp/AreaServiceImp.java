@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,16 +19,19 @@ import com.cafe.website.payload.AreaDTO;
 import com.cafe.website.repository.AreaRepository;
 import com.cafe.website.service.AreaService;
 import com.cafe.website.util.MapperUtils;
+import com.cafe.website.util.AreaMapper;
 
 import io.micrometer.common.util.StringUtils;
 
 @Service
 public class AreaServiceImp implements AreaService {
+	private AreaMapper areaMapper;
 
 	private AreaRepository areaRepository;
 
-	public AreaServiceImp(AreaRepository areaRepository) {
+	public AreaServiceImp(AreaRepository areaRepository, AreaMapper areaMapper) {
 		this.areaRepository = areaRepository;
+		this.areaMapper = areaMapper;
 	}
 
 	@Override
@@ -93,14 +98,14 @@ public class AreaServiceImp implements AreaService {
 	@Override
 	public AreaDTO updateArea(int id, AreaDTO areaDto) {
 
-		AreaDTO newAreaDto = this.getAreaById(id);
-		areaDto.setId(newAreaDto.getId());
+		AreaDTO newdto = this.getAreaById(id);
+		Area area = areaMapper.dtoToEntity(newdto);
+		areaDto.setId(id);
+		areaMapper.updateAreaFromDto(areaDto, area);
 
-		Area area = MapperUtils.mapToEntity(areaDto, Area.class);
 		areaRepository.save(area);
 
-		AreaDTO res = MapperUtils.mapToDTO(area, AreaDTO.class);
-		return res;
+		return areaMapper.entityToDto(area);
 	}
 
 	@Override

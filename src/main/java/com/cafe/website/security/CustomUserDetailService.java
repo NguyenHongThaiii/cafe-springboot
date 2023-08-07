@@ -13,15 +13,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.cafe.website.entity.User;
-import com.cafe.website.exception.ResourceNotFoundException;
 import com.cafe.website.repository.UserRepository;
-import com.cafe.website.serviceImp.ProductServiceImp;
 
 @Service
 public class CustomUserDetailService implements UserDetailsService {
 
 	private UserRepository userRepository;
-	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 
 	public CustomUserDetailService(UserRepository userRepository) {
 		this.userRepository = userRepository;
@@ -33,9 +30,8 @@ public class CustomUserDetailService implements UserDetailsService {
 		User user;
 		if (email.contains("@")) { // Nếu truyền vào là email
 			user = userRepository.findByEmail(email)
-					.orElseThrow(() ->  new UsernameNotFoundException("User not found with username: " + email));
+					.orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + email));
 		} else { // Nếu truyền vào là email
-			logger.info(email);
 
 			throw new UsernameNotFoundException("User not found with username: " + email);
 		}

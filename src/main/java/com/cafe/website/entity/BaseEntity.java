@@ -8,11 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 @MappedSuperclass
 public class BaseEntity {
 	@Id
@@ -27,5 +23,49 @@ public class BaseEntity {
 
 	@UpdateTimestamp
 	private Long updatedAt;
+
+	public BaseEntity(int id, int status, Long createdAt, Long updatedAt) {
+		super();
+		this.id = id;
+		this.status = status;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+	}
+
+	public BaseEntity() {
+		super();
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	public Long getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Long createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Long getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Long updatedAt) {
+		this.updatedAt = updatedAt;
+	}
 
 }

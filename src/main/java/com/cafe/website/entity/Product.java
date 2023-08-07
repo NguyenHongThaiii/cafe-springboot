@@ -10,16 +10,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "products")
 public class Product extends BaseEntity {
@@ -57,4 +48,164 @@ public class Product extends BaseEntity {
 	private String coordinates;
 	private String email;
 	private String facebook;
+
+	public Product(int id, int status, Long createdAt, Long updatedAt, String name, String slug, String phone,
+			List<Purpose> purposes, List<Area> areas, List<Kind> kinds, List<Convenience> conveniences,
+			List<Review> reviews, List<ProductSchedule> schedules, int priceMin, int priceMax, boolean outstanding,
+			String listMenu, String coordinates, String email, String facebook) {
+		super(id, status, createdAt, updatedAt);
+		this.name = name;
+		this.slug = slug;
+		this.phone = phone;
+		this.purposes = purposes;
+		this.areas = areas;
+		this.kinds = kinds;
+		this.conveniences = conveniences;
+		this.reviews = reviews;
+		this.schedules = schedules;
+		this.priceMin = priceMin;
+		this.priceMax = priceMax;
+		this.outstanding = outstanding;
+		this.listMenu = listMenu;
+		this.coordinates = coordinates;
+		this.email = email;
+		this.facebook = facebook;
+	}
+
+	public Product(int id, int status, Long createdAt, Long updatedAt) {
+		super(id, status, createdAt, updatedAt);
+	}
+
+	public Product() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getSlug() {
+		return slug;
+	}
+
+	public void setSlug(String slug) {
+		this.slug = slug;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public List<Purpose> getPurposes() {
+		return purposes;
+	}
+
+	public void setPurposes(List<Purpose> purposes) {
+		this.purposes = purposes;
+	}
+
+	public List<Area> getAreas() {
+		return areas;
+	}
+
+	public void setAreas(List<Area> areas) {
+		this.areas = areas;
+	}
+
+	public List<Kind> getKinds() {
+		return kinds;
+	}
+
+	public void setKinds(List<Kind> kinds) {
+		this.kinds = kinds;
+	}
+
+	public List<Convenience> getConveniences() {
+		return conveniences;
+	}
+
+	public void setConveniences(List<Convenience> conveniences) {
+		this.conveniences = conveniences;
+	}
+
+	public List<Review> getReviews() {
+		return reviews;
+	}
+
+	public void setReviews(List<Review> reviews) {
+		this.reviews = reviews;
+	}
+
+	public List<ProductSchedule> getSchedules() {
+		return schedules;
+	}
+
+	public void setSchedules(List<ProductSchedule> schedules) {
+		this.schedules = schedules;
+	}
+
+	public int getPriceMin() {
+		return priceMin;
+	}
+
+	public void setPriceMin(int priceMin) {
+		this.priceMin = priceMin;
+	}
+
+	public int getPriceMax() {
+		return priceMax;
+	}
+
+	public void setPriceMax(int priceMax) {
+		this.priceMax = priceMax;
+	}
+
+	public boolean isOutstanding() {
+		return outstanding;
+	}
+
+	public void setOutstanding(boolean outstanding) {
+		this.outstanding = outstanding;
+	}
+
+	public String getListMenu() {
+		return listMenu;
+	}
+
+	public void setListMenu(String listMenu) {
+		this.listMenu = listMenu;
+	}
+
+	public String getCoordinates() {
+		return coordinates;
+	}
+
+	public void setCoordinates(String coordinates) {
+		this.coordinates = coordinates;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getFacebook() {
+		return facebook;
+	}
+
+	public void setFacebook(String facebook) {
+		this.facebook = facebook;
+	}
+
 }

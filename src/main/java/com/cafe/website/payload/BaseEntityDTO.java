@@ -1,15 +1,5 @@
 package com.cafe.website.payload;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-
 public class BaseEntityDTO {
 	private int id;
 
@@ -18,4 +8,49 @@ public class BaseEntityDTO {
 	private Long createdAt;
 
 	private Long updatedAt;
+
+	public BaseEntityDTO(int id, int status, Long createdAt, Long updatedAt) {
+		super();
+		this.id = id;
+		this.status = status;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+	}
+	
+	public BaseEntityDTO() {
+		super();
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	public Long getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Long createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Long getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Long updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
 }
