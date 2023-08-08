@@ -2,8 +2,18 @@ package com.cafe.website.service;
 
 import java.util.List;
 
-import com.cafe.website.entity.Product;
+import com.cafe.website.payload.ProductCreateDTO;
+import com.cafe.website.payload.ProductDTO;
+import com.cafe.website.payload.ProductUpdateDTO;
 
 public interface ProductService {
-	List<Product> getListProducts(int limit, int page, String name,String sortBy);
+	List<ProductDTO> getListProducts(int limit, int page, String name, String sortBy);
+
+	ProductDTO createProduct(ProductCreateDTO productCreateDto);
+
+	ProductDTO updateProduct(int id, ProductUpdateDTO productUpdateDto);
+
+	ProductDTO getProductById(int id);
+
+	String deleteProduct(int id);
 }

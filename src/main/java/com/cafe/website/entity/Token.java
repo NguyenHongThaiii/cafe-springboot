@@ -10,9 +10,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Builder;
 
-@Builder
 @Entity
 @Table(name = "Token")
 public class Token extends BaseEntity {
@@ -21,7 +19,6 @@ public class Token extends BaseEntity {
 	public String name;
 
 	@Enumerated(EnumType.STRING)
-	@Builder.Default
 	public TokenType tokenType = TokenType.BEARER;
 
 	public boolean revoked;

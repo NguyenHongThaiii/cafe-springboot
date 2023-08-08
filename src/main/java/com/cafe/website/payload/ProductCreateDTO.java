@@ -1,0 +1,211 @@
+package com.cafe.website.payload;
+
+import java.util.List;
+
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
+public class ProductCreateDTO {
+	private int id;
+	@NotNull
+	private List<Integer> area_id;
+
+	private List<Integer> kind_id;
+
+	private List<Integer> convenience_id;
+
+	private List<Integer> purpose_id;
+
+	@NotNull
+	private String name;
+
+	@NotNull
+	private String slug;
+
+	@NotNull
+	private String phone;
+
+	@Min(value = 0, message = "status should not be less than 0")
+	@Max(value = 1, message = "status should not be greater than 1")
+	private int status;
+
+	@Min(value = 0, message = "priceMin should not be less than 0")
+	private int priceMin;
+
+	@Min(value = 0, message = "priceMax should not be less than 0")
+	private int priceMax;
+
+	@Min(value = 0, message = "status should not be less than 0")
+	@Max(value = 1, message = "status should not be greater than 1")
+	private int outstanding;
+
+	@NotNull
+	private String listMenu;
+
+	@NotNull
+	private String coordinates;
+
+	@NotNull
+	private String email;
+
+	@NotNull
+	private String facebook;
+
+	public ProductCreateDTO(int id, List<Integer> area_id, List<Integer> kind_id, List<Integer> convenience_id,
+			List<Integer> purpose_id, String name, String slug, String phone, int status, int priceMin, int priceMax,
+			@AssertTrue(message = "outstanding should be true") int outstanding, String listMenu, String coordinates,
+			String email, String facebook) {
+		super();
+		this.id = id;
+		this.area_id = area_id;
+		this.kind_id = kind_id;
+		this.convenience_id = convenience_id;
+		this.purpose_id = purpose_id;
+		this.name = name;
+		this.slug = slug;
+		this.phone = phone;
+		this.status = status;
+		this.priceMin = priceMin;
+		this.priceMax = priceMax;
+		this.outstanding = outstanding;
+		this.listMenu = listMenu;
+		this.coordinates = coordinates;
+		this.email = email;
+		this.facebook = facebook;
+	}
+
+	public ProductCreateDTO() {
+		super();
+	}
+
+	public int getOutstanding() {
+		return outstanding;
+	}
+
+	public void setOutstanding(int outstanding) {
+		this.outstanding = outstanding;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public List<Integer> getArea_id() {
+		return area_id;
+	}
+
+	public void setArea_id(List<Integer> area_id) {
+		this.area_id = area_id;
+	}
+
+	public List<Integer> getKind_id() {
+		return kind_id;
+	}
+
+	public void setKind_id(List<Integer> kind_id) {
+		this.kind_id = kind_id;
+	}
+
+	public List<Integer> getConvenience_id() {
+		return convenience_id;
+	}
+
+	public void setConvenience_id(List<Integer> convenience_id) {
+		this.convenience_id = convenience_id;
+	}
+
+	public List<Integer> getPurpose_id() {
+		return purpose_id;
+	}
+
+	public void setPurpose_id(List<Integer> purpose_id) {
+		this.purpose_id = purpose_id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getSlug() {
+		return slug;
+	}
+
+	public void setSlug(String slug) {
+		this.slug = slug;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	public int getPriceMin() {
+		return priceMin;
+	}
+
+	public void setPriceMin(int priceMin) {
+		this.priceMin = priceMin;
+	}
+
+	public int getPriceMax() {
+		return priceMax;
+	}
+
+	public void setPriceMax(int priceMax) {
+		this.priceMax = priceMax;
+	}
+
+	public String getListMenu() {
+		return listMenu;
+	}
+
+	public void setListMenu(String listMenu) {
+		this.listMenu = listMenu;
+	}
+
+	public String getCoordinates() {
+		return coordinates;
+	}
+
+	public void setCoordinates(String coordinates) {
+		this.coordinates = coordinates;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getFacebook() {
+		return facebook;
+	}
+
+	public void setFacebook(String facebook) {
+		this.facebook = facebook;
+	}
+
+}

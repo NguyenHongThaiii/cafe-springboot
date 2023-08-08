@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cafe.website.payload.JWTAuthResponse;
-import com.cafe.website.payload.LoginDto;
+import com.cafe.website.payload.LoginDTO;
 import com.cafe.website.service.AuthService;
 
 import io.jsonwebtoken.io.IOException;
@@ -25,7 +25,7 @@ public class AuthController {
 	}
 
 	@PostMapping(value = { "/login", "/signin" })
-	public ResponseEntity<JWTAuthResponse> login(@Valid @RequestBody  LoginDto loginDto) {
+	public ResponseEntity<JWTAuthResponse> login(@Valid @RequestBody  LoginDTO loginDto) {
 		System.out.print(loginDto.toString());
 		String token = authService.login(loginDto);
 

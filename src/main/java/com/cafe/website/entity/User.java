@@ -35,6 +35,7 @@ public class User extends BaseEntity {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Review> reviews;
 
+	
 	@OneToMany(mappedBy = "user")
 	private List<Token> tokens;
 

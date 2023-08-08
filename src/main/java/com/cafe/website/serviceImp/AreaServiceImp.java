@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -15,11 +13,12 @@ import org.springframework.stereotype.Service;
 import com.cafe.website.constant.SortField;
 import com.cafe.website.entity.Area;
 import com.cafe.website.exception.ResourceNotFoundException;
+import com.cafe.website.payload.AreaCreateDTO;
 import com.cafe.website.payload.AreaDTO;
 import com.cafe.website.repository.AreaRepository;
 import com.cafe.website.service.AreaService;
-import com.cafe.website.util.MapperUtils;
 import com.cafe.website.util.AreaMapper;
+import com.cafe.website.util.MapperUtils;
 
 import io.micrometer.common.util.StringUtils;
 
@@ -43,10 +42,10 @@ public class AreaServiceImp implements AreaService {
 		List<String> sortByList = new ArrayList<String>();
 		List<AreaDTO> listAreaDto;
 		List<Area> listArea;
+		List<Sort.Order> sortOrders = new ArrayList<>();
+
 		if (!StringUtils.isEmpty(sortBy))
 			sortByList = Arrays.asList(sortBy.split(","));
-
-		List<Sort.Order> sortOrders = new ArrayList<>();
 
 		for (String sb : sortByList) {
 			boolean isDescending = sb.endsWith("Desc");
@@ -84,9 +83,8 @@ public class AreaServiceImp implements AreaService {
 	}
 
 	@Override
-	public AreaDTO createArea(AreaDTO areaDto) {
-		Area area = MapperUtils.mapToEntity(areaDto, Area.class);
-		area.setStatus(1);
+	public AreaDTO createArea(AreaCreateDTO areaCreateDto) {
+		Area area = MapperUtils.mapToEntity(areaCreateDto, Area.class);
 
 		Area newArea = areaRepository.save(area);
 
@@ -97,9 +95,9 @@ public class AreaServiceImp implements AreaService {
 
 	@Override
 	public AreaDTO updateArea(int id, AreaDTO areaDto) {
-
 		AreaDTO newdto = this.getAreaById(id);
 		Area area = areaMapper.dtoToEntity(newdto);
+
 		areaDto.setId(id);
 		areaMapper.updateAreaFromDto(areaDto, area);
 
@@ -110,9 +108,8 @@ public class AreaServiceImp implements AreaService {
 
 	@Override
 	public void deleteArea(int id) {
-		AreaDTO newAreaDto = this.getAreaById(id);
-		Area area = MapperUtils.mapToEntity(newAreaDto, Area.class);
-		areaRepository.delete(area);
+		this.getAreaById(id);
+		areaRepository.deleteById(id);
 	}
 
 }

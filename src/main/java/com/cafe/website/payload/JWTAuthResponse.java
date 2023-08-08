@@ -1,10 +1,5 @@
 package com.cafe.website.payload;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 public class JWTAuthResponse {
 	private String accessToken;
 	private String tokenType = "Bearer";

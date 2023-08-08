@@ -3,7 +3,7 @@ package com.cafe.website.payload;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
-public class LoginDto {
+public class LoginDTO {
 	@NotEmpty(message = "Name should not be null or empty")
 	@Size(min = 6, max = 20)
 	private String email;
@@ -12,14 +12,13 @@ public class LoginDto {
 	@Size(min = 6, max = 20)
 	private String password;
 
-	public LoginDto(@NotEmpty(message = "Name should not be null or empty") @Size(min = 6, max = 20) String email,
-			@NotEmpty(message = "Name should not be null or empty") @Size(min = 6, max = 20) String password) {
+	public LoginDTO(String email, String password) {
 		super();
 		this.email = email;
 		this.password = password;
 	}
 
-	public LoginDto() {
+	public LoginDTO() {
 		super();
 	}
 

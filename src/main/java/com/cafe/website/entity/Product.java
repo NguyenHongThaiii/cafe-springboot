@@ -43,7 +43,7 @@ public class Product extends BaseEntity {
 
 	private int priceMin;
 	private int priceMax;
-	private boolean outstanding;
+	private int outstanding;
 	private String listMenu;
 	private String coordinates;
 	private String email;
@@ -51,7 +51,7 @@ public class Product extends BaseEntity {
 
 	public Product(int id, int status, Long createdAt, Long updatedAt, String name, String slug, String phone,
 			List<Purpose> purposes, List<Area> areas, List<Kind> kinds, List<Convenience> conveniences,
-			List<Review> reviews, List<ProductSchedule> schedules, int priceMin, int priceMax, boolean outstanding,
+			List<Review> reviews, List<ProductSchedule> schedules, int priceMin, int priceMax, int outstanding,
 			String listMenu, String coordinates, String email, String facebook) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;
@@ -168,11 +168,11 @@ public class Product extends BaseEntity {
 		this.priceMax = priceMax;
 	}
 
-	public boolean isOutstanding() {
+	public int getOutstanding() {
 		return outstanding;
 	}
 
-	public void setOutstanding(boolean outstanding) {
+	public void setOutstanding(int outstanding) {
 		this.outstanding = outstanding;
 	}
 
@@ -206,6 +206,15 @@ public class Product extends BaseEntity {
 
 	public void setFacebook(String facebook) {
 		this.facebook = facebook;
+	}
+
+	@Override
+	public String toString() {
+		return "Product [name=" + name + ", slug=" + slug + ", phone=" + phone + ", purposes=" + purposes + ", areas="
+				+ areas + ", kinds=" + kinds + ", conveniences=" + conveniences + ", reviews=" + reviews
+				+ ", schedules=" + schedules + ", priceMin=" + priceMin + ", priceMax=" + priceMax + ", outstanding="
+				+ outstanding + ", listMenu=" + listMenu + ", coordinates=" + coordinates + ", email=" + email
+				+ ", facebook=" + facebook + "]";
 	}
 
 }

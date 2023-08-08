@@ -11,7 +11,7 @@ import com.cafe.website.constant.TokenType;
 import com.cafe.website.entity.Token;
 import com.cafe.website.entity.User;
 import com.cafe.website.exception.ResourceNotFoundException;
-import com.cafe.website.payload.LoginDto;
+import com.cafe.website.payload.LoginDTO;
 import com.cafe.website.repository.RoleRepository;
 import com.cafe.website.repository.TokenRepository;
 import com.cafe.website.repository.UserRepository;
@@ -43,7 +43,7 @@ public class AuthServiceImp implements AuthService {
 	}
 
 	@Override
-	public String login(LoginDto loginDto) {
+	public String login(LoginDTO loginDto) {
 
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));

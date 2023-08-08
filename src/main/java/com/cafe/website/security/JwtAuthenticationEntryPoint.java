@@ -1,12 +1,7 @@
 package com.cafe.website.security;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;

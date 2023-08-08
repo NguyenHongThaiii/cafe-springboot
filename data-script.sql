@@ -18,7 +18,7 @@ VALUES (1,1,1,'','','thai','123123@','$2a$10$fmwrW8yb.BP4mUTJP03nVOGna.BXkUjBKuY
 INSERT INTO USERS (created_at,updated_at,status,address,avartar,name,email,password,phone)
 VALUES (1,1,1,'','','thai123','thai@','$2a$10$fmwrW8yb.BP4mUTJP03nVOGna.BXkUjBKuYcgqFdJdB/AhhDz8kxi','');
 
--- INSERT DATA TO ROLES TABLEareas
+-- INSERT DATA TO ROLES TABLE areas
 INSERT INTO ROLES (created_at,updated_at,status,name) VALUES (1,1,1,'ROLE_ADMIN');
 INSERT INTO ROLES (created_at,updated_at,status,name) VALUES (1,1,1,'ROLE_USER');
 
@@ -42,3 +42,9 @@ VALUES ('Seven Coffee3','seven-coffee3',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,'[
 '"https://www.facebook.com/SevenCoffee.HN/','["https://res.cloudinary.com/th-i-nguy-n/image/upload/v1690976979/cafe-springboot/menu/Seven-Coffee-menu-2_m4jxbs.jpg",
 "https://res.cloudinary.com/th-i-nguy-n/image/upload/v1690976978/cafe-springboot/menu/Seven-Coffee-menu-1_ujnjhn.jpg"]',
 10000,50000,1);
+-- INSERT DATA TO PRODUCTS_AREAS TABLE
+INSERT INTO products_areas(product_id,area_id) values (1,1);
+INSERT INTO products_areas(product_id,area_id) values (1,2);
+
+INSERT INTO products_areas(product_id,area_id) values (2,2);
+INSERT INTO products_areas(product_id,area_id) values (3,3);

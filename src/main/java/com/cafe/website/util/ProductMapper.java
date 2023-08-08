@@ -8,20 +8,22 @@ import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
 import com.cafe.website.entity.Area;
+import com.cafe.website.entity.Product;
 import com.cafe.website.payload.AreaDTO;
+import com.cafe.website.payload.ProductDTO;
+import com.cafe.website.payload.ProductUpdateDTO;
 
 @Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
-public interface AreaMapper {
-	public AreaMapper INSTANCE = Mappers.getMapper(AreaMapper.class);
+public interface ProductMapper {
+	public ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
 	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-	void updateAreaFromDto(AreaDTO areaDto, @MappingTarget Area area);
+	void updateProductFromDto(ProductDTO productDto, @MappingTarget Product product);
 
 	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, ignoreByDefault = true)
-	void updateAreaDTOFromArea(Area entity, @MappingTarget AreaDTO dto);
+	void updateProductDtoFromProduct(Product entity, @MappingTarget ProductDTO dto);
 
-	AreaDTO entityToDto(Area area);
-
-	Area dtoToEntity(AreaDTO areaDto);
-
+	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+	void updateProductDtoFromProductUpdateDto(@MappingTarget ProductDTO productDto, ProductUpdateDTO productUpdateDto);
+	
 }

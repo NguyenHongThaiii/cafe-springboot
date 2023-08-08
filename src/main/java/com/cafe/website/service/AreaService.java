@@ -3,6 +3,7 @@ package com.cafe.website.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.cafe.website.payload.AreaCreateDTO;
 import com.cafe.website.payload.AreaDTO;
 
 public interface AreaService {
@@ -10,7 +11,7 @@ public interface AreaService {
 
 	AreaDTO getAreaById(int id);
 
-	AreaDTO createArea(AreaDTO areaDto);
+	AreaDTO createArea(AreaCreateDTO areaCreateDto);
 
 	AreaDTO updateArea(int id,  AreaDTO areaDto);
 
