@@ -2,6 +2,8 @@ package com.cafe.website.payload;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -9,54 +11,59 @@ import jakarta.validation.constraints.NotNull;
 
 public class ProductCreateDTO {
 	private int id;
-	@NotNull
+
+//	@NotNull
 	private List<Integer> area_id;
 
+//	@NotNull
 	private List<Integer> kind_id;
 
+//	@NotNull
 	private List<Integer> convenience_id;
 
+//	@NotNull
 	private List<Integer> purpose_id;
 
 	@NotNull
 	private String name;
 
-	@NotNull
+//	@NotNull
 	private String slug;
 
-	@NotNull
+//	@NotNull
 	private String phone;
 
-	@Min(value = 0, message = "status should not be less than 0")
-	@Max(value = 1, message = "status should not be greater than 1")
+//	@Min(value = 0, message = "status should not be less than 0")
+//	@Max(value = 1, message = "status should not be greater than 1")
 	private int status;
 
-	@Min(value = 0, message = "priceMin should not be less than 0")
+//	@Min(value = 0, message = "priceMin should not be less than 0")
 	private int priceMin;
 
-	@Min(value = 0, message = "priceMax should not be less than 0")
+//	@Min(value = 0, message = "priceMax should not be less than 0")
 	private int priceMax;
 
-	@Min(value = 0, message = "status should not be less than 0")
-	@Max(value = 1, message = "status should not be greater than 1")
+//	@Min(value = 0, message = "status should not be less than 0")
+//	@Max(value = 1, message = "status should not be greater than 1")
 	private int outstanding;
 
-	@NotNull
-	private String listMenu;
+	private List<MultipartFile> listMenuFile;
 
-	@NotNull
+//	@NotNull
 	private String coordinates;
 
-	@NotNull
+//	@NotNull
 	private String email;
 
-	@NotNull
+//	@NotNull
 	private String facebook;
+
+	private List<MultipartFile> listImageFile;
 
 	public ProductCreateDTO(int id, List<Integer> area_id, List<Integer> kind_id, List<Integer> convenience_id,
 			List<Integer> purpose_id, String name, String slug, String phone, int status, int priceMin, int priceMax,
-			@AssertTrue(message = "outstanding should be true") int outstanding, String listMenu, String coordinates,
-			String email, String facebook) {
+			@AssertTrue(message = "outstanding should be true") int outstanding, List<MultipartFile> listMenuFile,
+			String coordinates, String email, String facebook) {
 		super();
 		this.id = id;
 		this.area_id = area_id;
@@ -70,7 +77,7 @@ public class ProductCreateDTO {
 		this.priceMin = priceMin;
 		this.priceMax = priceMax;
 		this.outstanding = outstanding;
-		this.listMenu = listMenu;
+		this.listMenuFile = listMenuFile;
 		this.coordinates = coordinates;
 		this.email = email;
 		this.facebook = facebook;
@@ -176,16 +183,24 @@ public class ProductCreateDTO {
 		this.priceMax = priceMax;
 	}
 
-	public String getListMenu() {
-		return listMenu;
+	public List<MultipartFile> getlistMenuFile() {
+		return listMenuFile;
 	}
 
-	public void setListMenu(String listMenu) {
-		this.listMenu = listMenu;
+	public void setlistMenuFile(List<MultipartFile> listMenuFile) {
+		this.listMenuFile = listMenuFile;
 	}
 
 	public String getCoordinates() {
 		return coordinates;
+	}
+
+	public List<MultipartFile> getlistImageFile() {
+		return listImageFile;
+	}
+
+	public void setlistImageFile(List<MultipartFile> listImageFile) {
+		this.listImageFile = listImageFile;
 	}
 
 	public void setCoordinates(String coordinates) {

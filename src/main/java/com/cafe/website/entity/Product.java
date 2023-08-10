@@ -45,6 +45,7 @@ public class Product extends BaseEntity {
 	private int priceMax;
 	private int outstanding;
 	private String listMenu;
+	private String listImage;
 	private String coordinates;
 	private String email;
 	private String facebook;
@@ -52,7 +53,7 @@ public class Product extends BaseEntity {
 	public Product(int id, int status, Long createdAt, Long updatedAt, String name, String slug, String phone,
 			List<Purpose> purposes, List<Area> areas, List<Kind> kinds, List<Convenience> conveniences,
 			List<Review> reviews, List<ProductSchedule> schedules, int priceMin, int priceMax, int outstanding,
-			String listMenu, String coordinates, String email, String facebook) {
+			String listMenu, String coordinates, String email, String facebook, String listImage) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;
 		this.slug = slug;
@@ -70,6 +71,7 @@ public class Product extends BaseEntity {
 		this.coordinates = coordinates;
 		this.email = email;
 		this.facebook = facebook;
+		this.listImage = listImage;
 	}
 
 	public Product(int id, int status, Long createdAt, Long updatedAt) {
@@ -194,6 +196,14 @@ public class Product extends BaseEntity {
 
 	public String getEmail() {
 		return email;
+	}
+
+	public String getListImage() {
+		return listImage;
+	}
+
+	public void setListImage(String listImage) {
+		this.listImage = listImage;
 	}
 
 	public void setEmail(String email) {

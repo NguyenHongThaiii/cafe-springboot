@@ -1,16 +1,25 @@
 package com.cafe.website.payload;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 public class AreaDTO {
 	private int id;
-
-	private int status;
-
 	private Long createdAt;
-
 	private Long updatedAt;
-	private String name;
-	private String slug;
 
+	@Min(value = 0, message = "Status should not be less than 0")
+	@Max(value = 1, message = "status should not be greater than 1")
+	private int status;
+	
+	@NotNull
+	private String name;
+	
+	@NotNull
+	private String slug;
+	
+	@NotNull
 	private String image;
 
 	public AreaDTO(int id, int status, Long createdAt, Long updatedAt, String name, String slug, String image) {

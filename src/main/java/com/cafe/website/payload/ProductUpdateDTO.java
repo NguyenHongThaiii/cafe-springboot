@@ -2,28 +2,62 @@ package com.cafe.website.payload;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 public class ProductUpdateDTO {
 	private int id;
 
+	@NotNull
 	private List<Integer> area_id;
+
+	@NotNull
 	private List<Integer> kind_id;
+
+	@NotNull
 	private List<Integer> convenience_id;
+
+	@NotNull
 	private List<Integer> purpose_id;
+
+	@NotNull
 	private String name;
+
+	@NotNull
 	private String slug;
+
 	private String phone;
+
+	@Min(value = 0, message = "status should not be less than 0")
+	@Max(value = 1, message = "status should not be greater than 1")
 	private int status;
+
+	@Min(value = 0, message = "priceMin should not be less than 0")
 	private int priceMin;
+
+	@Min(value = 0, message = "priceMax should not be less than 0")
 	private int priceMax;
+
+	@Min(value = 0, message = "status should not be less than 0")
+	@Max(value = 1, message = "status should not be greater than 1")
 	private int outstanding;
-	private String listMenu;
+
+	private List<MultipartFile> listMenuFile;
+
+	private List<MultipartFile> listImageFile;
+
+	@NotNull
 	private String coordinates;
+
 	private String email;
 	private String facebook;
 
 	public ProductUpdateDTO(int id, List<Integer> area_id, List<Integer> kind_id, List<Integer> convenience_id,
 			List<Integer> purpose_id, String name, String slug, String phone, int status, int priceMin, int priceMax,
-			int outstanding, String listMenu, String coordinates, String email, String facebook) {
+			int outstanding, List<MultipartFile> listMenuFile, String coordinates, String email, String facebook,List<MultipartFile> listImageFile) {
 		super();
 		this.id = id;
 		this.area_id = area_id;
@@ -37,7 +71,7 @@ public class ProductUpdateDTO {
 		this.priceMin = priceMin;
 		this.priceMax = priceMax;
 		this.outstanding = outstanding;
-		this.listMenu = listMenu;
+		this.listMenuFile = listMenuFile;
 		this.coordinates = coordinates;
 		this.email = email;
 		this.facebook = facebook;
@@ -135,8 +169,6 @@ public class ProductUpdateDTO {
 		this.priceMax = priceMax;
 	}
 
-
-
 	public int getOutstanding() {
 		return outstanding;
 	}
@@ -145,12 +177,12 @@ public class ProductUpdateDTO {
 		this.outstanding = outstanding;
 	}
 
-	public String getListMenu() {
-		return listMenu;
+	public List<MultipartFile> getlistMenuFile() {
+		return listMenuFile;
 	}
 
-	public void setListMenu(String listMenu) {
-		this.listMenu = listMenu;
+	public void setlistMenuFile(List<MultipartFile> listMenuFile) {
+		this.listMenuFile = listMenuFile;
 	}
 
 	public String getCoordinates() {
@@ -171,6 +203,22 @@ public class ProductUpdateDTO {
 
 	public String getFacebook() {
 		return facebook;
+	}
+
+	public List<MultipartFile> getListMenuFile() {
+		return listMenuFile;
+	}
+
+	public void setListMenuFile(List<MultipartFile> listMenuFile) {
+		this.listMenuFile = listMenuFile;
+	}
+
+	public List<MultipartFile> getlistImageFile() {
+		return listImageFile;
+	}
+
+	public void setlistImageFile(List<MultipartFile> listImageFile) {
+		this.listImageFile = listImageFile;
 	}
 
 	public void setFacebook(String facebook) {

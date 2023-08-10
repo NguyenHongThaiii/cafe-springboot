@@ -10,19 +10,12 @@ import com.cafe.website.entity.Purpose;
 import com.cafe.website.entity.Review;
 
 public class ProductDTO {
-
 	private List<Purpose> purposes;
-
 	private List<Area> areas;
-
 	private List<Kind> kinds;
-
 	private List<Convenience> conveniences;
-
 	private List<Review> reviews;
-
 	private List<ProductSchedule> schedules;
-
 	private int id;
 	private String name;
 	private String slug;
@@ -32,6 +25,7 @@ public class ProductDTO {
 	private int priceMax;
 	private int outstanding;
 	private String listMenu;
+	private String listImage;
 	private String coordinates;
 	private String email;
 	private String facebook;
