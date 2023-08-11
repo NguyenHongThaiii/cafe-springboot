@@ -3,10 +3,7 @@ package com.cafe.website.serviceImp;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -16,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.cafe.website.constant.SortField;
 import com.cafe.website.entity.Area;
@@ -37,8 +33,6 @@ import com.cafe.website.service.CloudinaryService;
 import com.cafe.website.service.ProductService;
 import com.cafe.website.util.MapperUtils;
 import com.cafe.website.util.ProductMapper;
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.micrometer.common.util.StringUtils;
@@ -115,15 +109,6 @@ public class ProductServiceImp implements ProductService {
 		List<String> listMenus = new ArrayList<>();
 		ObjectMapper objectMapper = new ObjectMapper();
 
-		for (MultipartFile menu : productCreateDto.getlistMenuFile()) {
-			if (menu != null) {
-				String url = cloudinaryService.uploadFile(menu, "cafe-springboot/menu", "auto");
-				listMenus.add(url);
-				logger.info("------------------------");
-				logger.info(url);
-			}
-		}
-
 		ProductDTO pdto = MapperUtils.mapToEntity(productCreateDto, ProductDTO.class);
 		Product product = new Product();
 
@@ -140,15 +125,17 @@ public class ProductServiceImp implements ProductService {
 		productMapper.updateProductFromDto(pdto, product);
 
 		product.setId(0);
+		cloudinaryService.uploadImages(listMenus, productCreateDto.getListMenuFile(), "cafe-springboot/menu", "image");
 		String jsonListMenu = objectMapper.writeValueAsString(listMenus);
 		product.setListMenu(jsonListMenu);
+
 		productRepository.save(product);
 
 		return MapperUtils.mapToDTO(product, ProductDTO.class);
 	}
 
 	@Override
-	public ProductDTO updateProduct(int id, ProductUpdateDTO productUpdateDto) {
+	public ProductDTO updateProduct(int id, ProductUpdateDTO productUpdateDto) throws IOException {
 		ProductDTO pdto = this.getProductById(id);
 		Product product = MapperUtils.mapToEntity(pdto, Product.class);
 		productUpdateDto.setId(id);
@@ -164,6 +151,17 @@ public class ProductServiceImp implements ProductService {
 		pdto.setKinds(listKinds);
 		pdto.setPurposes(listPurposes);
 		pdto.setConveniences(listCon);
+
+//		delete old images and add new images
+
+		if (productUpdateDto.getListMenuFile() != null) {
+			List<String> listMenus = new ArrayList<>();
+			cloudinaryService.uploadImages(listMenus, productUpdateDto.getListMenuFile(), "cafe-springboot/menu",
+					"image");
+			ObjectMapper objMapper = new ObjectMapper();
+			String urlImageMenu = objMapper.writeValueAsString(listMenus);
+			pdto.setListMenu(urlImageMenu);
+		}
 
 		productMapper.updateProductFromDto(pdto, product);
 		productRepository.save(product);
@@ -182,10 +180,22 @@ public class ProductServiceImp implements ProductService {
 	}
 
 	@Override
-	public String deleteProduct(int id) {
-		// TODO Auto-generated method stub
-		this.getProductById(id);
+	public String deleteProduct(int id) throws IOException {
+		ProductDTO productDto = this.getProductById(id);
+		String path_menu = "cafe-springboot/menu/";
+		String path_blogs = "cafe-springboot/blogs/";
+		String[] listImages = productDto.getListMenu().replace("[", "").replace("]", "").split(",".toString());
+		
+		for (String image : listImages) {
+			String[] parts = image.split("/");
+			String lastPart = parts[parts.length - 1];
+
+			String idPart = path_menu + lastPart.substring(0, lastPart.lastIndexOf("."));
+			cloudinaryService.deleteImage(idPart);
+		}
+		
 		productRepository.deleteById(id);
+
 		return "Delete successfully";
 	}
 

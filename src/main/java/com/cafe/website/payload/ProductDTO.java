@@ -3,20 +3,20 @@ package com.cafe.website.payload;
 import java.util.List;
 
 import com.cafe.website.entity.Area;
+import com.cafe.website.entity.BaseEntity;
 import com.cafe.website.entity.Convenience;
 import com.cafe.website.entity.Kind;
 import com.cafe.website.entity.ProductSchedule;
 import com.cafe.website.entity.Purpose;
 import com.cafe.website.entity.Review;
 
-public class ProductDTO {
+public class ProductDTO extends BaseEntity {
 	private List<Purpose> purposes;
 	private List<Area> areas;
 	private List<Kind> kinds;
 	private List<Convenience> conveniences;
 	private List<Review> reviews;
 	private List<ProductSchedule> schedules;
-	private int id;
 	private String name;
 	private String slug;
 	private String phone;
@@ -29,34 +29,39 @@ public class ProductDTO {
 	private String coordinates;
 	private String email;
 	private String facebook;
+	private String description;
+	private String location;
 
-	public ProductDTO(List<Purpose> purposes, List<Area> areas, List<Kind> kinds, List<Convenience> conveniences,
-			List<Review> reviews, List<ProductSchedule> schedules, int id, String name, String slug, String phone,
-			int status, int priceMin, int priceMax, int outstanding, String listMenu, String coordinates,
-			String email, String facebook) {
-		super();
+	public ProductDTO(int id, int status, Long createdAt, Long updatedAt, List<Purpose> purposes, List<Area> areas,
+			List<Kind> kinds, List<Convenience> conveniences, List<Review> reviews, List<ProductSchedule> schedules,
+			String name, String slug, String phone, int status2, int priceMin, int priceMax, int outstanding,
+			String listMenu, String listImage, String coordinates, String email, String facebook, String description,
+			String location) {
+		super(id, status, createdAt, updatedAt);
 		this.purposes = purposes;
 		this.areas = areas;
 		this.kinds = kinds;
 		this.conveniences = conveniences;
 		this.reviews = reviews;
 		this.schedules = schedules;
-		this.id = id;
 		this.name = name;
 		this.slug = slug;
 		this.phone = phone;
-		this.status = status;
+		status = status2;
 		this.priceMin = priceMin;
 		this.priceMax = priceMax;
 		this.outstanding = outstanding;
 		this.listMenu = listMenu;
+		this.listImage = listImage;
 		this.coordinates = coordinates;
 		this.email = email;
 		this.facebook = facebook;
+		this.description = description;
+		this.location = location;
 	}
 
 	public ProductDTO() {
-		super();
+		// TODO Auto-generated constructor stub
 	}
 
 	public List<Purpose> getPurposes() {
@@ -107,14 +112,6 @@ public class ProductDTO {
 		this.schedules = schedules;
 	}
 
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -163,7 +160,6 @@ public class ProductDTO {
 		this.priceMax = priceMax;
 	}
 
-
 	public int getOutstanding() {
 		return outstanding;
 	}
@@ -178,6 +174,14 @@ public class ProductDTO {
 
 	public void setListMenu(String listMenu) {
 		this.listMenu = listMenu;
+	}
+
+	public String getListImage() {
+		return listImage;
+	}
+
+	public void setListImage(String listImage) {
+		this.listImage = listImage;
 	}
 
 	public String getCoordinates() {
@@ -204,13 +208,19 @@ public class ProductDTO {
 		this.facebook = facebook;
 	}
 
-	@Override
-	public String toString() {
-		return "ProductDTO [purposes=" + purposes + ", areas=" + areas + ", kinds=" + kinds + ", conveniences="
-				+ conveniences + ", reviews=" + reviews + ", schedules=" + schedules + ", id=" + id + ", name=" + name
-				+ ", slug=" + slug + ", phone=" + phone + ", status=" + status + ", priceMin=" + priceMin
-				+ ", priceMax=" + priceMax + ", outstanding=" + outstanding + ", listMenu=" + listMenu
-				+ ", coordinates=" + coordinates + ", email=" + email + ", facebook=" + facebook + "]";
+	public String getDescription() {
+		return description;
 	}
 
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
 }

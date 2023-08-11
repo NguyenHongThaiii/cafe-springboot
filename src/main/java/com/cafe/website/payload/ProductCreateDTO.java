@@ -7,63 +7,75 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public class ProductCreateDTO {
 	private int id;
 
-//	@NotNull
+	@NotNull
 	private List<Integer> area_id;
 
-//	@NotNull
+	@NotNull
 	private List<Integer> kind_id;
 
-//	@NotNull
+	@NotNull
 	private List<Integer> convenience_id;
 
-//	@NotNull
+	@NotNull
 	private List<Integer> purpose_id;
 
 	@NotNull
 	private String name;
 
-//	@NotNull
+	@NotNull
 	private String slug;
 
-//	@NotNull
+	@NotNull
 	private String phone;
 
-//	@Min(value = 0, message = "status should not be less than 0")
-//	@Max(value = 1, message = "status should not be greater than 1")
+	@Min(value = 0, message = "status should not be less than 0")
+	@Max(value = 1, message = "status should not be greater than 1")
 	private int status;
 
-//	@Min(value = 0, message = "priceMin should not be less than 0")
+	@Min(value = 0, message = "priceMin should not be less than 0")
 	private int priceMin;
 
-//	@Min(value = 0, message = "priceMax should not be less than 0")
+	@Min(value = 0, message = "priceMax should not be less than 0")
 	private int priceMax;
 
-//	@Min(value = 0, message = "status should not be less than 0")
-//	@Max(value = 1, message = "status should not be greater than 1")
+	@Min(value = 0, message = "status should not be less than 0")
+	@Max(value = 1, message = "status should not be greater than 1")
 	private int outstanding;
 
+	@NotEmpty(message = "listMenuFile list cannot be empty")
 	private List<MultipartFile> listMenuFile;
 
-//	@NotNull
+	@NotNull
 	private String coordinates;
 
-//	@NotNull
-	private String email;
+	@NotNull
+	private String description;
 
-//	@NotNull
+	@NotNull
+	private String location;
+
+	private String email;
 	private String facebook;
 
+	@NotEmpty(message = "listImageFile list cannot be empty")
 	private List<MultipartFile> listImageFile;
 
-	public ProductCreateDTO(int id, List<Integer> area_id, List<Integer> kind_id, List<Integer> convenience_id,
-			List<Integer> purpose_id, String name, String slug, String phone, int status, int priceMin, int priceMax,
-			@AssertTrue(message = "outstanding should be true") int outstanding, List<MultipartFile> listMenuFile,
-			String coordinates, String email, String facebook) {
+	public ProductCreateDTO(int id, @NotNull List<Integer> area_id, List<Integer> kind_id, List<Integer> convenience_id,
+			List<Integer> purpose_id, @NotNull String name, @NotNull String slug, @NotNull String phone,
+			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") int status,
+			@Min(value = 0, message = "priceMin should not be less than 0") int priceMin,
+			@Min(value = 0, message = "priceMax should not be less than 0") int priceMax,
+			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") int outstanding,
+			@NotEmpty(message = "listMenuFile list cannot be empty") List<MultipartFile> listMenuFile,
+			@NotNull String coordinates, @NotNull String description, @NotNull String location, String email,
+			String facebook,
+			@NotEmpty(message = "listImageFile list cannot be empty") List<MultipartFile> listImageFile) {
 		super();
 		this.id = id;
 		this.area_id = area_id;
@@ -79,20 +91,15 @@ public class ProductCreateDTO {
 		this.outstanding = outstanding;
 		this.listMenuFile = listMenuFile;
 		this.coordinates = coordinates;
+		this.description = description;
+		this.location = location;
 		this.email = email;
 		this.facebook = facebook;
+		this.listImageFile = listImageFile;
 	}
 
 	public ProductCreateDTO() {
-		super();
-	}
-
-	public int getOutstanding() {
-		return outstanding;
-	}
-
-	public void setOutstanding(int outstanding) {
-		this.outstanding = outstanding;
+		// TODO Auto-generated constructor stub
 	}
 
 	public int getId() {
@@ -183,11 +190,19 @@ public class ProductCreateDTO {
 		this.priceMax = priceMax;
 	}
 
-	public List<MultipartFile> getlistMenuFile() {
+	public int getOutstanding() {
+		return outstanding;
+	}
+
+	public void setOutstanding(int outstanding) {
+		this.outstanding = outstanding;
+	}
+
+	public List<MultipartFile> getListMenuFile() {
 		return listMenuFile;
 	}
 
-	public void setlistMenuFile(List<MultipartFile> listMenuFile) {
+	public void setListMenuFile(List<MultipartFile> listMenuFile) {
 		this.listMenuFile = listMenuFile;
 	}
 
@@ -195,16 +210,24 @@ public class ProductCreateDTO {
 		return coordinates;
 	}
 
-	public List<MultipartFile> getlistImageFile() {
-		return listImageFile;
-	}
-
-	public void setlistImageFile(List<MultipartFile> listImageFile) {
-		this.listImageFile = listImageFile;
-	}
-
 	public void setCoordinates(String coordinates) {
 		this.coordinates = coordinates;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
 	}
 
 	public String getEmail() {
@@ -221,6 +244,14 @@ public class ProductCreateDTO {
 
 	public void setFacebook(String facebook) {
 		this.facebook = facebook;
+	}
+
+	public List<MultipartFile> getListImageFile() {
+		return listImageFile;
+	}
+
+	public void setListImageFile(List<MultipartFile> listImageFile) {
+		this.listImageFile = listImageFile;
 	}
 
 }

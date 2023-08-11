@@ -74,9 +74,6 @@ public class AuthServiceImp implements AuthService {
 		token.setExpired(false);
 		token.setRevoked(false);
 		token.setStatus(1);
-//				Token.builder().user(user).name(jwtToken).tokenType(TokenType.BEARER).expired(false)
-//				.revoked(false).build();
-//		token.setStatus(1);
 		tokenRepository.save(token);
 	}
 

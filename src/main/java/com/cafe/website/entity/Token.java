@@ -1,7 +1,7 @@
 package com.cafe.website.entity;
 
 import com.cafe.website.constant.TokenType;
-
+//import com.cafe.website.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

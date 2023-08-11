@@ -1,7 +1,6 @@
 package com.cafe.website.service;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 
 import com.cafe.website.payload.ProductCreateDTO;
@@ -13,9 +12,9 @@ public interface ProductService {
 
 	ProductDTO createProduct(ProductCreateDTO productCreateDto) throws IOException;
 
-	ProductDTO updateProduct(int id, ProductUpdateDTO productUpdateDto);
+	ProductDTO updateProduct(int id, ProductUpdateDTO productUpdateDto) throws IOException;
 
 	ProductDTO getProductById(int id);
 
-	String deleteProduct(int id);
+	String deleteProduct(int id) throws IOException;
 }

@@ -50,10 +50,14 @@ public class Product extends BaseEntity {
 	private String email;
 	private String facebook;
 
+	private String description;
+	private String location;
+
 	public Product(int id, int status, Long createdAt, Long updatedAt, String name, String slug, String phone,
 			List<Purpose> purposes, List<Area> areas, List<Kind> kinds, List<Convenience> conveniences,
 			List<Review> reviews, List<ProductSchedule> schedules, int priceMin, int priceMax, int outstanding,
-			String listMenu, String coordinates, String email, String facebook, String listImage) {
+			String listMenu, String listImage, String coordinates, String email, String facebook, String description,
+			String location) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;
 		this.slug = slug;
@@ -68,14 +72,12 @@ public class Product extends BaseEntity {
 		this.priceMax = priceMax;
 		this.outstanding = outstanding;
 		this.listMenu = listMenu;
+		this.listImage = listImage;
 		this.coordinates = coordinates;
 		this.email = email;
 		this.facebook = facebook;
-		this.listImage = listImage;
-	}
-
-	public Product(int id, int status, Long createdAt, Long updatedAt) {
-		super(id, status, createdAt, updatedAt);
+		this.description = description;
+		this.location = location;
 	}
 
 	public Product() {
@@ -186,6 +188,14 @@ public class Product extends BaseEntity {
 		this.listMenu = listMenu;
 	}
 
+	public String getListImage() {
+		return listImage;
+	}
+
+	public void setListImage(String listImage) {
+		this.listImage = listImage;
+	}
+
 	public String getCoordinates() {
 		return coordinates;
 	}
@@ -196,14 +206,6 @@ public class Product extends BaseEntity {
 
 	public String getEmail() {
 		return email;
-	}
-
-	public String getListImage() {
-		return listImage;
-	}
-
-	public void setListImage(String listImage) {
-		this.listImage = listImage;
 	}
 
 	public void setEmail(String email) {
@@ -218,13 +220,20 @@ public class Product extends BaseEntity {
 		this.facebook = facebook;
 	}
 
-	@Override
-	public String toString() {
-		return "Product [name=" + name + ", slug=" + slug + ", phone=" + phone + ", purposes=" + purposes + ", areas="
-				+ areas + ", kinds=" + kinds + ", conveniences=" + conveniences + ", reviews=" + reviews
-				+ ", schedules=" + schedules + ", priceMin=" + priceMin + ", priceMax=" + priceMax + ", outstanding="
-				+ outstanding + ", listMenu=" + listMenu + ", coordinates=" + coordinates + ", email=" + email
-				+ ", facebook=" + facebook + "]";
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
 	}
 
 }

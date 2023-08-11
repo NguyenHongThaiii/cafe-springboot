@@ -46,18 +46,28 @@ public class ProductUpdateDTO {
 	private int outstanding;
 
 	private List<MultipartFile> listMenuFile;
-
 	private List<MultipartFile> listImageFile;
 
 	@NotNull
 	private String coordinates;
 
+	@NotNull
+	private String description;
+
+	@NotNull
+	private String location;
+
 	private String email;
 	private String facebook;
 
-	public ProductUpdateDTO(int id, List<Integer> area_id, List<Integer> kind_id, List<Integer> convenience_id,
-			List<Integer> purpose_id, String name, String slug, String phone, int status, int priceMin, int priceMax,
-			int outstanding, List<MultipartFile> listMenuFile, String coordinates, String email, String facebook,List<MultipartFile> listImageFile) {
+	public ProductUpdateDTO(int id, @NotNull List<Integer> area_id, List<Integer> kind_id, List<Integer> convenience_id,
+			List<Integer> purpose_id, String name, String slug, String phone,
+			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") int status,
+			@Min(value = 0, message = "priceMin should not be less than 0") int priceMin,
+			@Min(value = 0, message = "priceMax should not be less than 0") int priceMax,
+			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") int outstanding,
+			List<MultipartFile> listMenuFile, List<MultipartFile> listImageFile, String coordinates, String description,
+			String location, String email, String facebook) {
 		super();
 		this.id = id;
 		this.area_id = area_id;
@@ -72,13 +82,16 @@ public class ProductUpdateDTO {
 		this.priceMax = priceMax;
 		this.outstanding = outstanding;
 		this.listMenuFile = listMenuFile;
+		this.listImageFile = listImageFile;
 		this.coordinates = coordinates;
+		this.description = description;
+		this.location = location;
 		this.email = email;
 		this.facebook = facebook;
 	}
 
 	public ProductUpdateDTO() {
-		super();
+		// TODO Auto-generated constructor stub
 	}
 
 	public int getId() {
@@ -177,12 +190,20 @@ public class ProductUpdateDTO {
 		this.outstanding = outstanding;
 	}
 
-	public List<MultipartFile> getlistMenuFile() {
+	public List<MultipartFile> getListMenuFile() {
 		return listMenuFile;
 	}
 
-	public void setlistMenuFile(List<MultipartFile> listMenuFile) {
+	public void setListMenuFile(List<MultipartFile> listMenuFile) {
 		this.listMenuFile = listMenuFile;
+	}
+
+	public List<MultipartFile> getListImageFile() {
+		return listImageFile;
+	}
+
+	public void setListImageFile(List<MultipartFile> listImageFile) {
+		this.listImageFile = listImageFile;
 	}
 
 	public String getCoordinates() {
@@ -191,6 +212,22 @@ public class ProductUpdateDTO {
 
 	public void setCoordinates(String coordinates) {
 		this.coordinates = coordinates;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
 	}
 
 	public String getEmail() {
@@ -203,22 +240,6 @@ public class ProductUpdateDTO {
 
 	public String getFacebook() {
 		return facebook;
-	}
-
-	public List<MultipartFile> getListMenuFile() {
-		return listMenuFile;
-	}
-
-	public void setListMenuFile(List<MultipartFile> listMenuFile) {
-		this.listMenuFile = listMenuFile;
-	}
-
-	public List<MultipartFile> getlistImageFile() {
-		return listImageFile;
-	}
-
-	public void setlistImageFile(List<MultipartFile> listImageFile) {
-		this.listImageFile = listImageFile;
 	}
 
 	public void setFacebook(String facebook) {

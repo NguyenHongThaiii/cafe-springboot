@@ -1,5 +1,6 @@
 package com.cafe.website.serviceImp;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,8 +16,10 @@ import com.cafe.website.entity.Area;
 import com.cafe.website.exception.ResourceNotFoundException;
 import com.cafe.website.payload.AreaCreateDTO;
 import com.cafe.website.payload.AreaDTO;
+import com.cafe.website.payload.AreaUpdateDTO;
 import com.cafe.website.repository.AreaRepository;
 import com.cafe.website.service.AreaService;
+import com.cafe.website.service.CloudinaryService;
 import com.cafe.website.util.AreaMapper;
 import com.cafe.website.util.MapperUtils;
 
@@ -25,12 +28,13 @@ import io.micrometer.common.util.StringUtils;
 @Service
 public class AreaServiceImp implements AreaService {
 	private AreaMapper areaMapper;
-
+	CloudinaryService cloudinaryService;
 	private AreaRepository areaRepository;
 
-	public AreaServiceImp(AreaRepository areaRepository, AreaMapper areaMapper) {
+	public AreaServiceImp(AreaRepository areaRepository, AreaMapper areaMapper, CloudinaryService cloudinaryService) {
 		this.areaRepository = areaRepository;
 		this.areaMapper = areaMapper;
+		this.cloudinaryService = cloudinaryService;
 	}
 
 	@Override
@@ -83,9 +87,10 @@ public class AreaServiceImp implements AreaService {
 	}
 
 	@Override
-	public AreaDTO createArea(AreaCreateDTO areaCreateDto) {
+	public AreaDTO createArea(AreaCreateDTO areaCreateDto) throws IOException {
 		Area area = MapperUtils.mapToEntity(areaCreateDto, Area.class);
-
+		String image = cloudinaryService.uploadImage(areaCreateDto.getImage(), "cafe-springboot/categories", "image");
+		area.setImage(image);
 		Area newArea = areaRepository.save(area);
 
 		AreaDTO newAreaDto = MapperUtils.mapToDTO(newArea, AreaDTO.class);
@@ -94,13 +99,16 @@ public class AreaServiceImp implements AreaService {
 	}
 
 	@Override
-	public AreaDTO updateArea(int id, AreaDTO areaDto) {
+	public AreaDTO updateArea(int id, AreaUpdateDTO areaUpdateDto) throws IOException {
 		AreaDTO newdto = this.getAreaById(id);
 		Area area = areaMapper.dtoToEntity(newdto);
+		String image = cloudinaryService.uploadImage(areaUpdateDto.getImage(), "cafe-springboot/categories", "image");
+		AreaDTO areaDto = MapperUtils.mapToDTO(areaUpdateDto, AreaDTO.class);
 
 		areaDto.setId(id);
+		areaDto.setImage(image);
+		
 		areaMapper.updateAreaFromDto(areaDto, area);
-
 		areaRepository.save(area);
 
 		return areaMapper.entityToDto(area);
