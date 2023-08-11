@@ -184,16 +184,20 @@ public class ProductServiceImp implements ProductService {
 		ProductDTO productDto = this.getProductById(id);
 		String path_menu = "cafe-springboot/menu/";
 		String path_blogs = "cafe-springboot/blogs/";
-		String[] listImages = productDto.getListMenu().replace("[", "").replace("]", "").split(",".toString());
-		
-		for (String image : listImages) {
-			String[] parts = image.split("/");
-			String lastPart = parts[parts.length - 1];
+		String listMenusDb = productDto.getListMenu();
 
-			String idPart = path_menu + lastPart.substring(0, lastPart.lastIndexOf("."));
-			cloudinaryService.deleteImage(idPart);
+		if (listMenusDb != null && StringUtils.isNotEmpty(listMenusDb)) {
+			String[] listImages = listMenusDb.replace("[", "").replace("]", "").split(",");
+			if (listImages.length > 0 && listMenusDb.length() > 2) {
+				for (String image : listImages) {
+					String[] parts = image.split("/");
+					String lastPart = parts[parts.length - 1];
+
+					String idPart = path_menu + lastPart.substring(0, lastPart.lastIndexOf("."));
+					cloudinaryService.deleteImage(idPart);
+				}
+			}
 		}
-		
 		productRepository.deleteById(id);
 
 		return "Delete successfully";
