@@ -16,5 +16,5 @@ public interface AreaService {
 
 	AreaDTO updateArea(int id,  AreaUpdateDTO areaDto) throws IOException;
 
-	void deleteArea(int id);
+	void deleteArea(int id) throws IOException;
 }

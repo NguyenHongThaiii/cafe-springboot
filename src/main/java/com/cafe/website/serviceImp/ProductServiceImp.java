@@ -47,6 +47,7 @@ public class ProductServiceImp implements ProductService {
 	private ProductMapper productMapper;
 	private CloudinaryService cloudinaryService;
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
+	ObjectMapper objMapper = new ObjectMapper();
 
 	public ProductServiceImp(ProductRepository productRepository, AreaRepository areaRepository,
 			KindRepository kindRepository, PurposeRepository purposeRepository, ConvenienceRepository conveRepository,
@@ -107,7 +108,6 @@ public class ProductServiceImp implements ProductService {
 	@Override
 	public ProductDTO createProduct(ProductCreateDTO productCreateDto) throws IOException {
 		List<String> listMenus = new ArrayList<>();
-		ObjectMapper objectMapper = new ObjectMapper();
 
 		ProductDTO pdto = MapperUtils.mapToEntity(productCreateDto, ProductDTO.class);
 		Product product = new Product();
@@ -126,7 +126,7 @@ public class ProductServiceImp implements ProductService {
 
 		product.setId(0);
 		cloudinaryService.uploadImages(listMenus, productCreateDto.getListMenuFile(), "cafe-springboot/menu", "image");
-		String jsonListMenu = objectMapper.writeValueAsString(listMenus);
+		String jsonListMenu = this.objMapper.writeValueAsString(listMenus);
 		product.setListMenu(jsonListMenu);
 
 		productRepository.save(product);
@@ -158,9 +158,9 @@ public class ProductServiceImp implements ProductService {
 			List<String> listMenus = new ArrayList<>();
 			cloudinaryService.uploadImages(listMenus, productUpdateDto.getListMenuFile(), "cafe-springboot/menu",
 					"image");
-			ObjectMapper objMapper = new ObjectMapper();
-			String urlImageMenu = objMapper.writeValueAsString(listMenus);
+			String urlImageMenu = this.objMapper.writeValueAsString(listMenus);
 			pdto.setListMenu(urlImageMenu);
+			this.deleteProduct(pdto.getId());
 		}
 
 		productMapper.updateProductFromDto(pdto, product);
@@ -186,18 +186,9 @@ public class ProductServiceImp implements ProductService {
 		String path_blogs = "cafe-springboot/blogs/";
 		String listMenusDb = productDto.getListMenu();
 
-		if (listMenusDb != null && StringUtils.isNotEmpty(listMenusDb)) {
-			String[] listImages = listMenusDb.replace("[", "").replace("]", "").split(",");
-			if (listImages.length > 0 && listMenusDb.length() > 2) {
-				for (String image : listImages) {
-					String[] parts = image.split("/");
-					String lastPart = parts[parts.length - 1];
+		this.cloudinaryService.removeListImageFromCloudinary(listMenusDb, path_menu);
+		this.cloudinaryService.removeListImageFromCloudinary(listMenusDb, path_blogs);
 
-					String idPart = path_menu + lastPart.substring(0, lastPart.lastIndexOf("."));
-					cloudinaryService.deleteImage(idPart);
-				}
-			}
-		}
 		productRepository.deleteById(id);
 
 		return "Delete successfully";

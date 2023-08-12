@@ -62,7 +62,7 @@ public class AreaController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteArea(@PathVariable(name = "id") int id) {
+    public ResponseEntity<String> deleteArea(@PathVariable(name = "id") int id) throws IOException {
         areaService.deleteArea(id);
         return new ResponseEntity<>("Delete successfully", HttpStatus.OK);
     }

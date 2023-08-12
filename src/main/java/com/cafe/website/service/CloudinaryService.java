@@ -15,4 +15,8 @@ public interface CloudinaryService {
 			throws IOException;
 
 	String uploadImage( MultipartFile file, String path, String typeUpload) throws IOException;
+
+	void removeListImageFromCloudinary(String listMenusDb, String path) throws IOException;
+
+	void removeImageFromCloudinary(String image, String path) throws IOException;
 }

@@ -107,16 +107,22 @@ public class AreaServiceImp implements AreaService {
 
 		areaDto.setId(id);
 		areaDto.setImage(image);
-		
+
 		areaMapper.updateAreaFromDto(areaDto, area);
+		this.deleteArea(area.getId());
 		areaRepository.save(area);
 
 		return areaMapper.entityToDto(area);
 	}
 
 	@Override
-	public void deleteArea(int id) {
-		this.getAreaById(id);
+	public void deleteArea(int id) throws IOException {
+		AreaDTO areaDto = this.getAreaById(id);
+		String path_category = "cafe-springboot/categories/";
+		String listMenusDb = areaDto.getImage();
+
+		this.cloudinaryService.removeImageFromCloudinary(listMenusDb, path_category);
+
 		areaRepository.deleteById(id);
 	}
 

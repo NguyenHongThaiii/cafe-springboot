@@ -12,6 +12,7 @@ VALUES ('Chill', 'chill', 'https://res.cloudinary.com/th-i-nguy-n/image/upload/v
 INSERT INTO areas (name, slug, image, status, created_at, updated_at) 
 VALUES ('Hẹn hò', 'hen-ho', 'https://res.cloudinary.com/th-i-nguy-n/image/upload/v1690898797/cafe-springboot/categories/category-hen-ho_alpfxb.jpg', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
+
 -- INSET DATA TO USERS TABLE
 INSERT INTO USERS (created_at,updated_at,status,address,avartar,name,email,password,phone)
 VALUES (1,1,1,'','','thai','123123@','$2a$10$fmwrW8yb.BP4mUTJP03nVOGna.BXkUjBKuYcgqFdJdB/AhhDz8kxi','');
@@ -41,6 +42,10 @@ INSERT INTO products (name,slug,created_at,updated_at,status,coordinates,email,p
 VALUES ('Seven Coffee3','seven-coffee3',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,'[21.0667245","105.7968339]','','0978 917 971',
 '"https://www.facebook.com/SevenCoffee.HN/','["https://res.cloudinary.com/th-i-nguy-n/image/upload/v1690976979/cafe-springboot/menu/Seven-Coffee-menu-2_m4jxbs.jpg",
 "https://res.cloudinary.com/th-i-nguy-n/image/upload/v1690976978/cafe-springboot/menu/Seven-Coffee-menu-1_ujnjhn.jpg"]',
+10000,50000,1);
+INSERT INTO products (name,slug,created_at,updated_at,status,coordinates,email,phone,facebook,list_menu,price_min,price_max,outstanding) 
+VALUES ('Seven Coffee3','seven-coffee3',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,'[21.0667245","105.7968339]','','0978 917 971',
+'"https://www.facebook.com/SevenCoffee.HN/','[]',
 10000,50000,1);
 -- INSERT DATA TO PRODUCTS_AREAS TABLE
 INSERT INTO products_areas(product_id,area_id) values (1,1);
