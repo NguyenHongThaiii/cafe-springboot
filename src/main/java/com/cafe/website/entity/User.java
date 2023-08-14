@@ -15,14 +15,14 @@ import jakarta.persistence.Table;
 @Table(name = "users")
 @Entity
 public class User extends BaseEntity {
-
+	@Column(unique = true)
+	private String email;
+	private String slug;
+	private String password;
 	private String name;
 	private String address;
 	private String avartar;
 	private String phone;
-	@Column(unique = true)
-	private String email;
-	private String password;
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "products_saved", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"))
@@ -35,13 +35,12 @@ public class User extends BaseEntity {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Review> reviews;
 
-	
 	@OneToMany(mappedBy = "user")
 	private List<Token> tokens;
 
 	public User(int id, int status, Long createdAt, Long updatedAt, String name, String address, String avartar,
 			String phone, String email, String password, List<Product> listProductSaved, List<Role> roles,
-			List<Review> reviews, List<Token> tokens) {
+			List<Review> reviews, List<Token> tokens, String slug) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;
 		this.address = address;
@@ -53,6 +52,7 @@ public class User extends BaseEntity {
 		this.roles = roles;
 		this.reviews = reviews;
 		this.tokens = tokens;
+		this.slug = slug;
 	}
 
 	public User(int id, int status, Long createdAt, Long updatedAt) {
@@ -61,6 +61,14 @@ public class User extends BaseEntity {
 
 	public User() {
 		// TODO Auto-generated constructor stub
+	}
+
+	public String getSlug() {
+		return slug;
+	}
+
+	public void setSlug(String slug) {
+		this.slug = slug;
 	}
 
 	public String getName() {
@@ -141,6 +149,13 @@ public class User extends BaseEntity {
 
 	public void setTokens(List<Token> tokens) {
 		this.tokens = tokens;
+	}
+
+	@Override
+	public String toString() {
+		return "User [email=" + email + ", slug=" + slug + ", password=" + password + ", name=" + name + ", address="
+				+ address + ", avartar=" + avartar + ", phone=" + phone + ", listProductSaved=" + listProductSaved
+				+ ", roles=" + roles + ", reviews=" + reviews + ", tokens=" + tokens + "]";
 	}
 
 }

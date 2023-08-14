@@ -1,5 +1,7 @@
 package com.cafe.website.repository;
 
+import java.util.UUID;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;

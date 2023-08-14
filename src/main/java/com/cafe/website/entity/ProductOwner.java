@@ -1,5 +1,6 @@
 package com.cafe.website.entity;
 
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,10 +21,6 @@ public class ProductOwner extends BaseEntity {
 		super(id, status, createdAt, updatedAt);
 		this.product = product;
 		this.name = name;
-	}
-
-	public ProductOwner(int id, int status, Long createdAt, Long updatedAt) {
-		super(id, status, createdAt, updatedAt);
 	}
 
 	public ProductOwner() {

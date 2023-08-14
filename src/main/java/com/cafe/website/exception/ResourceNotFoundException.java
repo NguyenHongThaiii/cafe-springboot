@@ -1,5 +1,7 @@
 package com.cafe.website.exception;
 
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -12,13 +14,36 @@ public class ResourceNotFoundException extends RuntimeException {
 	private String resourceName;
 	private String fieldName;
 	private long fieldValue;
+	private String fieldValueString;
+	private UUID fieldUUID;
+
+	public ResourceNotFoundException(String resourceName, String fieldName, UUID fieldUUID) {
+		super(String.format("%s not found with %s : '%s'", resourceName, fieldName, fieldUUID));
+		this.resourceName = resourceName;
+		this.fieldName = fieldName;
+		this.fieldUUID = fieldUUID;
+	}
+
+	public ResourceNotFoundException(String resourceName, String fieldName, String fieldValueString) {
+		super(String.format("%s not found with %s : '%s'", resourceName, fieldName, fieldValueString));
+		this.resourceName = resourceName;
+		this.fieldName = fieldName;
+		this.fieldValueString = fieldValueString;
+	}
 
 	public ResourceNotFoundException(String resourceName, String fieldName, long fieldValue) {
-		super(String.format("%s not found with %s : '%s'", resourceName, fieldName, fieldValue)); // Post not found with
-																									// id : 1
+		super(String.format("%s not found with %s : '%s'", resourceName, fieldName, fieldValue));
 		this.resourceName = resourceName;
 		this.fieldName = fieldName;
 		this.fieldValue = fieldValue;
+	}
+
+	public UUID getFieldUUID() {
+		return fieldUUID;
+	}
+
+	public String getFieldValueString() {
+		return fieldValueString;
 	}
 
 	public String getResourceName() {

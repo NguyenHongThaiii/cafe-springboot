@@ -15,10 +15,6 @@ public class BaseCategory extends BaseEntity {
 		this.image = image;
 	}
 
-	public BaseCategory(int id, int status, Long createdAt, Long updatedAt) {
-		super(id, status, createdAt, updatedAt);
-	}
-
 	public BaseCategory() {
 
 	}

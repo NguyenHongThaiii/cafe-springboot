@@ -18,16 +18,6 @@ public class Comment extends BaseEntity {
 	@JoinColumn(name = "review_id", nullable = false)
 	private Review review;
 
-	public Comment(int id, int status, Long createdAt, Long updatedAt, String name, int favorite, Review review) {
-		super(id, status, createdAt, updatedAt);
-		this.name = name;
-		this.favorite = favorite;
-		this.review = review;
-	}
-
-	public Comment(int id, int status, Long createdAt, Long updatedAt) {
-		super(id, status, createdAt, updatedAt);
-	}
 
 	public Comment() {
 		// TODO Auto-generated constructor stub

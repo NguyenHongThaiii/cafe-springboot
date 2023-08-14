@@ -1,5 +1,6 @@
 package com.cafe.website.entity;
 
+
 import com.cafe.website.constant.TokenType;
 //import com.cafe.website.entity.BaseEntity;
 import jakarta.persistence.Column;
@@ -38,6 +39,16 @@ public class Token extends BaseEntity {
 
 	public Token(int id, int status, Long createdAt, Long updatedAt) {
 		super(id, status, createdAt, updatedAt);
+	}
+
+	public Token(int id, int status, Long createdAt, Long updatedAt, String name, TokenType tokenType, boolean revoked,
+			boolean expired, User user) {
+		super(id, status, createdAt, updatedAt);
+		this.name = name;
+		this.tokenType = tokenType;
+		this.revoked = revoked;
+		this.expired = expired;
+		this.user = user;
 	}
 
 	public Token() {
@@ -81,16 +92,6 @@ public class Token extends BaseEntity {
 	}
 
 	public void setUser(User user) {
-		this.user = user;
-	}
-
-	public Token(int id, int status, Long createdAt, Long updatedAt, String name, TokenType tokenType, boolean revoked,
-			boolean expired, User user) {
-		super(id, status, createdAt, updatedAt);
-		this.name = name;
-		this.tokenType = tokenType;
-		this.revoked = revoked;
-		this.expired = expired;
 		this.user = user;
 	}
 

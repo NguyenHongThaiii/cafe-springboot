@@ -81,7 +81,8 @@ public class AreaServiceImp implements AreaService {
 
 	@Override
 	public AreaDTO getAreaById(int id) {
-		Area area = areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area", "area", id));
+		Area area = areaRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Area", "area", id + ""));
 		AreaDTO areaDto = MapperUtils.mapToDTO(area, AreaDTO.class);
 		return areaDto;
 	}

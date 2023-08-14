@@ -1,5 +1,6 @@
 package com.cafe.website.entity;
 
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -20,10 +21,6 @@ public class Rating extends BaseEntity {
 		this.food = food;
 		this.service = service;
 		this.price = price;
-	}
-
-	public Rating(int id, int status, Long createdAt, Long updatedAt) {
-		super(id, status, createdAt, updatedAt);
 	}
 
 	public Rating() {

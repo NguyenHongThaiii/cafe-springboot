@@ -1,5 +1,6 @@
 package com.cafe.website.entity;
 
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -13,12 +14,7 @@ public class Role extends BaseEntity {
 		this.name = name;
 	}
 
-	public Role(int id, int status, Long createdAt, Long updatedAt) {
-		super(id, status, createdAt, updatedAt);
-	}
-
 	public Role() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getName() {

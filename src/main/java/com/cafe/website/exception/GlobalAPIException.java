@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
@@ -121,8 +122,18 @@ public class GlobalAPIException extends ResponseEntityExceptionHandler {
 	public ResponseEntity<ErrorDetails> handleAccessDeniedException(AuthenticationException exception,
 			WebRequest webRequest) {
 
-		ErrorDetails errorDetails = new ErrorDetails(new Date(), "123123", webRequest.getDescription(false));
+		ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(),
+				webRequest.getDescription(false));
 		return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
 	}
+
+	// HttpMessageNotReadableException exceptions
+//	@ExceptionHandler(HttpMessageNotReadableException.class)
+//	public ResponseEntity<ErrorDetails> handleHttpMessageNotReadableExceptionException(
+//			HttpMessageNotReadableException exception, WebRequest webRequest) {
+//
+//		ErrorDetails errorDetails = new ErrorDetails(new Date(), "Body is required", webRequest.getDescription(false));
+//		return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
+//	}
 
 }

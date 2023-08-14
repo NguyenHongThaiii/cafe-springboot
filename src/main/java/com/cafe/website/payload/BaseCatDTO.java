@@ -1,5 +1,6 @@
 package com.cafe.website.payload;
 
+
 public class BaseCatDTO extends BaseEntityDTO {
 	private String name;
 	private String slug;

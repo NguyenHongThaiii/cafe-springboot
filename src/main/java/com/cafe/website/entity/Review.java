@@ -45,10 +45,6 @@ public class Review extends BaseEntity {
 		this.favorite = favorite;
 	}
 
-	public Review(int id, int status, Long createdAt, Long updatedAt) {
-		super(id, status, createdAt, updatedAt);
-	}
-
 	public Review() {
 		// TODO Auto-generated constructor stub
 	}

@@ -1,5 +1,6 @@
 package com.cafe.website.entity;
 
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,10 +30,6 @@ public class ProductSchedule extends BaseEntity {
 		this.dayOfWeek = dayOfWeek;
 		this.startTime = startTime;
 		this.end_time = end_time;
-	}
-
-	public ProductSchedule(int id, int status, Long createdAt, Long updatedAt) {
-		super(id, status, createdAt, updatedAt);
 	}
 
 	public Product getProduct() {

@@ -20,9 +20,9 @@ import io.micrometer.common.util.StringUtils;
 @Service
 public class CloudinaryServiceImp implements CloudinaryService {
 	private final Cloudinary cloudinary;
-	private final String CLOUD_NAME = "th-i-nguy-n";
-	private final String API_KEY = "979385842436938";
-	private final String API_SECRET = "gHEh8vqsRSEZJ9YWmIsYMEK4_70";
+	private final String CLOUD_NAME = System.getenv("CLOUD_NAME");
+	private final String API_KEY = System.getenv("API_KEY");
+	private final String API_SECRET = System.getenv("API_SECRET");
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 	ObjectMapper objMapper = new ObjectMapper();
 
@@ -68,8 +68,7 @@ public class CloudinaryServiceImp implements CloudinaryService {
 
 			if (listImages.size() > 0) {
 				for (String image : listImages) {
-					if (!image.contains("https://res.cloudinary.com/th-i-nguy-n/image/upload/")
-							|| !image.contains(path))
+					if (!image.contains(System.getenv("ROOT_CLOUDINARY")) || !image.contains(path))
 						continue;
 
 					String[] parts = image.split("/");
@@ -82,16 +81,16 @@ public class CloudinaryServiceImp implements CloudinaryService {
 			}
 		}
 	}
+
 	@Override
 	public void removeImageFromCloudinary(String image, String path) throws IOException {
-		if (!image.contains("https://res.cloudinary.com/th-i-nguy-n/image/upload/") || !image.contains(path))
+		if (!image.contains(System.getenv("ROOT_CLOUDINARY")) || !image.contains(path))
 			return;
 
 		String[] parts = image.split("/");
 		String lastPart = parts[parts.length - 1];
 		String idPart = path + lastPart.substring(0, lastPart.lastIndexOf("."));
 		this.deleteImage(idPart);
-//		cloudinary.deleteImage(idPart);
 		logger.info(idPart);
 	}
 

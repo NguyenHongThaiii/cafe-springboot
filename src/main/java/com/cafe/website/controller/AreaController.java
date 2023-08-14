@@ -25,45 +25,46 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("api/v1/areas")
 public class AreaController {
-    private AreaService areaService;
+	private AreaService areaService;
 
-    public AreaController(AreaService areaService) {
-        this.areaService = areaService;
-    }
+	public AreaController(AreaService areaService) {
+		this.areaService = areaService;
+	}
 
-    @RequestMapping("")
-    public ResponseEntity<List<AreaDTO>> getListAreas(@RequestParam(defaultValue = "5") int limit,
-                                                      @RequestParam(defaultValue = "1") int page, @RequestParam(required = false, defaultValue = "") String name,
-                                                      @RequestParam(required = false, defaultValue = "") String sortBy) {
-        List<AreaDTO> listAreasDto = areaService.getListAreas(limit, page, name, sortBy);
-        return new ResponseEntity<>(listAreasDto, HttpStatus.OK);
-    }
+	@RequestMapping("")
+	public ResponseEntity<List<AreaDTO>> getListAreas(@RequestParam(defaultValue = "5") int limit,
+			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false, defaultValue = "") String name,
+			@RequestParam(required = false, defaultValue = "") String sortBy) {
+		List<AreaDTO> listAreasDto = areaService.getListAreas(limit, page, name, sortBy);
+		return new ResponseEntity<>(listAreasDto, HttpStatus.OK);
+	}
 
-    @RequestMapping("/{id}")
-    public ResponseEntity<AreaDTO> getAreaById(@PathVariable(name = "id") int id) {
-        AreaDTO areaDto = areaService.getAreaById(id);
-        return new ResponseEntity<>(areaDto, HttpStatus.OK);
-    }
+	@RequestMapping("/{id}")
+	public ResponseEntity<AreaDTO> getAreaById(@PathVariable(name = "id") int id) {
+		AreaDTO areaDto = areaService.getAreaById(id);
+		return new ResponseEntity<>(areaDto, HttpStatus.OK);
+	}
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("")
-    public ResponseEntity<AreaDTO> createArea(@Valid @ModelAttribute AreaCreateDTO areaCreateDto) throws IOException {
+	@PreAuthorize("hasRole('ADMIN')")
+	@PostMapping("")
+	public ResponseEntity<AreaDTO> createArea(@Valid @ModelAttribute AreaCreateDTO areaCreateDto) throws IOException {
 
-        AreaDTO newAreaDto = areaService.createArea(areaCreateDto);
-        return new ResponseEntity<>(newAreaDto, HttpStatus.CREATED);
-    }
+		AreaDTO newAreaDto = areaService.createArea(areaCreateDto);
+		return new ResponseEntity<>(newAreaDto, HttpStatus.CREATED);
+	}
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/{id}")
-    public ResponseEntity<AreaDTO> updateArea(@Valid @ModelAttribute AreaUpdateDTO areaDto, @PathVariable(name = "id") int id) throws IOException {
-        AreaDTO newAreaDto = areaService.updateArea(id, areaDto);
-        return new ResponseEntity<>(newAreaDto, HttpStatus.OK);
-    }
+	@PreAuthorize("hasRole('ADMIN')")
+	@PatchMapping("/{id}")
+	public ResponseEntity<AreaDTO> updateArea(@Valid @ModelAttribute AreaUpdateDTO areaDto,
+			@PathVariable(name = "id") int id) throws IOException {
+		AreaDTO newAreaDto = areaService.updateArea(id, areaDto);
+		return new ResponseEntity<>(newAreaDto, HttpStatus.OK);
+	}
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteArea(@PathVariable(name = "id") int id) throws IOException {
-        areaService.deleteArea(id);
-        return new ResponseEntity<>("Delete successfully", HttpStatus.OK);
-    }
+	@PreAuthorize("hasRole('ADMIN')")
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteArea(@PathVariable(name = "id") int id) throws IOException {
+		areaService.deleteArea(id);
+		return new ResponseEntity<>("Delete successfully", HttpStatus.OK);
+	}
 }

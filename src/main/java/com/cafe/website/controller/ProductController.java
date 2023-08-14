@@ -56,9 +56,8 @@ public class ProductController {
 	@PostMapping("")
 	public ResponseEntity<ProductDTO> createProduct(@Valid @ModelAttribute ProductCreateDTO productCreateDto)
 			throws IOException {
-
 		ProductDTO product = productService.createProduct(productCreateDto);
-		return new ResponseEntity<ProductDTO>(product, HttpStatus.OK);
+		return new ResponseEntity<ProductDTO>(product, HttpStatus.CREATED);
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")

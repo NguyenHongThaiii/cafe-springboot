@@ -1,5 +1,6 @@
 package com.cafe.website.payload;
 
+
 public class BaseEntityDTO {
 	private int id;
 

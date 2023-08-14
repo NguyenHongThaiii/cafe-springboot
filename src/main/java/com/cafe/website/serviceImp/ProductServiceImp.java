@@ -124,6 +124,7 @@ public class ProductServiceImp implements ProductService {
 		pdto.setConveniences(listCon);
 		productMapper.updateProductFromDto(pdto, product);
 
+		
 		product.setId(0);
 		cloudinaryService.uploadImages(listMenus, productCreateDto.getListMenuFile(), "cafe-springboot/menu", "image");
 		String jsonListMenu = this.objMapper.writeValueAsString(listMenus);
@@ -172,7 +173,7 @@ public class ProductServiceImp implements ProductService {
 	@Override
 	public ProductDTO getProductById(int id) {
 		Product product = productRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Product", "product", id));
+				.orElseThrow(() -> new ResourceNotFoundException("Product", "product", id + ""));
 
 		ProductDTO productDto = MapperUtils.mapToDTO(product, ProductDTO.class);
 
