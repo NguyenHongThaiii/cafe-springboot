@@ -32,7 +32,7 @@ public class CloudinaryServiceImp implements CloudinaryService {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
+//	@Override
 	public String uploadFile(MultipartFile file, String folerName, String type) throws IOException {
 		Map<String, Object> params = ObjectUtils.asMap("folder", folerName, "resource_type", type);
 
@@ -75,7 +75,6 @@ public class CloudinaryServiceImp implements CloudinaryService {
 					String lastPart = parts[parts.length - 1];
 					String idPart = path + lastPart.substring(0, lastPart.lastIndexOf("."));
 					this.deleteImage(idPart);
-//					cloudinary.deleteImage(idPart);
 					logger.info(idPart);
 				}
 			}
@@ -84,22 +83,19 @@ public class CloudinaryServiceImp implements CloudinaryService {
 
 	@Override
 	public void removeImageFromCloudinary(String image, String path) throws IOException {
-		if (!image.contains(System.getenv("ROOT_CLOUDINARY")) || !image.contains(path))
+		if (image == null || !image.contains(System.getenv("ROOT_CLOUDINARY")) || !image.contains(path))
 			return;
 
 		String[] parts = image.split("/");
 		String lastPart = parts[parts.length - 1];
 		String idPart = path + lastPart.substring(0, lastPart.lastIndexOf("."));
 		this.deleteImage(idPart);
-		logger.info(idPart);
 	}
 
 	@Override
 	public String uploadImage(MultipartFile file, String path, String typeUpload) throws IOException {
 		if (file != null) {
 			String url = this.uploadFile(file, path, typeUpload);
-			logger.info("------------------------");
-			logger.info(url);
 			return url;
 		}
 		return null;

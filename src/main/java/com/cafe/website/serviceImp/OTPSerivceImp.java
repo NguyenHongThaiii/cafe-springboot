@@ -25,8 +25,8 @@ public class OTPSerivceImp implements OTPService {
 
 	@Cacheable(value = "session", key = "#otp")
 	@Override
-	public String generateAndStoreAnotherData(String otp) {
-		String data = generateUniqueOtp(otp, "anotherCache");
+	public String generateAndStoreAnotherData(String email) {
+		String data = generateUniqueOtp(email, "session");
 		return data;
 	}
 
@@ -46,10 +46,10 @@ public class OTPSerivceImp implements OTPService {
 
 	@Cacheable(value = "session", key = "#otp")
 	@Override
-	public String getOtpBySession(String otp) {
+	public String getOtpBySession(String email) {
 		Cache otpCache = cacheManager.getCache("session");
 		if (otpCache != null) {
-			Cache.ValueWrapper valueWrapper = otpCache.get(otp);
+			Cache.ValueWrapper valueWrapper = otpCache.get(email);
 			if (valueWrapper != null) {
 				return (String) valueWrapper.get();
 			}
@@ -73,7 +73,9 @@ public class OTPSerivceImp implements OTPService {
 	}
 
 	@Override
-	public void clearCache(String name) {
-		cacheManager.getCache(name).clear();
-	}
+	public void clearCache(String name,String key) {
+		 Cache cache = cacheManager.getCache(name);
+		    if (cache != null) {
+		        cache.evict(key);
+		    }	}
 }

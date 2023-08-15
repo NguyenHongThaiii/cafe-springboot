@@ -3,6 +3,7 @@ package com.cafe.website.payload;
 import jakarta.validation.constraints.NotNull;
 
 public class ForgotPasswordDTO {
+	
 	@NotNull
 	private String email;
 

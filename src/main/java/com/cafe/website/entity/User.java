@@ -17,8 +17,10 @@ import jakarta.persistence.Table;
 public class User extends BaseEntity {
 	@Column(unique = true)
 	private String email;
+	@Column(unique = true)
 	private String slug;
 	private String password;
+	@Column(unique = true)
 	private String name;
 	private String address;
 	private String avartar;

@@ -173,7 +173,7 @@ public class ProductServiceImp implements ProductService {
 	@Override
 	public ProductDTO getProductById(int id) {
 		Product product = productRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Product", "product", id + ""));
+				.orElseThrow(() -> new ResourceNotFoundException("Product", "id", id + ""));
 
 		ProductDTO productDto = MapperUtils.mapToDTO(product, ProductDTO.class);
 

@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface CloudinaryService {
 
-	String uploadFile(MultipartFile file, String folderName, String type) throws IOException;
+//	String uploadFile(MultipartFile file, String folderName, String type) throws IOException;
 
 	void deleteImage(String publicId) throws IOException;
 

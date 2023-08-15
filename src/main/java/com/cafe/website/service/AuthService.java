@@ -1,8 +1,13 @@
 package com.cafe.website.service;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.cafe.website.payload.LoginDTO;
+import com.cafe.website.payload.ProfileDTO;
 import com.cafe.website.payload.RegisterDTO;
 import com.cafe.website.payload.RegisterResponse;
+import com.cafe.website.payload.ResetPasswordDTO;
+import com.cafe.website.payload.UpdateAvatarDTO;
 import com.cafe.website.payload.UserDTO;
 import com.cafe.website.payload.UserUpdateDTO;
 import com.cafe.website.payload.ValidateOtpDTO;
@@ -20,11 +25,17 @@ public interface AuthService {
 
 	void forgotPassword(String email) throws MessagingException;
 
-	UserDTO updateUser(int id, UserUpdateDTO userUpdateDto);
+	UserDTO updateUser(String slug, UserUpdateDTO userUpdateDto);
 
 	RegisterResponse validateRegister(ValidateOtpDTO validateDto);
 
 	void handleValidateResetPassword(ValidateOtpDTO validateOtpDto);
 
 	boolean validateOtp(String otp, String key);
+
+	UserDTO getProfile(String slug);
+
+	void updateProfileImage(UpdateAvatarDTO profileDto);
+
+	void handleResePassword(ResetPasswordDTO reset);
 }

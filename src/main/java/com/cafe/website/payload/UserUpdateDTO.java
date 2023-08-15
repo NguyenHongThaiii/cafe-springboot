@@ -3,17 +3,7 @@ package com.cafe.website.payload;
 import java.util.List;
 
 import com.cafe.website.entity.Product;
-import com.cafe.website.entity.Review;
 import com.cafe.website.entity.Role;
-import com.cafe.website.entity.Token;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 
 public class UserUpdateDTO {
 	private String email;
@@ -23,12 +13,13 @@ public class UserUpdateDTO {
 	private String avartar;
 	private String phone;
 	private int status;
+	private String slug;
 	private List<Product> listProductSaved;
 
 	private List<Role> roles;
 
 	public UserUpdateDTO(String email, String password, String name, String address, String avartar, String phone,
-			int status, List<Product> listProductSaved, List<Role> roles) {
+			int status, List<Product> listProductSaved, List<Role> roles, String slug) {
 		super();
 		this.email = email;
 		this.password = password;
@@ -39,6 +30,15 @@ public class UserUpdateDTO {
 		this.status = status;
 		this.listProductSaved = listProductSaved;
 		this.roles = roles;
+		this.slug = slug;
+	}
+
+	public String getSlug() {
+		return slug;
+	}
+
+	public void setSlug(String slug) {
+		this.slug = slug;
 	}
 
 	public String getEmail() {

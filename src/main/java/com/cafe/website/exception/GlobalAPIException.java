@@ -12,6 +12,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,7 +24,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import com.cafe.website.payload.ErrorDetails;
 
 import io.jsonwebtoken.security.SignatureException;
-import org.springframework.security.core.AuthenticationException;
+import jakarta.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
 public class GlobalAPIException extends ResponseEntityExceptionHandler {
@@ -116,24 +117,5 @@ public class GlobalAPIException extends ResponseEntityExceptionHandler {
 				webRequest.getDescription(false));
 		return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
 	}
-
-	// AuthenticationException exceptions
-	@ExceptionHandler(AuthenticationException.class)
-	public ResponseEntity<ErrorDetails> handleAccessDeniedException(AuthenticationException exception,
-			WebRequest webRequest) {
-
-		ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(),
-				webRequest.getDescription(false));
-		return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
-	}
-
-	// HttpMessageNotReadableException exceptions
-//	@ExceptionHandler(HttpMessageNotReadableException.class)
-//	public ResponseEntity<ErrorDetails> handleHttpMessageNotReadableExceptionException(
-//			HttpMessageNotReadableException exception, WebRequest webRequest) {
-//
-//		ErrorDetails errorDetails = new ErrorDetails(new Date(), "Body is required", webRequest.getDescription(false));
-//		return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
-//	}
 
 }

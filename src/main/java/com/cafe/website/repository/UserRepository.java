@@ -1,7 +1,6 @@
 package com.cafe.website.repository;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,5 +10,13 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	Optional<User> findByEmail(String email);
 
 	Boolean existsByEmail(String email);
+
+	Boolean existsBySlug(String slug);
+
+	Optional<User> findByName(String name);
+
+	Optional<User> findBySlug(String slug);
+
+	Boolean existsByName(String email);
 
 }

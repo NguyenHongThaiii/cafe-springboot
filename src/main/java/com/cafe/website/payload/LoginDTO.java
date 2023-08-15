@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 
 public class LoginDTO {
 	@NotEmpty(message = "Name should not be null or empty")
-	@Size(min = 6, max = 20)
+	@Size(min = 6, max = 30)
 	private String email;
 
 	@NotEmpty(message = "Name should not be null or empty")

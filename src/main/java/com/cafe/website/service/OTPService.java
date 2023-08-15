@@ -5,9 +5,9 @@ public interface OTPService {
 
 	String getOtpByEmail(String email);
 
-	String generateAndStoreAnotherData(String otp);
+	String generateAndStoreAnotherData(String email);
 
-	String getOtpBySession(String otp);
+	String getOtpBySession(String email);
 
-	void clearCache(String name);
+	void clearCache(String name,String key);
 }

@@ -2,11 +2,7 @@ package com.cafe.website.entity;
 
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.id.IdentifierGenerator;
-import org.hibernate.id.PostInsertIdentifierGenerator;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
@@ -18,7 +14,6 @@ import jakarta.persistence.MappedSuperclass;
 public class BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @GeneratedintValue( timing = GenerationTiming.INSERT )
 
 	private int id;
 

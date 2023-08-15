@@ -1,9 +1,10 @@
 package com.cafe.website.serviceImp;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,8 @@ import com.cafe.website.exception.ResourceNotFoundException;
 import com.cafe.website.payload.LoginDTO;
 import com.cafe.website.payload.RegisterDTO;
 import com.cafe.website.payload.RegisterResponse;
+import com.cafe.website.payload.ResetPasswordDTO;
+import com.cafe.website.payload.UpdateAvatarDTO;
 import com.cafe.website.payload.UserDTO;
 import com.cafe.website.payload.UserUpdateDTO;
 import com.cafe.website.payload.ValidateOtpDTO;
@@ -31,13 +34,13 @@ import com.cafe.website.repository.TokenRepository;
 import com.cafe.website.repository.UserRepository;
 import com.cafe.website.security.JwtTokenProvider;
 import com.cafe.website.service.AuthService;
+import com.cafe.website.service.CloudinaryService;
 import com.cafe.website.service.EmailService;
 import com.cafe.website.service.OTPService;
 import com.cafe.website.util.MapperUtils;
 import com.cafe.website.util.UserMapper;
 import com.github.slugify.Slugify;
 
-import io.micrometer.common.util.StringUtils;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -54,13 +57,15 @@ public class AuthServiceImp implements AuthService {
 	private EmailService emailService;
 	private OTPService otpService;
 	private UserMapper userMapper;
-	private Slugify slug = Slugify.builder().build();
+	private CloudinaryService cloudinaryService;
+	private Slugify slugify = Slugify.builder().build();
 
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 
 	public AuthServiceImp(AuthenticationManager authenticationManager, UserRepository userRepository,
 			RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider,
-			TokenRepository tokenRepository, EmailService emailService, OTPService otpService, UserMapper userMapper) {
+			TokenRepository tokenRepository, EmailService emailService, OTPService otpService, UserMapper userMapper,
+			CloudinaryService cloudinaryService) {
 		this.authenticationManager = authenticationManager;
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
@@ -70,6 +75,7 @@ public class AuthServiceImp implements AuthService {
 		this.emailService = emailService;
 		this.userMapper = userMapper;
 		this.otpService = otpService;
+		this.cloudinaryService = cloudinaryService;
 	}
 
 	@Override
@@ -82,7 +88,7 @@ public class AuthServiceImp implements AuthService {
 		String token = jwtTokenProvider.generateToken(authentication);
 
 		User user = userRepository.findByEmail(loginDto.getEmail())
-				.orElseThrow(() -> new ResourceNotFoundException("User", "user", loginDto.getEmail()));
+				.orElseThrow(() -> new ResourceNotFoundException("User", "email", loginDto.getEmail()));
 		revokeAllUserTokens(user);
 		saveUserToken(user, token);
 
@@ -96,16 +102,22 @@ public class AuthServiceImp implements AuthService {
 		if (userRepository.existsByEmail(registerDto.getEmail())) {
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Email is already exists!.");
 		}
+		if (userRepository.existsByName(registerDto.getName())) {
+			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!.");
+		}
 
 		User user = MapperUtils.mapToEntity(registerDto, User.class);
 		user.setPassword(passwordEncode);
-		user.setSlug(slug.slugify(user.getName()));
+		user.setSlug(slugify.slugify(user.getName()));
 
 		List<Role> roles = new ArrayList<>();
 		Role userRole = roleRepository.findByName("ROLE_USER").get();
 		roles.add(userRole);
 		user.setRoles(roles);
+		String newSlug = this.generateSlug(slugify.slugify(registerDto.getName()));
+		user.setSlug(newSlug);
 		String otp = otpService.generateAndStoreOtp(user.getEmail());
+
 		emailService.sendSimpleEmail(user.getEmail(), "Otp register user", otp);
 		userRepository.save(user);
 
@@ -129,7 +141,7 @@ public class AuthServiceImp implements AuthService {
 		this.validateOtp(validateDto.getOtp(), otpCache);
 		// update token
 		User user = userRepository.findByEmail(validateDto.getEmail())
-				.orElseThrow(() -> new ResourceNotFoundException("User", "user", validateDto.getEmail()));
+				.orElseThrow(() -> new ResourceNotFoundException("User", "email", validateDto.getEmail()));
 		token = jwtTokenProvider.generateToken(user.getName());
 
 		revokeAllUserTokens(user);
@@ -140,7 +152,7 @@ public class AuthServiceImp implements AuthService {
 		userRepository.save(user);
 		RegisterResponse reg = MapperUtils.mapToDTO(user, RegisterResponse.class);
 		reg.setToken(token);
-		otpService.clearCache("otpCache");
+		otpService.clearCache("otpCache", validateDto.getEmail());
 		return reg;
 	}
 
@@ -172,16 +184,25 @@ public class AuthServiceImp implements AuthService {
 	}
 
 	@Override
-	public UserDTO updateUser(int id, UserUpdateDTO userUpdateDto) {
-		User userCurrent = userRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("User", "user", id));
+	public UserDTO updateUser(String slug, UserUpdateDTO userUpdateDto) {
+		if (userRepository.existsBySlug(slugify.slugify(userUpdateDto.getSlug())))
+			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Slug is already exists!");
+		if (userRepository.existsByName(userUpdateDto.getName()))
+			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
+
+		User userCurrent = userRepository.findBySlug(slug)
+				.orElseThrow(() -> new ResourceNotFoundException("User", "slug", slug));
+
 		UserDTO userDto = MapperUtils.mapToDTO(userUpdateDto, UserDTO.class);
 
+		userDto.setId(userCurrent.getId());
 		userMapper.updateUserFromDto(userDto, userCurrent);
-		userCurrent.setSlug(slug.slugify(userCurrent.getName()));
+		userCurrent.setSlug(slugify.slugify(userUpdateDto.getSlug()));
 		userCurrent.setStatus(1);
+
 		if (userDto.getPassword() != null)
 			userCurrent.setPassword(passwordEncoder.encode(userDto.getPassword()));
+
 		userRepository.save(userCurrent);
 		userCurrent.setPassword(null);
 
@@ -201,8 +222,61 @@ public class AuthServiceImp implements AuthService {
 	public void handleValidateResetPassword(ValidateOtpDTO validateOtpDto) {
 		String otpEmail = otpService.getOtpByEmail(validateOtpDto.getEmail());
 		this.validateOtp(otpEmail, validateOtpDto.getOtp());
-		otpService.generateAndStoreAnotherData(otpEmail);
-		otpService.clearCache("otpCache");
+		otpService.clearCache("otpCache", validateOtpDto.getEmail());
+		otpService.generateAndStoreAnotherData(validateOtpDto.getEmail());
+	}
+
+	@Override
+	public void handleResePassword(ResetPasswordDTO reset) {
+		User user = userRepository.findByEmail(reset.getEmail())
+				.orElseThrow(() -> new ResourceNotFoundException("User", "email", reset.getEmail()));
+		if (!reset.getPassword().equals(reset.getRetypePassword()))
+			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "retype password is not match");
+
+		otpService.clearCache("session", reset.getEmail());
+		String passwordEncryt = passwordEncoder.encode(reset.getPassword());
+		user.setPassword(passwordEncryt);
+
+		userRepository.save(user);
 
 	}
+
+	@Override
+	public UserDTO getProfile(String slug) {
+		User user = userRepository.findBySlug(slug)
+				.orElseThrow(() -> new ResourceNotFoundException("User", "name", slug));
+		user.setPassword(null);
+		user.setRoles(null);
+		return MapperUtils.mapToDTO(user, UserDTO.class);
+	}
+
+	@Override
+	public void updateProfileImage(UpdateAvatarDTO profileDto) {
+		String slug = profileDto.getSlug();
+		String path_user = "cafe-springboot/Users/";
+
+		User user = userRepository.findBySlug(slug)
+				.orElseThrow(() -> new ResourceNotFoundException("User", "slug", slug));
+
+		try {
+			logger.info(user.getAvartar());
+			cloudinaryService.removeImageFromCloudinary(user.getAvartar(), path_user);
+			String avatar = cloudinaryService.uploadImage(profileDto.getAvatar(), path_user, "auto");
+			user.setAvartar(avatar);
+			userRepository.save(user);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private String generateSlug(String initialSlug) {
+		String slug = initialSlug;
+		while (userRepository.existsBySlug(slug)) {
+			slug = initialSlug + RandomStringUtils.randomAlphanumeric(8);
+		}
+
+		return slug;
+	}
+
 }

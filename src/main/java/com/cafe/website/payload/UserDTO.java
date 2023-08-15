@@ -1,12 +1,12 @@
 package com.cafe.website.payload;
 
 import java.util.List;
-import java.util.UUID;
 
 import com.cafe.website.entity.Product;
 import com.cafe.website.entity.Role;
 
 public class UserDTO {
+	private int id;
 	private int status;
 	private String email;
 	private String password;
@@ -18,9 +18,10 @@ public class UserDTO {
 	private List<Product> listProductSaved;
 	private List<Role> roles;
 
-	public UserDTO(int status, String email, String password, String name, String address, String avartar, String phone,
-			String slug, List<Product> listProductSaved, List<Role> roles) {
+	public UserDTO(int id, int status, String email, String password, String name, String address, String avartar,
+			String phone, String slug, List<Product> listProductSaved, List<Role> roles) {
 		super();
+		this.id = id;
 		this.status = status;
 		this.email = email;
 		this.password = password;
@@ -35,6 +36,14 @@ public class UserDTO {
 
 	public UserDTO() {
 		// TODO Auto-generated constructor stub
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public int getStatus() {
