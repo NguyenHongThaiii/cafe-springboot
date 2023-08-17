@@ -2,6 +2,8 @@ package com.cafe.website.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,7 +36,8 @@ public class User extends BaseEntity {
 	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
 	private List<Role> roles;
 
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonManagedReference
 	private List<Review> reviews;
 
 	@OneToMany(mappedBy = "user")
@@ -151,13 +154,6 @@ public class User extends BaseEntity {
 
 	public void setTokens(List<Token> tokens) {
 		this.tokens = tokens;
-	}
-
-	@Override
-	public String toString() {
-		return "User [email=" + email + ", slug=" + slug + ", password=" + password + ", name=" + name + ", address="
-				+ address + ", avartar=" + avartar + ", phone=" + phone + ", listProductSaved=" + listProductSaved
-				+ ", roles=" + roles + ", reviews=" + reviews + ", tokens=" + tokens + "]";
 	}
 
 }

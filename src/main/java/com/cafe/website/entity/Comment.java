@@ -13,11 +13,12 @@ import jakarta.persistence.Table;
 public class Comment extends BaseEntity {
 	private String name;
 	private int favorite;
-
+// productId
+//	userId
+//	favorieId
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "review_id", nullable = false)
 	private Review review;
-
 
 	public Comment() {
 		// TODO Auto-generated constructor stub

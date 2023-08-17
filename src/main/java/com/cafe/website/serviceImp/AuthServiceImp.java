@@ -126,7 +126,7 @@ public class AuthServiceImp implements AuthService {
 	}
 
 	@Override
-	public boolean validateOtp(String otp, String otpCache) {
+	public Boolean validateOtp(String otp, String otpCache) {
 
 		if (otpCache != null && !otpCache.equals(otp))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Otp is not correct!");
@@ -185,20 +185,20 @@ public class AuthServiceImp implements AuthService {
 
 	@Override
 	public UserDTO updateUser(String slug, UserUpdateDTO userUpdateDto) {
-		if (userRepository.existsBySlug(slugify.slugify(userUpdateDto.getSlug())))
-			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Slug is already exists!");
-		if (userRepository.existsByName(userUpdateDto.getName()))
-			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
-
 		User userCurrent = userRepository.findBySlug(slug)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "slug", slug));
+
+		if (userRepository.existsBySlugAndIdNot(slugify.slugify(userUpdateDto.getSlug()), userCurrent.getId()))
+			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Slug is already exists!");
+		if (userRepository.existsByNameAndIdNot(userUpdateDto.getName(), userCurrent.getId()))
+			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
 
 		UserDTO userDto = MapperUtils.mapToDTO(userUpdateDto, UserDTO.class);
 
 		userDto.setId(userCurrent.getId());
+		userDto.setSlug(slugify.slugify(userUpdateDto.getSlug()));
+//		userDto.setStatus(1);
 		userMapper.updateUserFromDto(userDto, userCurrent);
-		userCurrent.setSlug(slugify.slugify(userUpdateDto.getSlug()));
-		userCurrent.setStatus(1);
 
 		if (userDto.getPassword() != null)
 			userCurrent.setPassword(passwordEncoder.encode(userDto.getPassword()));
@@ -277,6 +277,14 @@ public class AuthServiceImp implements AuthService {
 		}
 
 		return slug;
+	}
+
+	@Override
+	public UserDTO getUserById(int id) {
+		User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+		UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
+		userDto.setPassword(null);
+		return userDto;
 	}
 
 }

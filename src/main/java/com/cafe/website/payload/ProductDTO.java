@@ -15,7 +15,6 @@ public class ProductDTO extends BaseEntity {
 	private List<Area> areas;
 	private List<Kind> kinds;
 	private List<Convenience> conveniences;
-	private List<Review> reviews;
 	private List<ProductSchedule> schedules;
 	private String name;
 	private String slug;
@@ -42,7 +41,6 @@ public class ProductDTO extends BaseEntity {
 		this.areas = areas;
 		this.kinds = kinds;
 		this.conveniences = conveniences;
-		this.reviews = reviews;
 		this.schedules = schedules;
 		this.name = name;
 		this.slug = slug;
@@ -94,14 +92,6 @@ public class ProductDTO extends BaseEntity {
 
 	public void setConveniences(List<Convenience> conveniences) {
 		this.conveniences = conveniences;
-	}
-
-	public List<Review> getReviews() {
-		return reviews;
-	}
-
-	public void setReviews(List<Review> reviews) {
-		this.reviews = reviews;
 	}
 
 	public List<ProductSchedule> getSchedules() {

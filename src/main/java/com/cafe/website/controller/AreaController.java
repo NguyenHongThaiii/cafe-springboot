@@ -45,7 +45,7 @@ public class AreaController {
 		return new ResponseEntity<>(areaDto, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PostMapping("")
 	public ResponseEntity<AreaDTO> createArea(@Valid @ModelAttribute AreaCreateDTO areaCreateDto) throws IOException {
 
@@ -53,7 +53,7 @@ public class AreaController {
 		return new ResponseEntity<>(newAreaDto, HttpStatus.CREATED);
 	}
 
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PatchMapping("/{id}")
 	public ResponseEntity<AreaDTO> updateArea(@Valid @ModelAttribute AreaUpdateDTO areaDto,
 			@PathVariable(name = "id") int id) throws IOException {
@@ -61,7 +61,7 @@ public class AreaController {
 		return new ResponseEntity<>(newAreaDto, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deleteArea(@PathVariable(name = "id") int id) throws IOException {
 		areaService.deleteArea(id);

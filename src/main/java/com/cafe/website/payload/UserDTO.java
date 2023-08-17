@@ -3,6 +3,7 @@ package com.cafe.website.payload;
 import java.util.List;
 
 import com.cafe.website.entity.Product;
+import com.cafe.website.entity.Review;
 import com.cafe.website.entity.Role;
 
 public class UserDTO {

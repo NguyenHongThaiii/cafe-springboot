@@ -1,9 +1,6 @@
 package com.cafe.website.service;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import com.cafe.website.payload.LoginDTO;
-import com.cafe.website.payload.ProfileDTO;
 import com.cafe.website.payload.RegisterDTO;
 import com.cafe.website.payload.RegisterResponse;
 import com.cafe.website.payload.ResetPasswordDTO;
@@ -31,11 +28,14 @@ public interface AuthService {
 
 	void handleValidateResetPassword(ValidateOtpDTO validateOtpDto);
 
-	boolean validateOtp(String otp, String key);
+	Boolean validateOtp(String otp, String key);
 
 	UserDTO getProfile(String slug);
+
+	UserDTO getUserById(int id);
 
 	void updateProfileImage(UpdateAvatarDTO profileDto);
 
 	void handleResePassword(ResetPasswordDTO reset);
+
 }

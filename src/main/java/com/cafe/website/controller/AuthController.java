@@ -62,10 +62,17 @@ public class AuthController {
 
 	}
 
-	@PreAuthorize("hasRole('USER')")
+	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@GetMapping("/users/profile/{slug}")
 	public ResponseEntity<UserDTO> getProfile(@Valid @PathVariable(name = "slug") String slug) {
 		UserDTO userDto = authService.getProfile(slug);
+		return ResponseEntity.ok(userDto);
+	}
+
+	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
+	@GetMapping("/users/{id}")
+	public ResponseEntity<UserDTO> getUserById(@Valid @PathVariable(name = "id") int id) {
+		UserDTO userDto = authService.getUserById(id);
 		return ResponseEntity.ok(userDto);
 	}
 
@@ -88,7 +95,7 @@ public class AuthController {
 		return ResponseEntity.ok("Ok");
 	}
 
-	@PreAuthorize("hasRole('USER')")
+	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@PatchMapping("/update/{slug}")
 	public ResponseEntity<UserDTO> updateUser(@Valid @RequestBody UserUpdateDTO userUpdateDto,
 			@PathVariable(name = "slug") String slug) {

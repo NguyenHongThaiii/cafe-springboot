@@ -2,10 +2,14 @@ package com.cafe.website.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -16,6 +20,7 @@ import jakarta.persistence.Table;
 public class Review extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id", nullable = false)
+	@JsonIgnore
 	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -29,12 +34,15 @@ public class Review extends BaseEntity {
 	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Comment> comments;
 
-	private List<String> listImages;
+	private String listImages;
 	private String name;
-	private int favorite;
+
+	@ManyToMany( fetch = FetchType.LAZY)
+	@JoinTable(name = "review_favorites", joinColumns = @JoinColumn(name = "review_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+	private List<User> favoritedBy;
 
 	public Review(int id, int status, Long createdAt, Long updatedAt, User user, Product product, Rating rating,
-			List<Comment> comments, List<String> listImages, String name, int favorite) {
+			List<Comment> comments, String listImages, String name, List<User> favoritedBy) {
 		super(id, status, createdAt, updatedAt);
 		this.user = user;
 		this.product = product;
@@ -42,7 +50,7 @@ public class Review extends BaseEntity {
 		this.comments = comments;
 		this.listImages = listImages;
 		this.name = name;
-		this.favorite = favorite;
+		this.favoritedBy = favoritedBy;
 	}
 
 	public Review() {
@@ -81,13 +89,14 @@ public class Review extends BaseEntity {
 		this.comments = comments;
 	}
 
-	public List<String> getListImages() {
+	public String getListImages() {
 		return listImages;
 	}
 
-	public void setListImages(List<String> listImages) {
+	public void setListImages(String listImages) {
 		this.listImages = listImages;
 	}
+	
 
 	public String getName() {
 		return name;
@@ -97,12 +106,12 @@ public class Review extends BaseEntity {
 		this.name = name;
 	}
 
-	public int getFavorite() {
-		return favorite;
+	public List<User> getFavorite() {
+		return favoritedBy;
 	}
 
-	public void setFavorite(int favorite) {
-		this.favorite = favorite;
+	public void setFavorite(List<User> favoritedBy) {
+		this.favoritedBy = favoritedBy;
 	}
 
 }

@@ -3,6 +3,7 @@ package com.cafe.website.entity;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -11,11 +12,13 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
-@Entity	
+@Entity
 @Table(name = "products")
 public class Product extends BaseEntity {
 
+	@Column(unique = true, nullable = false)
 	private String name;
+	@Column(unique = true, nullable = false)
 	private String slug;
 	private String phone;
 
@@ -52,8 +55,6 @@ public class Product extends BaseEntity {
 
 	private String description;
 	private String location;
-
-	
 
 	public Product(int id, int status, Long createdAt, Long updatedAt, String name, String slug, String phone,
 			List<Purpose> purposes, List<Area> areas, List<Kind> kinds, List<Convenience> conveniences,

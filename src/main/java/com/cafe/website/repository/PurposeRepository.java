@@ -11,4 +11,8 @@ public interface PurposeRepository extends JpaRepository<Purpose, Integer> {
 
 	Slice<Area> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
+	Boolean existsBySlugAndIdNot(String slug, Integer id);
+
+	Boolean existsByNameAndIdNot(String name, Integer id);
+
 }

@@ -10,4 +10,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
 	Slice<Product> findByNameContainingIgnoreCase(String searchBy, Pageable pageable);
 
+	Boolean existsBySlugAndIdNot(String slug, Integer id);
+
+	Boolean existsByNameAndIdNot(String name, Integer id);
+
 }
