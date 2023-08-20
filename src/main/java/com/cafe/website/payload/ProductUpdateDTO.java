@@ -11,22 +11,22 @@ import jakarta.validation.constraints.NotNull;
 public class ProductUpdateDTO {
 	private int id;
 
-	@NotNull
+	// @NotNull
 	private List<Integer> area_id;
 
-	@NotNull
+	// @NotNull
 	private List<Integer> kind_id;
 
-	@NotNull
+	// @NotNull
 	private List<Integer> convenience_id;
 
-	@NotNull
+	// @NotNull
 	private List<Integer> purpose_id;
 
-	@NotNull
+	// @NotNull
 	private String name;
 
-	@NotNull
+	// @NotNull
 	private String slug;
 
 	private String phone;
@@ -48,19 +48,21 @@ public class ProductUpdateDTO {
 	private List<MultipartFile> listMenuFile;
 	private List<MultipartFile> listImageFile;
 
-	@NotNull
+	// @NotNull
 	private String coordinates;
 
-	@NotNull
+	// @NotNull
 	private String description;
 
-	@NotNull
+	// @NotNull
 	private String location;
 
 	private String email;
 	private String facebook;
 
-	public ProductUpdateDTO(int id, @NotNull List<Integer> area_id, List<Integer> kind_id, List<Integer> convenience_id,
+	
+
+	public ProductUpdateDTO(int id, List<Integer> area_id, List<Integer> kind_id, List<Integer> convenience_id,
 			List<Integer> purpose_id, String name, String slug, String phone,
 			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") int status,
 			@Min(value = 0, message = "priceMin should not be less than 0") int priceMin,

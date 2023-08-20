@@ -1,5 +1,4 @@
 package com.cafe.website.util;
-
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;

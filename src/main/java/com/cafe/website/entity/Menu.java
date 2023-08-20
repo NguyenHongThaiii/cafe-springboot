@@ -4,26 +4,35 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "owners")
-public class ProductOwner extends BaseEntity {
-	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+@Table(name = "menus")
+public class Menu extends BaseEntity {
+	private String image;
+
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "product_id", nullable = false)
 	private Product product;
 
-	private String name;
-
-	public ProductOwner(int id, int status, Long createdAt, Long updatedAt, Product product, String name) {
-		super(id, status, createdAt, updatedAt);
-		this.product = product;
-		this.name = name;
+	public Menu() {
+		// TODO Auto-generated constructor stub
 	}
 
-	public ProductOwner() {
-		// TODO Auto-generated constructor stub
+	public Menu(int id, int status, Long createdAt, Long updatedAt, String image, Product product) {
+		super(id, status, createdAt, updatedAt);
+		this.image = image;
+		this.product = product;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
 	}
 
 	public Product getProduct() {
@@ -32,14 +41,6 @@ public class ProductOwner extends BaseEntity {
 
 	public void setProduct(Product product) {
 		this.product = product;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 }

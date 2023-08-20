@@ -1,11 +1,12 @@
 package com.cafe.website.payload;
-
 import java.util.List;
 
 import com.cafe.website.entity.Area;
 import com.cafe.website.entity.BaseEntity;
 import com.cafe.website.entity.Convenience;
+import com.cafe.website.entity.Image;
 import com.cafe.website.entity.Kind;
+import com.cafe.website.entity.Menu;
 import com.cafe.website.entity.ProductSchedule;
 import com.cafe.website.entity.Purpose;
 import com.cafe.website.entity.Review;
@@ -23,8 +24,6 @@ public class ProductDTO extends BaseEntity {
 	private int priceMin;
 	private int priceMax;
 	private int outstanding;
-	private String listMenu;
-	private String listImage;
 	private String coordinates;
 	private String email;
 	private String facebook;
@@ -32,10 +31,9 @@ public class ProductDTO extends BaseEntity {
 	private String location;
 
 	public ProductDTO(int id, int status, Long createdAt, Long updatedAt, List<Purpose> purposes, List<Area> areas,
-			List<Kind> kinds, List<Convenience> conveniences, List<Review> reviews, List<ProductSchedule> schedules,
-			String name, String slug, String phone, int status2, int priceMin, int priceMax, int outstanding,
-			String listMenu, String listImage, String coordinates, String email, String facebook, String description,
-			String location) {
+			List<Kind> kinds, List<Convenience> conveniences, List<ProductSchedule> schedules, String name, String slug,
+			String phone, int status2, int priceMin, int priceMax, int outstanding, String coordinates, String email,
+			String facebook, String description, String location) {
 		super(id, status, createdAt, updatedAt);
 		this.purposes = purposes;
 		this.areas = areas;
@@ -49,8 +47,6 @@ public class ProductDTO extends BaseEntity {
 		this.priceMin = priceMin;
 		this.priceMax = priceMax;
 		this.outstanding = outstanding;
-		this.listMenu = listMenu;
-		this.listImage = listImage;
 		this.coordinates = coordinates;
 		this.email = email;
 		this.facebook = facebook;
@@ -158,21 +154,7 @@ public class ProductDTO extends BaseEntity {
 		this.outstanding = outstanding;
 	}
 
-	public String getListMenu() {
-		return listMenu;
-	}
 
-	public void setListMenu(String listMenu) {
-		this.listMenu = listMenu;
-	}
-
-	public String getListImage() {
-		return listImage;
-	}
-
-	public void setListImage(String listImage) {
-		this.listImage = listImage;
-	}
 
 	public String getCoordinates() {
 		return coordinates;

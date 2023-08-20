@@ -1,5 +1,4 @@
 package com.cafe.website.entity;
-
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -37,7 +36,6 @@ public class User extends BaseEntity {
 	private List<Role> roles;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JsonManagedReference
 	private List<Review> reviews;
 
 	@OneToMany(mappedBy = "user")

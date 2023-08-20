@@ -22,19 +22,19 @@ public class Product extends BaseEntity {
 	private String slug;
 	private String phone;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "products_purposes", joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "purpose_id", referencedColumnName = "id"))
 	private List<Purpose> purposes;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "products_areas", joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "area_id", referencedColumnName = "id"))
 	private List<Area> areas;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "products_kinds", joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "kind_id", referencedColumnName = "id"))
 	private List<Kind> kinds;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "products_conveniences", joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "convenience_id", referencedColumnName = "id"))
 	private List<Convenience> conveniences;
 
@@ -44,11 +44,16 @@ public class Product extends BaseEntity {
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<ProductSchedule> schedules;
 
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private List<Menu> listMenus;
+
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private List<Image> listImages;
+
 	private int priceMin;
 	private int priceMax;
 	private int outstanding;
-	private String listMenu;
-	private String listImage;
+
 	private String coordinates;
 	private String email;
 	private String facebook;
@@ -59,8 +64,8 @@ public class Product extends BaseEntity {
 	public Product(int id, int status, Long createdAt, Long updatedAt, String name, String slug, String phone,
 			List<Purpose> purposes, List<Area> areas, List<Kind> kinds, List<Convenience> conveniences,
 			List<Review> reviews, List<ProductSchedule> schedules, int priceMin, int priceMax, int outstanding,
-			String listMenu, String listImage, String coordinates, String email, String facebook, String description,
-			String location) {
+			List<Menu> listMenus, List<Image> listImages, String coordinates, String email, String facebook,
+			String description, String location) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;
 		this.slug = slug;
@@ -74,8 +79,8 @@ public class Product extends BaseEntity {
 		this.priceMin = priceMin;
 		this.priceMax = priceMax;
 		this.outstanding = outstanding;
-		this.listMenu = listMenu;
-		this.listImage = listImage;
+		this.listMenus = listMenus;
+		this.listImages = listImages;
 		this.coordinates = coordinates;
 		this.email = email;
 		this.facebook = facebook;
@@ -183,20 +188,20 @@ public class Product extends BaseEntity {
 		this.outstanding = outstanding;
 	}
 
-	public String getListMenu() {
-		return listMenu;
+	public List<Menu> getlistMenus() {
+		return listMenus;
 	}
 
-	public void setListMenu(String listMenu) {
-		this.listMenu = listMenu;
+	public void setlistMenus(List<Menu> listMenus) {
+		this.listMenus = listMenus;
 	}
 
-	public String getListImage() {
-		return listImage;
+	public List<Image> getlistImages() {
+		return listImages;
 	}
 
-	public void setListImage(String listImage) {
-		this.listImage = listImage;
+	public void setlistImages(List<Image> listImages) {
+		this.listImages = listImages;
 	}
 
 	public String getCoordinates() {

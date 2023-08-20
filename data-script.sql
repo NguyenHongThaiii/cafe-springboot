@@ -28,24 +28,21 @@ INSERT INTO USERS_ROLES (user_id,role_id) VALUES(1,1);
 INSERT INTO USERS_ROLES (user_id,role_id) VALUES(2,2);
 
 -- INSERT DATA TO BLOGS TABLE
-INSERT INTO products (name,slug,created_at,updated_at,status,coordinates,email,phone,facebook,list_menu,price_min,price_max,outstanding) 
+INSERT INTO products (name,slug,created_at,updated_at,status,coordinates,email,phone,facebook,price_min,price_max,outstanding) 
 VALUES ('Seven Coffee','seven-coffee',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,'[21.0667245","105.7968339]','','0978 917 971',
-'"https://www.facebook.com/SevenCoffee.HN/','["https://res.cloudinary.com/th-i-nguy-n/image/upload/v1690976979/cafe-springboot/menu/Seven-Coffee-menu-2_m4jxbs.jpg",
-"https://res.cloudinary.com/th-i-nguy-n/image/upload/v1690976978/cafe-springboot/menu/Seven-Coffee-menu-1_ujnjhn.jpg"]',
+'"https://www.facebook.com/SevenCoffee.HN/',
 30000,50000,1);
-INSERT INTO products (name,slug,created_at,updated_at,status,coordinates,email,phone,facebook,list_menu,price_min,price_max,outstanding) 
+INSERT INTO products (name,slug,created_at,updated_at,status,coordinates,email,phone,facebook,price_min,price_max,outstanding) 
 VALUES ('Seven Coffee2','seven-coffee2',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,'[21.0667245","105.7968339]','','0978 917 971',
-'"https://www.facebook.com/SevenCoffee.HN/','["https://res.cloudinary.com/th-i-nguy-n/image/upload/v1690976979/cafe-springboot/menu/Seven-Coffee-menu-2_m4jxbs.jpg",
-"https://res.cloudinary.com/th-i-nguy-n/image/upload/v1690976978/cafe-springboot/menu/Seven-Coffee-menu-1_ujnjhn.jpg"]',
+'"https://www.facebook.com/SevenCoffee.HN/',
 40000,50000,1);
-INSERT INTO products (name,slug,created_at,updated_at,status,coordinates,email,phone,facebook,list_menu,price_min,price_max,outstanding) 
+INSERT INTO products (name,slug,created_at,updated_at,status,coordinates,email,phone,facebook,price_min,price_max,outstanding) 
 VALUES ('Seven Coffee3','seven-coffee3',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,'[21.0667245","105.7968339]','','0978 917 971',
-'"https://www.facebook.com/SevenCoffee.HN/','["https://res.cloudinary.com/th-i-nguy-n/image/upload/v1690976979/cafe-springboot/menu/Seven-Coffee-menu-2_m4jxbs.jpg",
-"https://res.cloudinary.com/th-i-nguy-n/image/upload/v1690976978/cafe-springboot/menu/Seven-Coffee-menu-1_ujnjhn.jpg"]',
+'"https://www.facebook.com/SevenCoffee.HN/',
 10000,50000,1);
-INSERT INTO products (name,slug,created_at,updated_at,status,coordinates,email,phone,facebook,list_menu,price_min,price_max,outstanding) 
+INSERT INTO products (name,slug,created_at,updated_at,status,coordinates,email,phone,facebook,price_min,price_max,outstanding) 
 VALUES ('Seven Coffee4','seven-coffee4',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1,'[21.0667245","105.7968339]','','0978 917 971',
-'"https://www.facebook.com/SevenCoffee.HN/','[]',
+'"https://www.facebook.com/SevenCoffee.HN/',
 10000,50000,1);
 -- INSERT DATA TO PRODUCTS_AREAS TABLE
 INSERT INTO products_areas(product_id,area_id) values (1,1);
@@ -59,6 +56,9 @@ INSERT INTO ratings (created_at,updated_at,status,food,location,service,price,sp
 
 -- INSERT DATA TO REVIEWS TABLE
 INSERT INTO reviews ( `created_at`, `status`, `updated_at`,  `list_images`, `name`, `product_id`, `rating_id`, `user_id`) 
-VALUES ( NOW(), 1, NOW(),  '[]', 'ádasdsad', 1, 1, 1);
+VALUES ( NOW(), 1, NOW(),  '[]', 'ádasdsad', 1, 3, 1);
 INSERT INTO reviews ( `created_at`, `status`, `updated_at`,  `list_images`, `name`, `product_id`, `rating_id`, `user_id`) 
-VALUES ( NOW(), 1, NOW(),  '[]', 'qưeqwe', 1, 2, 1);
+VALUES ( NOW(), 1, NOW(),  '[]', 'qưeqwe', 4, 4, 1);
+-- INSERT DATA TO IMAGES TABLE
+INSERT INTO IMAGES(image, product_id) values('https://res.cloudinary.com/th-i-nguy-n/image/upload/v1690976979/cafe-springboot/menu/Seven-Coffee-menu-2_m4jxbs.jpg',1);
+INSERT INTO IMAGES(image, product_id) values('https://res.cloudinary.com/th-i-nguy-n/image/upload/v1690976978/cafe-springboot/menu/Seven-Coffee-menu-1_ujnjhn.jpg',2);

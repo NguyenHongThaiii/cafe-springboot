@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -19,9 +20,12 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cafe.website.constant.SortField;
 import com.cafe.website.entity.Area;
 import com.cafe.website.entity.Convenience;
+import com.cafe.website.entity.Image;
 import com.cafe.website.entity.Kind;
+import com.cafe.website.entity.Menu;
 import com.cafe.website.entity.Product;
 import com.cafe.website.entity.Purpose;
+import com.cafe.website.entity.Review;
 import com.cafe.website.exception.CafeAPIException;
 import com.cafe.website.exception.ResourceNotFoundException;
 import com.cafe.website.payload.ProductCreateDTO;
@@ -29,9 +33,12 @@ import com.cafe.website.payload.ProductDTO;
 import com.cafe.website.payload.ProductUpdateDTO;
 import com.cafe.website.repository.AreaRepository;
 import com.cafe.website.repository.ConvenienceRepository;
+import com.cafe.website.repository.ImageRepository;
 import com.cafe.website.repository.KindRepository;
+import com.cafe.website.repository.MenuRepository;
 import com.cafe.website.repository.ProductRepository;
 import com.cafe.website.repository.PurposeRepository;
+import com.cafe.website.repository.ReviewRepository;
 import com.cafe.website.service.CloudinaryService;
 import com.cafe.website.service.ProductService;
 import com.cafe.website.util.MapperUtils;
@@ -48,6 +55,9 @@ public class ProductServiceImp implements ProductService {
 	private KindRepository kindRepository;
 	private PurposeRepository purposeRepository;
 	private ConvenienceRepository conveRepository;
+	private ReviewRepository reviewRepository;
+	private ImageRepository imageRepository;
+	private MenuRepository menuRepository;
 	private ProductMapper productMapper;
 	private CloudinaryService cloudinaryService;
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
@@ -56,7 +66,8 @@ public class ProductServiceImp implements ProductService {
 
 	public ProductServiceImp(ProductRepository productRepository, AreaRepository areaRepository,
 			KindRepository kindRepository, PurposeRepository purposeRepository, ConvenienceRepository conveRepository,
-			ProductMapper productMapper, CloudinaryService cloudinaryService) {
+			ProductMapper productMapper, CloudinaryService cloudinaryService, ReviewRepository reviewRepository,
+			MenuRepository menuRepository, ImageRepository imageRepository) {
 		super();
 		this.productRepository = productRepository;
 		this.areaRepository = areaRepository;
@@ -65,6 +76,9 @@ public class ProductServiceImp implements ProductService {
 		this.conveRepository = conveRepository;
 		this.productMapper = productMapper;
 		this.cloudinaryService = cloudinaryService;
+		this.reviewRepository = reviewRepository;
+		this.imageRepository = imageRepository;
+		this.menuRepository = menuRepository;
 	}
 
 	@Override
@@ -112,8 +126,17 @@ public class ProductServiceImp implements ProductService {
 
 	@Override
 	public ProductDTO createProduct(ProductCreateDTO productCreateDto) throws IOException {
-		List<String> listMenus = new ArrayList<>();
 
+		if (productRepository.existsBySlugAndIdNot(slugify.slugify(productCreateDto.getSlug()),
+				productCreateDto.getId()))
+			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Slug is already exists!");
+		if (productRepository.existsByNameAndIdNot(productCreateDto.getName(), productCreateDto.getId()))
+			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
+
+		List<Menu> listMenus = new ArrayList<>();
+		List<String> menus = new ArrayList<>();
+		List<Image> listImages = new ArrayList<>();
+		List<String> images = new ArrayList<>();
 		ProductDTO pdto = MapperUtils.mapToEntity(productCreateDto, ProductDTO.class);
 		Product product = new Product();
 
@@ -127,14 +150,31 @@ public class ProductServiceImp implements ProductService {
 		pdto.setKinds(listKinds);
 		pdto.setPurposes(listPurposes);
 		pdto.setConveniences(listCon);
+		pdto.setSlug(slugify.slugify(productCreateDto.getSlug()));
 		productMapper.updateProductFromDto(pdto, product);
 
 		product.setId(0);
-		cloudinaryService.uploadImages(listMenus, productCreateDto.getListMenuFile(), "cafe-springboot/menu", "image");
-		String jsonListMenu = this.objMapper.writeValueAsString(listMenus);
-		product.setListMenu(jsonListMenu);
+
+//		move to their service
+		cloudinaryService.uploadImages(images, productCreateDto.getListImageFile(), "cafe-springboot/blogs", "image");
+		images.forEach(image -> {
+			Image imageItem = new Image();
+			imageItem.setImage(image);
+			imageItem.setProduct(product);
+			listImages.add(imageItem);
+		});
+
+		cloudinaryService.uploadImages(menus, productCreateDto.getListImageFile(), "cafe-springboot/blogs", "image");
+		menus.forEach(menu -> {
+			Menu menuItem = new Menu();
+			menuItem.setImage(menu);
+			menuItem.setProduct(product);
+			listMenus.add(menuItem);
+		});
 
 		productRepository.save(product);
+		menuRepository.saveAll(listMenus);
+		imageRepository.saveAll(listImages);
 
 		return MapperUtils.mapToDTO(product, ProductDTO.class);
 	}
@@ -142,6 +182,8 @@ public class ProductServiceImp implements ProductService {
 	@Override
 	public ProductDTO updateProduct(int id, ProductUpdateDTO productUpdateDto) throws IOException {
 		ProductDTO pdto = this.getProductById(id);
+		String path_menu = "cafe-springboot/menu/";
+		String path_blogs = "cafe-springboot/blogs/";
 		if (productRepository.existsBySlugAndIdNot(slugify.slugify(productUpdateDto.getSlug()), pdto.getId()))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Slug is already exists!");
 		if (productRepository.existsByNameAndIdNot(productUpdateDto.getName(), pdto.getId()))
@@ -163,16 +205,44 @@ public class ProductServiceImp implements ProductService {
 		pdto.setConveniences(listCon);
 		pdto.setSlug(slugify.slugify(productUpdateDto.getSlug()));
 
-//		delete old images and add new images
+		if (productUpdateDto.getListMenuFile() != null) {
+			List<String> menus = new ArrayList<>();
+			List<Menu> listMenus = new ArrayList<>();
+			List<Menu> listEntityMenus = menuRepository.findAllMenuByProductId(id);
 
-		if (productUpdateDto.getListMenuFile() != null
-				&& productUpdateDto.getListMenuFile() instanceof List<MultipartFile>) {
-			List<String> listMenus = new ArrayList<>();
-			cloudinaryService.uploadImages(listMenus, productUpdateDto.getListMenuFile(), "cafe-springboot/menu",
-					"image");
-			String urlImageMenu = this.objMapper.writeValueAsString(listMenus);
-			pdto.setListMenu(urlImageMenu);
-			this.deleteProduct(pdto.getId());
+			if (listEntityMenus != null)
+				for (Menu menu : listEntityMenus)
+					cloudinaryService.removeImageFromCloudinary(menu.getImage(), path_menu);
+
+			cloudinaryService.uploadImages(menus, productUpdateDto.getListMenuFile(), path_menu, "image");
+			menus.forEach(menuTemp -> {
+				Menu menuItem = new Menu();
+				menuItem.setImage(menuTemp);
+				menuItem.setProduct(product);
+				listMenus.add(menuItem);
+			});
+			menuRepository.deleteAllMenuByProductId(id);
+			product.setlistMenus(listMenus);
+		}
+
+		if (productUpdateDto.getListImageFile() != null) {
+			List<String> images = new ArrayList<>();
+			List<Image> listImages = new ArrayList<>();
+			List<Image> listEntityImages = imageRepository.findAllImageByProductId(id);
+
+			if (listEntityImages != null)
+				for (Image temp : listEntityImages)
+					cloudinaryService.removeImageFromCloudinary(temp.getImage(), path_blogs);
+
+			cloudinaryService.uploadImages(images, productUpdateDto.getListImageFile(), path_blogs, "image");
+			images.forEach(imageTemp -> {
+				Image imageItem = new Image();
+				imageItem.setImage(imageTemp);
+				imageItem.setProduct(product);
+				listImages.add(imageItem);
+			});
+			imageRepository.deleteAllImageByProductId(id);
+			product.setlistImages(listImages);
 		}
 
 		productMapper.updateProductFromDto(pdto, product);
@@ -196,10 +266,16 @@ public class ProductServiceImp implements ProductService {
 		ProductDTO productDto = this.getProductById(id);
 		String path_menu = "cafe-springboot/menu/";
 		String path_blogs = "cafe-springboot/blogs/";
-		String listMenusDb = productDto.getListMenu();
+		List<Menu> listEntityMenus = menuRepository.findAllMenuByProductId(id);
+		List<Image> listEntityImages = imageRepository.findAllImageByProductId(id);
 
-		this.cloudinaryService.removeListImageFromCloudinary(listMenusDb, path_menu);
-		this.cloudinaryService.removeListImageFromCloudinary(listMenusDb, path_blogs);
+		if (listEntityImages != null)
+			for (Image temp : listEntityImages)
+				cloudinaryService.removeImageFromCloudinary(temp.getImage(), path_blogs);
+
+		if (listEntityMenus != null)
+			for (Menu menu : listEntityMenus)
+				cloudinaryService.removeImageFromCloudinary(menu.getImage(), path_menu);
 
 		productRepository.deleteById(id);
 

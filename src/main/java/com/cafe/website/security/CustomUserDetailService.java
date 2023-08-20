@@ -15,7 +15,7 @@ import com.cafe.website.repository.UserRepository;
 
 @Service
 public class CustomUserDetailService implements UserDetailsService {
-
+	
 	private UserRepository userRepository;
 
 	public CustomUserDetailService(UserRepository userRepository) {

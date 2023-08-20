@@ -67,4 +67,10 @@ public class Rating extends BaseEntity {
 		this.price = price;
 	}
 
+	@Override
+	public String toString() {
+		return "Rating [location=" + location + ", space=" + space + ", food=" + food + ", service=" + service
+				+ ", price=" + price + "]";
+	}
+
 }

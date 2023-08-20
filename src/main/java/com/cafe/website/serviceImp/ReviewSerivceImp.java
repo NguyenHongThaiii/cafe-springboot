@@ -9,24 +9,28 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.cafe.website.constant.SortField;
-import com.cafe.website.entity.Area;
+import com.cafe.website.entity.Image;
+import com.cafe.website.entity.Product;
+import com.cafe.website.entity.Rating;
 import com.cafe.website.entity.Review;
-import com.cafe.website.exception.CafeAPIException;
+import com.cafe.website.entity.User;
 import com.cafe.website.exception.ResourceNotFoundException;
-import com.cafe.website.payload.AreaCreateDTO;
-import com.cafe.website.payload.AreaDTO;
-import com.cafe.website.payload.AreaUpdateDTO;
+import com.cafe.website.payload.ReviewCreateDTO;
 import com.cafe.website.payload.ReviewDTO;
 import com.cafe.website.payload.ReviewUpdateDTO;
+import com.cafe.website.repository.ImageRepository;
+import com.cafe.website.repository.ProductRepository;
+import com.cafe.website.repository.RatingRepository;
 import com.cafe.website.repository.ReviewRepository;
+import com.cafe.website.repository.UserRepository;
 import com.cafe.website.service.CloudinaryService;
 import com.cafe.website.service.ReviewService;
 import com.cafe.website.util.MapperUtils;
 import com.cafe.website.util.ReviewMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.micrometer.common.util.StringUtils;
 
@@ -34,14 +38,26 @@ import io.micrometer.common.util.StringUtils;
 public class ReviewSerivceImp implements ReviewService {
 	private ReviewRepository reviewRepository;
 	private CloudinaryService cloudinaryService;
-	private ReviewMapper reviewMapper; 
+	private RatingRepository ratingRepository;
+	private ProductRepository productRepository;
+	private UserRepository userRepository;
+	private ImageRepository imageRepository;
 
+	private ReviewMapper reviewMapper;
+	ObjectMapper objMapper = new ObjectMapper();
+	String path_reviews = "cafe-springboot/reviews/";
 
 	public ReviewSerivceImp(ReviewRepository reviewRepository, CloudinaryService cloudinaryService,
-			ReviewMapper reviewMapper) {
+			RatingRepository ratingRepository, ProductRepository productRepository, UserRepository userRepository,
+			ReviewMapper reviewMapper, ImageRepository imageRepository) {
+		super();
 		this.reviewRepository = reviewRepository;
 		this.cloudinaryService = cloudinaryService;
+		this.ratingRepository = ratingRepository;
+		this.productRepository = productRepository;
+		this.userRepository = userRepository;
 		this.reviewMapper = reviewMapper;
+		this.imageRepository = imageRepository;
 	}
 
 	@Override
@@ -121,41 +137,91 @@ public class ReviewSerivceImp implements ReviewService {
 	}
 
 	@Override
-	public ReviewDTO createReview(ReviewDTO areaCreateDto) throws IOException {
+	public ReviewDTO createReview(ReviewCreateDTO reviewCreateDto) throws IOException {
 		// TODO Auto-generated method stub
-		return null;
+		List<Image> listImages = new ArrayList<>();
+		List<String> images = new ArrayList<>();
+		Review review = new Review();
+		Rating rating = new Rating();
+
+		rating.setFood(reviewCreateDto.getFood());
+		rating.setLocation(reviewCreateDto.getLocation());
+		rating.setPrice(reviewCreateDto.getPrice());
+		rating.setService(reviewCreateDto.getService());
+		rating.setSpace(reviewCreateDto.getSpace());
+		rating.setStatus(1);
+
+		Product product = productRepository.findById(reviewCreateDto.getProductId())
+				.orElseThrow(() -> new ResourceNotFoundException("Product", "id", reviewCreateDto.getProductId()));
+		User user = userRepository.findById(reviewCreateDto.getUserId())
+				.orElseThrow(() -> new ResourceNotFoundException("User", "id", reviewCreateDto.getUserId()));
+
+		cloudinaryService.uploadImages(images, reviewCreateDto.getlistImageFiles(), "cafe-springboot/blogs", "image");
+		images.forEach(image -> {
+			Image imageItem = new Image();
+			imageItem.setImage(image);
+			imageItem.setReview(review);
+			listImages.add(imageItem);
+		});
+
+		review.setName(reviewCreateDto.getName());
+		review.setProduct(product);
+		review.setUser(user);
+		review.setStatus(1);
+		review.setRating(rating);
+
+		reviewRepository.save(review);
+		imageRepository.saveAll(listImages);
+
+		return MapperUtils.mapToDTO(review, ReviewDTO.class);
 	}
 
 	@Override
 	public ReviewDTO updateReview(int id, ReviewUpdateDTO reviewUpdateDto) throws IOException {
-		ReviewDTO reviewDto = this.getReviewById(id);
-		Review review = MapperUtils.mapToEntity(reviewDto, Review.class);
-		
-//		AreaDTO newdto = this.getAreaById(id);
-//
-//		if (areaRepository.existsBySlugAndIdNot(slugify.slugify(areaUpdateDto.getSlug()), newdto.getId()))
-//			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Slug is already exists!");
-//		if (areaRepository.existsByNameAndIdNot(areaUpdateDto.getName(), newdto.getId()))
-//			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
-//
-//		Area area = areaMapper.dtoToEntity(newdto);
-//		String image = cloudinaryService.uploadImage(areaUpdateDto.getImage(), "cafe-springboot/categories", "image");
-//		AreaDTO areaDto = MapperUtils.mapToDTO(areaUpdateDto, AreaDTO.class);
-//
-//		areaDto.setId(id);
-//		areaDto.setImage(image);
-//		areaDto.setSlug(slugify.slugify(areaUpdateDto.getSlug()));
-//
-//		areaMapper.updateAreaFromDto(areaDto, area);
-//		areaRepository.save(area);
+		Review review = reviewRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Review", "id", id));
+		String path_reviews = "cafe-springboot/reviews";
+		ReviewDTO reviewDto = MapperUtils.mapToDTO(review, ReviewDTO.class);
 
-//		return areaMapper.entityToDto(area);
-		return null;
+		if (reviewUpdateDto.getListImageFiles() != null) {
+			List<String> images = new ArrayList<>();
+			List<Image> listImages = new ArrayList<>();
+
+			List<Image> listEntityImages = imageRepository.findAllImageByReviewId(id);
+			if (listEntityImages != null)
+				for (Image temp : listEntityImages)
+					cloudinaryService.removeImageFromCloudinary(temp.getImage(), path_reviews);
+
+			cloudinaryService.uploadImages(images, reviewUpdateDto.getListImageFiles(), path_reviews, "image");
+			images.forEach(imageTemp -> {
+				Image imageItem = new Image();
+				imageItem.setImage(imageTemp);
+				imageItem.setReview(review);
+				listImages.add(imageItem);
+			});
+			imageRepository.deleteAllImageByReviewId(id);
+			review.setListImages(listImages);
+		}
+
+		reviewMapper.updateReviewFromDto(reviewDto, review);
+		reviewRepository.save(review);
+
+		return reviewDto;
 	}
 
 	@Override
-	public void deleteReview(int id) throws IOException {
-		// TODO Auto-generated method stub
+	public String deleteReview(int id) throws IOException {
+		ReviewDTO reviewDto = this.getReviewById(id);
+		String path_reviews = "cafe-springboot/reviews";
+		List<Image> listEntityImages = imageRepository.findAllImageByReviewId(id);
+
+		if (listEntityImages != null)
+			for (Image temp : listEntityImages)
+				cloudinaryService.removeImageFromCloudinary(temp.getImage(), path_reviews);
+
+		reviewRepository.deleteById(id);
+
+		return "Delete successfully";
 
 	}
 

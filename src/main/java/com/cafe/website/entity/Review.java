@@ -18,12 +18,11 @@ import jakarta.persistence.Table;
 @Table(name = "reviews")
 @Entity
 public class Review extends BaseEntity {
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
-	@JsonIgnore
 	private User user;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "product_id", nullable = false)
 	private Product product;
 
@@ -34,15 +33,16 @@ public class Review extends BaseEntity {
 	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Comment> comments;
 
-	private String listImages;
+	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Image> listImages;
 	private String name;
 
-	@ManyToMany( fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "review_favorites", joinColumns = @JoinColumn(name = "review_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
 	private List<User> favoritedBy;
 
 	public Review(int id, int status, Long createdAt, Long updatedAt, User user, Product product, Rating rating,
-			List<Comment> comments, String listImages, String name, List<User> favoritedBy) {
+			List<Comment> comments, List<Image> listImages, String name, List<User> favoritedBy) {
 		super(id, status, createdAt, updatedAt);
 		this.user = user;
 		this.product = product;
@@ -89,14 +89,21 @@ public class Review extends BaseEntity {
 		this.comments = comments;
 	}
 
-	public String getListImages() {
+	public List<Image> getListImages() {
 		return listImages;
 	}
 
-	public void setListImages(String listImages) {
+	public void setListImages(List<Image> listImages) {
 		this.listImages = listImages;
 	}
-	
+
+	public List<User> getFavoritedBy() {
+		return favoritedBy;
+	}
+
+	public void setFavoritedBy(List<User> favoritedBy) {
+		this.favoritedBy = favoritedBy;
+	}
 
 	public String getName() {
 		return name;
@@ -112,6 +119,12 @@ public class Review extends BaseEntity {
 
 	public void setFavorite(List<User> favoritedBy) {
 		this.favoritedBy = favoritedBy;
+	}
+
+	@Override
+	public String toString() {
+		return "Review [user=" + user + ", product=" + product + ", rating=" + rating + ", comments=" + comments
+				+ ", listImages=" + listImages + ", name=" + name + ", favoritedBy=" + favoritedBy + "]";
 	}
 
 }
