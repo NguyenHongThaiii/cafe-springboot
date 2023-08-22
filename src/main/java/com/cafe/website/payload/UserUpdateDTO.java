@@ -1,5 +1,8 @@
 package com.cafe.website.payload;
+
 import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cafe.website.entity.Product;
 import com.cafe.website.entity.Role;
@@ -9,7 +12,7 @@ public class UserUpdateDTO {
 	private String password;
 	private String name;
 	private String address;
-	private String avartar;
+	private MultipartFile avartar;
 	private String phone;
 	private int status;
 	private String slug;
@@ -17,8 +20,8 @@ public class UserUpdateDTO {
 
 	private List<Role> roles;
 
-	public UserUpdateDTO(String email, String password, String name, String address, String avartar, String phone,
-			int status, List<Product> listProductSaved, List<Role> roles, String slug) {
+	public UserUpdateDTO(String email, String password, String name, String address, MultipartFile avartar,
+			String phone, int status, List<Product> listProductSaved, List<Role> roles, String slug) {
 		super();
 		this.email = email;
 		this.password = password;
@@ -72,11 +75,11 @@ public class UserUpdateDTO {
 		this.address = address;
 	}
 
-	public String getAvartar() {
+	public MultipartFile getAvartar() {
 		return avartar;
 	}
 
-	public void setAvartar(String avartar) {
+	public void setAvartar(MultipartFile avartar) {
 		this.avartar = avartar;
 	}
 

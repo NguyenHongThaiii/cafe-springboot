@@ -12,10 +12,14 @@ import com.cafe.website.entity.User;
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
 	Slice<Product> findByNameContainingIgnoreCase(String searchBy, Pageable pageable);
-	Optional<Product> findBySlugOrName(String slug,String name);
+
+	Optional<Product> findBySlugOrName(String slug, String name);
 
 	Boolean existsBySlugAndIdNot(String slug, Integer id);
 
 	Boolean existsByNameAndIdNot(String name, Integer id);
 
+	Boolean existsBySlug(String slug);
+
+	Boolean existsByName(String name);
 }

@@ -1,10 +1,13 @@
 package com.cafe.website.serviceImp;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -14,12 +17,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.cafe.website.constant.SortField;
 import com.cafe.website.entity.Area;
+import com.cafe.website.entity.Image;
 import com.cafe.website.exception.CafeAPIException;
 import com.cafe.website.exception.ResourceNotFoundException;
 import com.cafe.website.payload.AreaCreateDTO;
 import com.cafe.website.payload.AreaDTO;
 import com.cafe.website.payload.AreaUpdateDTO;
+import com.cafe.website.payload.ImageDTO;
+import com.cafe.website.payload.ProductDTO;
 import com.cafe.website.repository.AreaRepository;
+import com.cafe.website.repository.ImageRepository;
 import com.cafe.website.service.AreaService;
 import com.cafe.website.service.CloudinaryService;
 import com.cafe.website.util.AreaMapper;
@@ -33,12 +40,16 @@ public class AreaServiceImp implements AreaService {
 	private AreaMapper areaMapper;
 	CloudinaryService cloudinaryService;
 	private AreaRepository areaRepository;
+	private ImageRepository imageRepository;
 	private Slugify slugify = Slugify.builder().build();
+	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 
-	public AreaServiceImp(AreaRepository areaRepository, AreaMapper areaMapper, CloudinaryService cloudinaryService) {
+	public AreaServiceImp(AreaRepository areaRepository, AreaMapper areaMapper, CloudinaryService cloudinaryService,
+			ImageRepository imageRepository) {
 		this.areaRepository = areaRepository;
 		this.areaMapper = areaMapper;
 		this.cloudinaryService = cloudinaryService;
+		this.imageRepository = imageRepository;
 	}
 
 	@Override
@@ -77,8 +88,13 @@ public class AreaServiceImp implements AreaService {
 		else
 			listArea = areaRepository.findAll(pageable).getContent();
 
-		listAreaDto = listArea.stream().map(area -> MapperUtils.mapToDTO(area, AreaDTO.class))
-				.collect(Collectors.toList());
+		listAreaDto = listArea.stream().map(area -> {
+			AreaDTO areaDto = MapperUtils.mapToDTO(area, AreaDTO.class);
+			Image image = imageRepository.findImageByAreaId(area.getId()).orElse(null);
+
+			areaDto.setImage(ImageDTO.generateImageDTO(image));
+			return areaDto;
+		}).collect(Collectors.toList());
 
 		return listAreaDto;
 	}
@@ -87,28 +103,43 @@ public class AreaServiceImp implements AreaService {
 	public AreaDTO getAreaById(int id) {
 		Area area = areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area", "id", id + ""));
 		AreaDTO areaDto = MapperUtils.mapToDTO(area, AreaDTO.class);
+		Image image = imageRepository.findImageByAreaId(area.getId()).orElse(null);
+		areaDto.setImage(ImageDTO.generateImageDTO(image));
+		return areaDto;
+	}
+
+	@Override
+	public AreaDTO getAreaBySlug(String slug) {
+		Area area = areaRepository.findBySlug(slug)
+				.orElseThrow(() -> new ResourceNotFoundException("Area", "slug", slug));
+		AreaDTO areaDto = MapperUtils.mapToDTO(area, AreaDTO.class);
+		Image image = imageRepository.findImageByAreaId(area.getId()).orElse(null);
+
+		areaDto.setImage(ImageDTO.generateImageDTO(image));
 		return areaDto;
 	}
 
 	@Override
 	public AreaDTO createArea(AreaCreateDTO areaCreateDto) throws IOException {
-		Area areaCurrent = areaRepository.findByName(areaCreateDto.getName())
-				.orElseThrow(() -> new ResourceNotFoundException("Area", "name", areaCreateDto.getName()));
 
-		if (areaRepository.existsBySlugAndIdNot(slugify.slugify(areaCreateDto.getSlug()), areaCurrent.getId()))
+		if (areaRepository.existsBySlug(slugify.slugify(areaCreateDto.getSlug())))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Slug is already exists!");
-		if (areaRepository.existsByNameAndIdNot(areaCreateDto.getName(), areaCurrent.getId()))
+		if (areaRepository.existsByName(areaCreateDto.getName()))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
 
 		Area area = MapperUtils.mapToEntity(areaCreateDto, Area.class);
-		String image = cloudinaryService.uploadImage(areaCreateDto.getImage(), "cafe-springboot/categories", "image");
-		area.setImage(image);
 		area.setSlug(slugify.slugify(areaCreateDto.getSlug()));
+		String url = cloudinaryService.uploadImage(areaCreateDto.getImageFile(), "cafe-springboot/categories", "image");
+
+		Image image = new Image();
+		image.setArea(area);
+		image.setImage(url);
+		area.setImage(image);
 
 		Area newArea = areaRepository.save(area);
 
 		AreaDTO newAreaDto = MapperUtils.mapToDTO(newArea, AreaDTO.class);
-
+		newAreaDto.setImage(ImageDTO.generateImageDTO(image));
 		return newAreaDto;
 	}
 
@@ -123,10 +154,14 @@ public class AreaServiceImp implements AreaService {
 
 		Area area = areaMapper.dtoToEntity(newdto);
 		AreaDTO areaDto = MapperUtils.mapToDTO(areaUpdateDto, AreaDTO.class);
-		if (areaUpdateDto.getImage() != null && areaUpdateDto.getImage() instanceof MultipartFile) {
-			String image = cloudinaryService.uploadImage(areaUpdateDto.getImage(), "cafe-springboot/categories",
+		if (areaUpdateDto.getImageFile() != null) {
+			logger.info("run");
+			String url = cloudinaryService.uploadImage(areaUpdateDto.getImageFile(), "cafe-springboot/categories",
 					"image");
-			areaDto.setImage(image);
+			Image image = new Image();
+			image.setArea(area);
+			image.setImage(url);
+			area.setImage(image);
 		}
 
 		areaDto.setId(id);
@@ -135,16 +170,19 @@ public class AreaServiceImp implements AreaService {
 		areaMapper.updateAreaFromDto(areaDto, area);
 		areaRepository.save(area);
 
-		return areaMapper.entityToDto(area);
+		AreaDTO newAreaDto = MapperUtils.mapToDTO(area, AreaDTO.class);
+		newAreaDto.setImage(ImageDTO.generateImageDTO(area.getImage()));
+
+		return newAreaDto;
 	}
 
 	@Override
 	public void deleteArea(int id) throws IOException {
 		AreaDTO areaDto = this.getAreaById(id);
 		String path_category = "cafe-springboot/categories/";
-		String listMenusDb = areaDto.getImage();
 
-		this.cloudinaryService.removeImageFromCloudinary(listMenusDb, path_category);
+		Image image = imageRepository.findImageByAreaId(id).orElse(null);
+		this.cloudinaryService.removeImageFromCloudinary(image.getImage(), path_category);
 
 		areaRepository.deleteById(id);
 	}

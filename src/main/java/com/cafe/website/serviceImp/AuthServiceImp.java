@@ -1,7 +1,9 @@
 package com.cafe.website.serviceImp;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -15,11 +17,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.cafe.website.constant.TokenType;
+import com.cafe.website.entity.Image;
 import com.cafe.website.entity.Role;
 import com.cafe.website.entity.Token;
 import com.cafe.website.entity.User;
 import com.cafe.website.exception.CafeAPIException;
 import com.cafe.website.exception.ResourceNotFoundException;
+import com.cafe.website.payload.ImageDTO;
 import com.cafe.website.payload.LoginDTO;
 import com.cafe.website.payload.RegisterDTO;
 import com.cafe.website.payload.RegisterResponse;
@@ -28,6 +32,7 @@ import com.cafe.website.payload.UpdateAvatarDTO;
 import com.cafe.website.payload.UserDTO;
 import com.cafe.website.payload.UserUpdateDTO;
 import com.cafe.website.payload.ValidateOtpDTO;
+import com.cafe.website.repository.ImageRepository;
 import com.cafe.website.repository.RoleRepository;
 import com.cafe.website.repository.TokenRepository;
 import com.cafe.website.repository.UserRepository;
@@ -53,10 +58,13 @@ public class AuthServiceImp implements AuthService {
 	private PasswordEncoder passwordEncoder;
 	private JwtTokenProvider jwtTokenProvider;
 	private TokenRepository tokenRepository;
+	private ImageRepository imageRepository;
 	private EmailService emailService;
 	private OTPService otpService;
 	private UserMapper userMapper;
 	private CloudinaryService cloudinaryService;
+	final String path_user = "cafe-springboot/Users/";
+
 	private Slugify slugify = Slugify.builder().build();
 
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
@@ -64,13 +72,14 @@ public class AuthServiceImp implements AuthService {
 	public AuthServiceImp(AuthenticationManager authenticationManager, UserRepository userRepository,
 			RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider,
 			TokenRepository tokenRepository, EmailService emailService, OTPService otpService, UserMapper userMapper,
-			CloudinaryService cloudinaryService) {
+			CloudinaryService cloudinaryService, ImageRepository imageRepository) {
 		this.authenticationManager = authenticationManager;
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.jwtTokenProvider = jwtTokenProvider;
 		this.tokenRepository = tokenRepository;
+		this.imageRepository = imageRepository;
 		this.emailService = emailService;
 		this.userMapper = userMapper;
 		this.otpService = otpService;
@@ -98,12 +107,10 @@ public class AuthServiceImp implements AuthService {
 	public RegisterResponse createUser(RegisterDTO registerDto) {
 		String passwordEncode = passwordEncoder.encode(registerDto.getPassword());
 
-		if (userRepository.existsByEmail(registerDto.getEmail())) {
+		if (userRepository.existsByEmail(registerDto.getEmail()))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Email is already exists!.");
-		}
-		if (userRepository.existsByName(registerDto.getName())) {
+		if (userRepository.existsByName(registerDto.getName()))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!.");
-		}
 
 		User user = MapperUtils.mapToEntity(registerDto, User.class);
 		user.setPassword(passwordEncode);
@@ -196,16 +203,19 @@ public class AuthServiceImp implements AuthService {
 
 		userDto.setId(userCurrent.getId());
 		userDto.setSlug(slugify.slugify(userUpdateDto.getSlug()));
-//		userDto.setStatus(1);
+		userDto.setStatus(1);
 		userMapper.updateUserFromDto(userDto, userCurrent);
 
-		if (userDto.getPassword() != null)
-			userCurrent.setPassword(passwordEncoder.encode(userDto.getPassword()));
+		if (userUpdateDto.getPassword() != null)
+			userCurrent.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
 
 		userRepository.save(userCurrent);
-		userCurrent.setPassword(null);
 
-		return MapperUtils.mapToDTO(userCurrent, UserDTO.class);
+		userCurrent.setPassword(null);
+		UserDTO res = MapperUtils.mapToDTO(userCurrent, UserDTO.class);
+		Image image = imageRepository.findImageByUserId(res.getId()).orElse(null);
+		res.setListImages(ImageDTO.generateImageDTO(image));
+		return res;
 	}
 
 	@Override
@@ -246,22 +256,31 @@ public class AuthServiceImp implements AuthService {
 				.orElseThrow(() -> new ResourceNotFoundException("User", "name", slug));
 		user.setPassword(null);
 		user.setRoles(null);
-		return MapperUtils.mapToDTO(user, UserDTO.class);
+
+		UserDTO res = MapperUtils.mapToDTO(user, UserDTO.class);
+
+		Image image = imageRepository.findImageByUserId(res.getId()).orElse(null);
+		res.setListImages(ImageDTO.generateImageDTO(image));
+
+		return res;
 	}
 
 	@Override
-	public void updateProfileImage(UpdateAvatarDTO profileDto) {
-		String slug = profileDto.getSlug();
-		String path_user = "cafe-springboot/Users/";
-
+	public void updateProfileImage(String slug, UpdateAvatarDTO profileDto) {
 		User user = userRepository.findBySlug(slug)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "slug", slug));
+		Image image = imageRepository.findImageByUserId(user.getId()).orElse(null);
 
 		try {
-			logger.info(user.getAvartar());
-			cloudinaryService.removeImageFromCloudinary(user.getAvartar(), path_user);
-			String avatar = cloudinaryService.uploadImage(profileDto.getAvatar(), path_user, "auto");
-			user.setAvartar(avatar);
+//			logger.info(user.getAvartar());
+			if (image != null)
+				cloudinaryService.removeImageFromCloudinary(image.getImage(), path_user);
+			String avatar = cloudinaryService.uploadImage(profileDto.getAvatar(), path_user, "image");
+			Image imageTemp = new Image();
+			imageTemp.setUser(user);
+			imageTemp.setImage(avatar);
+
+			user.setAvatar(imageTemp);
 			userRepository.save(user);
 
 		} catch (IOException e) {
@@ -282,8 +301,45 @@ public class AuthServiceImp implements AuthService {
 	public UserDTO getUserById(int id) {
 		User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
 		UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
-		userDto.setPassword(null);
+
+		Image image = imageRepository.findImageByUserId(userDto.getId()).orElse(null);
+		userDto.setListImages(ImageDTO.generateImageDTO(image));
+
 		return userDto;
+	}
+
+	@Override
+	public UserDTO getUserBySlug(String slug) {
+		User user = userRepository.findBySlug(slug)
+				.orElseThrow(() -> new ResourceNotFoundException("User", "slug", slug));
+		UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
+
+		Image image = imageRepository.findImageByUserId(userDto.getId()).orElse(null);
+		userDto.setListImages(ImageDTO.generateImageDTO(image));
+		return userDto;
+	}
+
+	@Override
+	public void deleteUserById(Integer id) throws IOException {
+		this.getUserById(id);
+		// TODO Auto-generated method stub
+		Image image = imageRepository.findImageByUserId(id).orElse(null);
+		if (image != null)
+			cloudinaryService.removeImageFromCloudinary(image.getImage(), path_user);
+
+		userRepository.deleteById(id);
+	}
+
+	@Override
+	public void deleteUserBySlug(String slug) throws IOException {
+		// TODO Auto-generated method stub
+		UserDTO userDto = this.getUserBySlug(slug);
+		Image image = imageRepository.findImageByUserId(userDto.getId()).orElse(null);
+		if (image != null)
+			cloudinaryService.removeImageFromCloudinary(image.getImage(), path_user);
+
+		userRepository.deleteUserBySlug(slug);
+
 	}
 
 }

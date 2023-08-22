@@ -19,7 +19,7 @@ public interface ReviewService {
 
 	ReviewDTO updateReview(int id, ReviewUpdateDTO areaUpdateDto) throws IOException;
 
-	String deleteReview(int id) throws IOException;
+	void deleteReview(int id) throws IOException;
 
 	Integer getRatingByReviewId(int id);
 }

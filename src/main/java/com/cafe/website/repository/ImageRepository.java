@@ -16,6 +16,7 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
 
 	Optional<Image> findImageByUserId(Integer userId);
 
+
 	Optional<Image> findImageByReviewId(Integer reviewId);
 
 	Optional<Image> findImageByAreaId(Integer areaId);
@@ -47,4 +48,6 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
 
 	List<Image> findAllImageByUserId(Integer productId);
 
+
+	
 }

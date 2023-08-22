@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,7 +37,7 @@ public class ProductController {
 		this.productService = productService;
 	}
 
-	@RequestMapping("")
+	@GetMapping("")
 	public ResponseEntity<List<ProductDTO>> getListProducts(@RequestParam(defaultValue = "5") int limit,
 			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false, defaultValue = "") String name,
 			@RequestParam(required = false, defaultValue = "") String sortBy) {
@@ -44,7 +45,7 @@ public class ProductController {
 		return new ResponseEntity<>(listproducts, HttpStatus.OK);
 	}
 
-	@RequestMapping("/{id}")
+	@GetMapping("/id/{id}")
 	public ResponseEntity<ProductDTO> getProductById(@PathVariable(name = "id") int id) {
 		ProductDTO product = productService.getProductById(id);
 
@@ -52,15 +53,23 @@ public class ProductController {
 
 	}
 
-	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/{slug}")
+	public ResponseEntity<ProductDTO> getProductBySlug(@PathVariable(name = "slug") String slug) {
+		ProductDTO product = productService.getProductBySlug(slug);
+
+		return new ResponseEntity<>(product, HttpStatus.OK);
+
+	}
+
+	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PostMapping("")
-	public ResponseEntity<ProductDTO> createProduct( @ModelAttribute ProductCreateDTO productCreateDto)
+	public ResponseEntity<ProductDTO> createProduct(@ModelAttribute ProductCreateDTO productCreateDto)
 			throws IOException {
 		ProductDTO product = productService.createProduct(productCreateDto);
 		return new ResponseEntity<ProductDTO>(product, HttpStatus.CREATED);
 	}
 
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PatchMapping("/{id}")
 	public ResponseEntity<ProductDTO> updateProduct(@PathVariable(name = "id") int id,
 			@Valid @ModelAttribute ProductUpdateDTO productUpdateDto) throws IOException {
@@ -71,8 +80,8 @@ public class ProductController {
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deleteProduct(@PathVariable(name = "id") int id) throws IOException {
-		String res = productService.deleteProduct(id);
-		return new ResponseEntity<String>(res, HttpStatus.OK);
+		productService.deleteProduct(id);
+		return new ResponseEntity<String>("Delete successfully", HttpStatus.OK);
 	}
 
 }

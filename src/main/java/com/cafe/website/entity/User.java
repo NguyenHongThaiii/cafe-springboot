@@ -1,4 +1,5 @@
 package com.cafe.website.entity;
+
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -11,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Table(name = "users")
@@ -24,8 +26,10 @@ public class User extends BaseEntity {
 	@Column(unique = true)
 	private String name;
 	private String address;
-	private String avartar;
 	private String phone;
+	
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+	private Image avatar;
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "products_saved", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"))
@@ -38,16 +42,16 @@ public class User extends BaseEntity {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Review> reviews;
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private List<Token> tokens;
 
-	public User(int id, int status, Long createdAt, Long updatedAt, String name, String address, String avartar,
+	public User(int id, int status, Long createdAt, Long updatedAt, String name, String address, Image avartar,
 			String phone, String email, String password, List<Product> listProductSaved, List<Role> roles,
 			List<Review> reviews, List<Token> tokens, String slug) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;
 		this.address = address;
-		this.avartar = avartar;
+		this.avatar = avartar;
 		this.phone = phone;
 		this.email = email;
 		this.password = password;
@@ -90,12 +94,12 @@ public class User extends BaseEntity {
 		this.address = address;
 	}
 
-	public String getAvartar() {
-		return avartar;
+	public Image getAvatar() {
+		return avatar;
 	}
 
-	public void setAvartar(String avartar) {
-		this.avartar = avartar;
+	public void setAvatar(Image avartar) {
+		this.avatar = avartar;
 	}
 
 	public String getPhone() {

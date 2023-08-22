@@ -8,13 +8,9 @@ public class UpdateAvatarDTO {
 	@NotNull
 	private MultipartFile avatar;
 
-	@NotNull
-	private String slug;
-
-	public UpdateAvatarDTO(@NotNull MultipartFile avatar, @NotNull String slug) {
+	public UpdateAvatarDTO(@NotNull MultipartFile avatar) {
 		super();
 		this.avatar = avatar;
-		this.slug = slug;
 	}
 
 	public UpdateAvatarDTO() {
@@ -27,14 +23,6 @@ public class UpdateAvatarDTO {
 
 	public void setAvatar(MultipartFile avatar) {
 		this.avatar = avatar;
-	}
-
-	public String getSlug() {
-		return slug;
-	}
-
-	public void setSlug(String slug) {
-		this.slug = slug;
 	}
 
 }

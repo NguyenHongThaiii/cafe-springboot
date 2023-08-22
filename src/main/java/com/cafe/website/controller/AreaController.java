@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,7 +32,7 @@ public class AreaController {
 		this.areaService = areaService;
 	}
 
-	@RequestMapping("")
+	@GetMapping("")
 	public ResponseEntity<List<AreaDTO>> getListAreas(@RequestParam(defaultValue = "5") int limit,
 			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false, defaultValue = "") String name,
 			@RequestParam(required = false, defaultValue = "") String sortBy) {
@@ -39,9 +40,15 @@ public class AreaController {
 		return new ResponseEntity<>(listAreasDto, HttpStatus.OK);
 	}
 
-	@RequestMapping("/{id}")
+	@GetMapping("/id/{id}")
 	public ResponseEntity<AreaDTO> getAreaById(@PathVariable(name = "id") int id) {
 		AreaDTO areaDto = areaService.getAreaById(id);
+		return new ResponseEntity<>(areaDto, HttpStatus.OK);
+	}
+
+	@GetMapping("/{slug}")
+	public ResponseEntity<AreaDTO> getAreaBySlug(@PathVariable(name = "slug") String slug) {
+		AreaDTO areaDto = areaService.getAreaBySlug(slug);
 		return new ResponseEntity<>(areaDto, HttpStatus.OK);
 	}
 

@@ -15,4 +15,7 @@ public interface ConvenienceRepository extends JpaRepository<Convenience, Intege
 
 	Boolean existsByNameAndIdNot(String name, Integer id);
 
+	Boolean existsBySlug(String slug);
+
+	Boolean existsByName(String name);
 }

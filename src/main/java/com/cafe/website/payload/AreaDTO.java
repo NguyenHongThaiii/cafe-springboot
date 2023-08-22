@@ -1,29 +1,18 @@
 package com.cafe.website.payload;
 
-
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-
 public class AreaDTO {
 	private int id;
 	private Long createdAt;
 	private Long updatedAt;
-
-	@Min(value = 0, message = "Status should not be less than 0")
-	@Max(value = 1, message = "status should not be greater than 1")
 	private int status;
-	
-	@NotNull
-	private String name;
-	
-	@NotNull
-	private String slug;
-	
-	@NotNull
-	private String image;
 
-	public AreaDTO(int id, int status, Long createdAt, Long updatedAt, String name, String slug, String image) {
+	private String name;
+
+	private String slug;
+
+	private ImageDTO imageDto;
+
+	public AreaDTO(int id, int status, Long createdAt, Long updatedAt, String name, String slug, ImageDTO imageDto) {
 		super();
 		this.id = id;
 		this.status = status;
@@ -31,7 +20,7 @@ public class AreaDTO {
 		this.updatedAt = updatedAt;
 		this.name = name;
 		this.slug = slug;
-		this.image = image;
+		this.imageDto = imageDto;
 	}
 
 	public AreaDTO() {
@@ -86,12 +75,12 @@ public class AreaDTO {
 		this.slug = slug;
 	}
 
-	public String getImage() {
-		return image;
+	public ImageDTO getImage() {
+		return imageDto;
 	}
 
-	public void setImage(String image) {
-		this.image = image;
+	public void setImage(ImageDTO imageDto) {
+		this.imageDto = imageDto;
 	}
 
 }

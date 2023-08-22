@@ -1,4 +1,6 @@
 package com.cafe.website.payload;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import com.cafe.website.entity.Area;
@@ -29,11 +31,12 @@ public class ProductDTO extends BaseEntity {
 	private String facebook;
 	private String description;
 	private String location;
+	private List<ImageDTO> listImage = new ArrayList<>();
 
 	public ProductDTO(int id, int status, Long createdAt, Long updatedAt, List<Purpose> purposes, List<Area> areas,
 			List<Kind> kinds, List<Convenience> conveniences, List<ProductSchedule> schedules, String name, String slug,
 			String phone, int status2, int priceMin, int priceMax, int outstanding, String coordinates, String email,
-			String facebook, String description, String location) {
+			String facebook, String description, String location, List<ImageDTO> listImage) {
 		super(id, status, createdAt, updatedAt);
 		this.purposes = purposes;
 		this.areas = areas;
@@ -52,10 +55,19 @@ public class ProductDTO extends BaseEntity {
 		this.facebook = facebook;
 		this.description = description;
 		this.location = location;
+		this.listImage = listImage;
 	}
 
 	public ProductDTO() {
 		// TODO Auto-generated constructor stub
+	}
+
+	public List<ImageDTO> getListImage() {
+		return listImage;
+	}
+
+	public void setListImage(List<ImageDTO> listImage) {
+		this.listImage = listImage;
 	}
 
 	public List<Purpose> getPurposes() {
@@ -153,8 +165,6 @@ public class ProductDTO extends BaseEntity {
 	public void setOutstanding(int outstanding) {
 		this.outstanding = outstanding;
 	}
-
-
 
 	public String getCoordinates() {
 		return coordinates;

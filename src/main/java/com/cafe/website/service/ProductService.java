@@ -1,4 +1,5 @@
 package com.cafe.website.service;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -15,5 +16,7 @@ public interface ProductService {
 
 	ProductDTO getProductById(int id);
 
-	String deleteProduct(int id) throws IOException;
+	ProductDTO getProductBySlug(String slug);
+
+	void deleteProduct(int id) throws IOException;
 }

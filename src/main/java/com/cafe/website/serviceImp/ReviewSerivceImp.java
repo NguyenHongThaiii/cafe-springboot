@@ -18,6 +18,7 @@ import com.cafe.website.entity.Rating;
 import com.cafe.website.entity.Review;
 import com.cafe.website.entity.User;
 import com.cafe.website.exception.ResourceNotFoundException;
+import com.cafe.website.payload.ImageDTO;
 import com.cafe.website.payload.ReviewCreateDTO;
 import com.cafe.website.payload.ReviewDTO;
 import com.cafe.website.payload.ReviewUpdateDTO;
@@ -121,8 +122,14 @@ public class ReviewSerivceImp implements ReviewService {
 			listReview = reviewRepository.findAll(pageable).getContent();
 		}
 
-		listReviewDto = listReview.stream().map(review -> MapperUtils.mapToDTO(review, ReviewDTO.class))
-				.collect(Collectors.toList());
+		listReviewDto = listReview.stream().map(review -> {
+			ReviewDTO reviewDto = MapperUtils.mapToDTO(review, ReviewDTO.class);
+			List<Image> listEntityImages = imageRepository.findAllImageByReviewId(review.getId());
+
+			reviewDto.setListImages(ImageDTO.generateListImageDTO(listEntityImages));
+
+			return reviewDto;
+		}).collect(Collectors.toList());
 
 		return listReviewDto;
 	}
@@ -132,6 +139,9 @@ public class ReviewSerivceImp implements ReviewService {
 		Review review = reviewRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Review", "id", id));
 		ReviewDTO reviewDto = MapperUtils.mapToDTO(review, ReviewDTO.class);
+		List<Image> listEntityImages = imageRepository.findAllImageByReviewId(review.getId());
+
+		reviewDto.setListImages(ImageDTO.generateListImageDTO(listEntityImages));
 
 		return reviewDto;
 	}
@@ -173,7 +183,12 @@ public class ReviewSerivceImp implements ReviewService {
 		reviewRepository.save(review);
 		imageRepository.saveAll(listImages);
 
-		return MapperUtils.mapToDTO(review, ReviewDTO.class);
+		ReviewDTO reviewDto = MapperUtils.mapToDTO(review, ReviewDTO.class);
+		List<Image> listEntityImages = imageRepository.findAllImageByReviewId(review.getId());
+
+		reviewDto.setListImages(ImageDTO.generateListImageDTO(listEntityImages));
+
+		return reviewDto;
 	}
 
 	@Override
@@ -206,11 +221,14 @@ public class ReviewSerivceImp implements ReviewService {
 		reviewMapper.updateReviewFromDto(reviewDto, review);
 		reviewRepository.save(review);
 
+		List<Image> listEntityImages = imageRepository.findAllImageByReviewId(review.getId());
+		reviewDto.setListImages(ImageDTO.generateListImageDTO(listEntityImages));
+
 		return reviewDto;
 	}
 
 	@Override
-	public String deleteReview(int id) throws IOException {
+	public void deleteReview(int id) throws IOException {
 		ReviewDTO reviewDto = this.getReviewById(id);
 		String path_reviews = "cafe-springboot/reviews";
 		List<Image> listEntityImages = imageRepository.findAllImageByReviewId(id);
@@ -220,8 +238,6 @@ public class ReviewSerivceImp implements ReviewService {
 				cloudinaryService.removeImageFromCloudinary(temp.getImage(), path_reviews);
 
 		reviewRepository.deleteById(id);
-
-		return "Delete successfully";
 
 	}
 

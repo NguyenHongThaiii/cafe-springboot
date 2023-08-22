@@ -14,8 +14,14 @@ public interface AreaRepository extends JpaRepository<Area, Integer> {
 
 	Boolean existsBySlugAndIdNot(String slug, Integer id);
 
+	Boolean existsBySlug(String slug);
+
+	Boolean existsByName(String name);
+
 	Boolean existsByNameAndIdNot(String name, Integer id);
-	
+
 	Optional<Area> findByName(String name);
+
+	Optional<Area> findBySlug(String slug);
 
 }

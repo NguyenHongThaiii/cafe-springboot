@@ -6,13 +6,10 @@ import jakarta.persistence.MappedSuperclass;
 public class BaseCategory extends BaseEntity {
 	private String name;
 	private String slug;
-	private String image;
 
-	public BaseCategory(int id, int status, Long createdAt, Long updatedAt, String name, String slug, String image) {
+	public BaseCategory(int id, int status, Long createdAt, Long updatedAt, String slug) {
 		super(id, status, createdAt, updatedAt);
-		this.name = name;
 		this.slug = slug;
-		this.image = image;
 	}
 
 	public BaseCategory() {
@@ -33,14 +30,6 @@ public class BaseCategory extends BaseEntity {
 
 	public void setSlug(String slug) {
 		this.slug = slug;
-	}
-
-	public String getImage() {
-		return image;
-	}
-
-	public void setImage(String image) {
-		this.image = image;
 	}
 
 }

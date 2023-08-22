@@ -1,4 +1,7 @@
 package com.cafe.website.service;
+
+import java.io.IOException;
+
 import com.cafe.website.payload.LoginDTO;
 import com.cafe.website.payload.RegisterDTO;
 import com.cafe.website.payload.RegisterResponse;
@@ -33,8 +36,13 @@ public interface AuthService {
 
 	UserDTO getUserById(int id);
 
-	void updateProfileImage(UpdateAvatarDTO profileDto);
+	void updateProfileImage(String slug, UpdateAvatarDTO profileDto);
 
 	void handleResePassword(ResetPasswordDTO reset);
 
+	void deleteUserById(Integer id) throws IOException;
+
+	void deleteUserBySlug(String slug) throws IOException;
+
+	UserDTO getUserBySlug(String slug);
 }

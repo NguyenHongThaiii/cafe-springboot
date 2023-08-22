@@ -1,4 +1,5 @@
 package com.cafe.website.repository;
+
 import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
@@ -27,4 +28,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 	Boolean existsByNameAndIdNot(String name, Integer id);
 
+	void deleteUserBySlug(String slug);
 }

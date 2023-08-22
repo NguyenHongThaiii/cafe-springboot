@@ -12,9 +12,11 @@ public interface AreaService {
 
 	AreaDTO getAreaById(int id);
 
+	AreaDTO getAreaBySlug(String slug);
+
 	AreaDTO createArea(AreaCreateDTO areaCreateDto) throws IOException;
 
-	AreaDTO updateArea(int id,  AreaUpdateDTO areaDto) throws IOException;
+	AreaDTO updateArea(int id, AreaUpdateDTO areaDto) throws IOException;
 
 	void deleteArea(int id) throws IOException;
 }

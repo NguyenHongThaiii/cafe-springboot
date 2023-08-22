@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -69,11 +70,31 @@ public class AuthController {
 		return ResponseEntity.ok(userDto);
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
-	@GetMapping("/users/{id}")
+	@GetMapping("/users/id/{id}")
 	public ResponseEntity<UserDTO> getUserById(@Valid @PathVariable(name = "id") int id) {
 		UserDTO userDto = authService.getUserById(id);
 		return ResponseEntity.ok(userDto);
+	}
+
+	@GetMapping("/users/{slug}")
+	public ResponseEntity<UserDTO> getUserBySlug(@Valid @PathVariable(name = "slug") String slug) {
+		UserDTO userDto = authService.getUserBySlug(slug);
+		return ResponseEntity.ok(userDto);
+	}
+
+	@PreAuthorize("hasAnyRole('ADMIN')")
+	@DeleteMapping("/users/id/{id}")
+	public ResponseEntity<String> deleteUserById(@PathVariable(name = "id") int id) throws java.io.IOException {
+		authService.deleteUserById(id);
+		return ResponseEntity.ok("Delete Successfully");
+	}
+
+	@PreAuthorize("hasAnyRole('ADMIN')")
+	@DeleteMapping("/users/{slug}")
+	public ResponseEntity<String> deleteUserBySlug(@PathVariable(name = "slug") String slug)
+			throws java.io.IOException {
+		authService.deleteUserBySlug(slug);
+		return ResponseEntity.ok("Delete Successfully");
 	}
 
 	@PostMapping(value = { "/validateRegister", })
@@ -97,7 +118,7 @@ public class AuthController {
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@PatchMapping("/update/{slug}")
-	public ResponseEntity<UserDTO> updateUser(@Valid @RequestBody UserUpdateDTO userUpdateDto,
+	public ResponseEntity<UserDTO> updateUser(@Valid @ModelAttribute UserUpdateDTO userUpdateDto,
 			@PathVariable(name = "slug") String slug) {
 		UserDTO userDto = authService.updateUser(slug, userUpdateDto);
 		return new ResponseEntity<>(userDto, HttpStatus.CREATED);
@@ -109,15 +130,16 @@ public class AuthController {
 		return ResponseEntity.ok("Ok");
 	}
 
-	@PreAuthorize("hasRole('USER')")
-	@PostMapping("/avatar")
-	public ResponseEntity<String> updateAvatar(@Valid @ModelAttribute UpdateAvatarDTO avatarDto) {
-		authService.updateProfileImage(avatarDto);
+	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
+	@PatchMapping("/avatar/{slug}")
+	public ResponseEntity<String> updateAvatar(@Valid @ModelAttribute UpdateAvatarDTO avatarDto,
+			@PathVariable(name = "slug") String slug) {
+		authService.updateProfileImage(slug, avatarDto);
 		return ResponseEntity.ok("Ok");
 	}
 
 	@PostMapping("/refresh-token")
-	@PreAuthorize("hasRole('USER')")
+//	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	public ResponseEntity<JWTAuthResponse> refreshToken(HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 		JWTAuthResponse jwtAuthResponse = new JWTAuthResponse();

@@ -20,14 +20,14 @@ public class AreaCreateDTO {
 	private String slug;
 
 	@NotNull(message = "Image should not be null or empty")
-	private MultipartFile image;
+	private MultipartFile imageFile;
 
-	public AreaCreateDTO(int status, String name, String slug, MultipartFile image) {
+	public AreaCreateDTO(int status, String name, String slug, MultipartFile imageFile) {
 		super();
 		this.status = status;
 		this.name = name;
 		this.slug = slug;
-		this.image = image;
+		this.imageFile = imageFile;
 	}
 
 	public AreaCreateDTO() {
@@ -58,12 +58,14 @@ public class AreaCreateDTO {
 		this.slug = slug;
 	}
 
-	public MultipartFile getImage() {
-		return image;
+	public MultipartFile getImageFile() {
+		return imageFile;
 	}
 
-	public void setImage(MultipartFile image) {
-		this.image = image;
+	public void setImageFile(MultipartFile imageFile) {
+		this.imageFile = imageFile;
 	}
+
+
 
 }

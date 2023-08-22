@@ -2,7 +2,7 @@ package com.cafe.website.payload;
 
 import org.springframework.web.multipart.MultipartFile;
 
-public class AreaUpdateDTO  {
+public class AreaUpdateDTO {
 
 	private int status;
 
@@ -10,14 +10,14 @@ public class AreaUpdateDTO  {
 
 	private String slug;
 
-	private MultipartFile image;
+	private MultipartFile imageFile;
 
-	public AreaUpdateDTO(int status, String name, String slug, MultipartFile image) {
+	public AreaUpdateDTO(int status, String name, String slug, MultipartFile imageFile) {
 		super();
 		this.status = status;
 		this.name = name;
 		this.slug = slug;
-		this.image = image;
+		this.imageFile = imageFile;
 	}
 
 	public AreaUpdateDTO() {
@@ -48,12 +48,12 @@ public class AreaUpdateDTO  {
 		this.slug = slug;
 	}
 
-	public MultipartFile getImage() {
-		return image;
+	public MultipartFile getImageFile() {
+		return imageFile;
 	}
 
-	public void setImage(MultipartFile image) {
-		this.image = image;
+	public void setImageFile(MultipartFile imageFile) {
+		this.imageFile = imageFile;
 	}
 
 }

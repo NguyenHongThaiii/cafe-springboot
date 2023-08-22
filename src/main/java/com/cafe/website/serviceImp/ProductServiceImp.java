@@ -28,6 +28,8 @@ import com.cafe.website.entity.Purpose;
 import com.cafe.website.entity.Review;
 import com.cafe.website.exception.CafeAPIException;
 import com.cafe.website.exception.ResourceNotFoundException;
+import com.cafe.website.payload.BaseImage;
+import com.cafe.website.payload.ImageDTO;
 import com.cafe.website.payload.ProductCreateDTO;
 import com.cafe.website.payload.ProductDTO;
 import com.cafe.website.payload.ProductUpdateDTO;
@@ -118,8 +120,13 @@ public class ProductServiceImp implements ProductService {
 		else
 			productList = productRepository.findAll(pageable).getContent();
 
-		listProductDto = productList.stream().map(product -> MapperUtils.mapToDTO(product, ProductDTO.class))
-				.collect(Collectors.toList());
+		listProductDto = productList.stream().map(product -> {
+			ProductDTO pdto = MapperUtils.mapToDTO(product, ProductDTO.class);
+			List<Image> listEntityImages = imageRepository.findAllImageByProductId(product.getId());
+
+			pdto.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
+			return pdto;
+		}).collect(Collectors.toList());
 
 		return listProductDto;
 	}
@@ -127,10 +134,9 @@ public class ProductServiceImp implements ProductService {
 	@Override
 	public ProductDTO createProduct(ProductCreateDTO productCreateDto) throws IOException {
 
-		if (productRepository.existsBySlugAndIdNot(slugify.slugify(productCreateDto.getSlug()),
-				productCreateDto.getId()))
+		if (productRepository.existsBySlug(slugify.slugify(productCreateDto.getSlug())))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Slug is already exists!");
-		if (productRepository.existsByNameAndIdNot(productCreateDto.getName(), productCreateDto.getId()))
+		if (productRepository.existsByName(productCreateDto.getName()))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
 
 		List<Menu> listMenus = new ArrayList<>();
@@ -176,7 +182,13 @@ public class ProductServiceImp implements ProductService {
 		menuRepository.saveAll(listMenus);
 		imageRepository.saveAll(listImages);
 
-		return MapperUtils.mapToDTO(product, ProductDTO.class);
+		ProductDTO res = MapperUtils.mapToDTO(product, ProductDTO.class);
+
+		List<Image> listEntityImages = imageRepository.findAllImageByProductId(res.getId());
+
+		res.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
+
+		return res;
 	}
 
 	@Override
@@ -248,6 +260,9 @@ public class ProductServiceImp implements ProductService {
 		productMapper.updateProductFromDto(pdto, product);
 		productRepository.save(product);
 
+		List<Image> listEntityImages = imageRepository.findAllImageByProductId(id);
+		pdto.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
+
 		return pdto;
 	}
 
@@ -255,14 +270,16 @@ public class ProductServiceImp implements ProductService {
 	public ProductDTO getProductById(int id) {
 		Product product = productRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Product", "id", id + ""));
-
 		ProductDTO productDto = MapperUtils.mapToDTO(product, ProductDTO.class);
+		List<Image> listEntityImages = imageRepository.findAllImageByProductId(id);
+
+		productDto.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
 
 		return productDto;
 	}
 
 	@Override
-	public String deleteProduct(int id) throws IOException {
+	public void deleteProduct(int id) throws IOException {
 		ProductDTO productDto = this.getProductById(id);
 		String path_menu = "cafe-springboot/menu/";
 		String path_blogs = "cafe-springboot/blogs/";
@@ -279,7 +296,6 @@ public class ProductServiceImp implements ProductService {
 
 		productRepository.deleteById(id);
 
-		return "Delete successfully";
 	}
 
 	private <T> List<T> getListFromIds(List<Integer> ids, JpaRepository<T, Integer> repository, String entityName) {
@@ -291,5 +307,18 @@ public class ProductServiceImp implements ProductService {
 					resultList.add(entity);
 			});
 		return resultList;
+	}
+
+	@Override
+	public ProductDTO getProductBySlug(String slug) {
+		Product product = productRepository.findBySlugOrName(slug, null)
+				.orElseThrow(() -> new ResourceNotFoundException("Product", "slug", slug));
+
+		ProductDTO productDto = MapperUtils.mapToDTO(product, ProductDTO.class);
+		List<Image> listEntityImages = imageRepository.findAllImageByProductId(product.getId());
+
+		productDto.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
+
+		return productDto;
 	}
 }
