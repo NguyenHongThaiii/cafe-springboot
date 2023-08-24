@@ -18,5 +18,7 @@ public class PasswordGeneratorEncoder {
 //		String lastPart = parts[parts.length - 1];
 //		String idPart = lastPart.substring(0, lastPart.lastIndexOf("."));
 //		System.out.print(idPart);
+	
 	}
+	
 }
