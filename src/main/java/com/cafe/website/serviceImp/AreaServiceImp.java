@@ -34,9 +34,13 @@ import com.cafe.website.util.MapperUtils;
 import com.github.slugify.Slugify;
 
 import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @Service
 public class AreaServiceImp implements AreaService {
+	@PersistenceContext
+	private EntityManager entityManager;
 	private AreaMapper areaMapper;
 	CloudinaryService cloudinaryService;
 	private AreaRepository areaRepository;
@@ -83,10 +87,7 @@ public class AreaServiceImp implements AreaService {
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
-		if (name != null && !name.isEmpty())
-			listArea = areaRepository.findByNameContainingIgnoreCase(name, pageable).getContent();
-		else
-			listArea = areaRepository.findAll(pageable).getContent();
+		listArea = areaRepository.findWithFilters(name, pageable, entityManager);
 
 		listAreaDto = listArea.stream().map(area -> {
 			AreaDTO areaDto = MapperUtils.mapToDTO(area, AreaDTO.class);
@@ -163,7 +164,6 @@ public class AreaServiceImp implements AreaService {
 			image.setImage(url);
 			area.setImage(image);
 		}
-
 		areaDto.setId(id);
 		areaDto.setSlug(slugify.slugify(areaUpdateDto.getSlug()));
 

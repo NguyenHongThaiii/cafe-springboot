@@ -1,14 +1,18 @@
 package com.cafe.website.entity;
 
+import com.cafe.website.payload.HasImage;
+import com.cafe.website.payload.ImageDTO;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Table(name = "areas")
 @Entity
-public class Area extends BaseCategory {
-	@OneToOne(cascade = CascadeType.ALL, mappedBy = "area")
+public class Area extends BaseCategory implements HasImage {
+	@OneToOne(cascade = CascadeType.ALL, mappedBy = "area", fetch = FetchType.LAZY)
 	private Image image;
 
 	public Area() {

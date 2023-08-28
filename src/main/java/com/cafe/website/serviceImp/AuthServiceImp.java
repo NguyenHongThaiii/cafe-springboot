@@ -2,12 +2,17 @@ package com.cafe.website.serviceImp;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,13 +21,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.cafe.website.constant.SortField;
 import com.cafe.website.constant.TokenType;
+import com.cafe.website.entity.Area;
 import com.cafe.website.entity.Image;
+import com.cafe.website.entity.Product;
 import com.cafe.website.entity.Role;
 import com.cafe.website.entity.Token;
 import com.cafe.website.entity.User;
 import com.cafe.website.exception.CafeAPIException;
 import com.cafe.website.exception.ResourceNotFoundException;
+import com.cafe.website.payload.AreaDTO;
 import com.cafe.website.payload.ImageDTO;
 import com.cafe.website.payload.LoginDTO;
 import com.cafe.website.payload.RegisterDTO;
@@ -33,6 +42,7 @@ import com.cafe.website.payload.UserDTO;
 import com.cafe.website.payload.UserUpdateDTO;
 import com.cafe.website.payload.ValidateOtpDTO;
 import com.cafe.website.repository.ImageRepository;
+import com.cafe.website.repository.ProductRepository;
 import com.cafe.website.repository.RoleRepository;
 import com.cafe.website.repository.TokenRepository;
 import com.cafe.website.repository.UserRepository;
@@ -45,15 +55,20 @@ import com.cafe.website.util.MapperUtils;
 import com.cafe.website.util.UserMapper;
 import com.github.slugify.Slugify;
 
+import io.micrometer.common.util.StringUtils;
 import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public class AuthServiceImp implements AuthService {
-
+	@PersistenceContext
+	private EntityManager entityManager;
 	private AuthenticationManager authenticationManager;
 	private UserRepository userRepository;
+	private ProductRepository productRepository;
 	private RoleRepository roleRepository;
 	private PasswordEncoder passwordEncoder;
 	private JwtTokenProvider jwtTokenProvider;
@@ -72,7 +87,7 @@ public class AuthServiceImp implements AuthService {
 	public AuthServiceImp(AuthenticationManager authenticationManager, UserRepository userRepository,
 			RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider,
 			TokenRepository tokenRepository, EmailService emailService, OTPService otpService, UserMapper userMapper,
-			CloudinaryService cloudinaryService, ImageRepository imageRepository) {
+			CloudinaryService cloudinaryService, ImageRepository imageRepository, ProductRepository productRepository) {
 		this.authenticationManager = authenticationManager;
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
@@ -84,6 +99,7 @@ public class AuthServiceImp implements AuthService {
 		this.userMapper = userMapper;
 		this.otpService = otpService;
 		this.cloudinaryService = cloudinaryService;
+		this.productRepository = productRepository;
 	}
 
 	@Override
@@ -115,6 +131,7 @@ public class AuthServiceImp implements AuthService {
 		User user = MapperUtils.mapToEntity(registerDto, User.class);
 		user.setPassword(passwordEncode);
 		user.setSlug(slugify.slugify(user.getName()));
+		user.setStatus(0);
 
 		List<Role> roles = new ArrayList<>();
 		Role userRole = roleRepository.findByName("ROLE_USER").get();
@@ -214,14 +231,13 @@ public class AuthServiceImp implements AuthService {
 		userCurrent.setPassword(null);
 		UserDTO res = MapperUtils.mapToDTO(userCurrent, UserDTO.class);
 		Image image = imageRepository.findImageByUserId(res.getId()).orElse(null);
-		res.setListImages(ImageDTO.generateImageDTO(image));
+		res.setImageDto(ImageDTO.generateImageDTO(image));
 		return res;
 	}
 
 	@Override
 	public void forgotPassword(String email) throws MessagingException {
 		if (email.contains("@")) {
-
 			String otp = otpService.generateAndStoreOtp(email);
 			emailService.sendSimpleEmail(email, "resetPassword", otp);
 		}
@@ -260,7 +276,7 @@ public class AuthServiceImp implements AuthService {
 		UserDTO res = MapperUtils.mapToDTO(user, UserDTO.class);
 
 		Image image = imageRepository.findImageByUserId(res.getId()).orElse(null);
-		res.setListImages(ImageDTO.generateImageDTO(image));
+		res.setImageDto(ImageDTO.generateImageDTO(image));
 
 		return res;
 	}
@@ -303,7 +319,7 @@ public class AuthServiceImp implements AuthService {
 		UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
 
 		Image image = imageRepository.findImageByUserId(userDto.getId()).orElse(null);
-		userDto.setListImages(ImageDTO.generateImageDTO(image));
+		userDto.setImageDto(ImageDTO.generateImageDTO(image));
 
 		return userDto;
 	}
@@ -315,7 +331,7 @@ public class AuthServiceImp implements AuthService {
 		UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
 
 		Image image = imageRepository.findImageByUserId(userDto.getId()).orElse(null);
-		userDto.setListImages(ImageDTO.generateImageDTO(image));
+		userDto.setImageDto(ImageDTO.generateImageDTO(image));
 		return userDto;
 	}
 
@@ -340,6 +356,51 @@ public class AuthServiceImp implements AuthService {
 
 		userRepository.deleteUserBySlug(slug);
 
+	}
+
+	@Override
+	public List<UserDTO> getListUser(int limit, int page, String name, String email, String sortBy) {
+
+		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
+				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
+				SortField.CREATEDATDESC);
+		Pageable pageable = PageRequest.of(page - 1, limit);
+		List<String> sortByList = new ArrayList<String>();
+		List<UserDTO> listUserDto;
+		List<User> listUser;
+		List<Sort.Order> sortOrders = new ArrayList<>();
+
+		if (!StringUtils.isEmpty(sortBy))
+			sortByList = Arrays.asList(sortBy.split(","));
+
+		for (String sb : sortByList) {
+			boolean isDescending = sb.endsWith("Desc");
+
+			if (isDescending && !StringUtils.isEmpty(sortBy))
+				sb = sb.substring(0, sb.length() - 4).trim();
+
+			for (SortField sortField : validSortFields) {
+				if (sortField.toString().equals(sb)) {
+					sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
+					break;
+				}
+			}
+		}
+
+		if (!sortOrders.isEmpty())
+			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
+
+		listUser = userRepository.findWithFilters(name, email, pageable, entityManager);
+
+		listUserDto = listUser.stream().map(user -> {
+			UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
+			Image image = imageRepository.findImageByUserId(user.getId()).orElse(null);
+
+			userDto.setImageDto(ImageDTO.generateImageDTO(image));
+			return userDto;
+		}).collect(Collectors.toList());
+
+		return listUserDto;
 	}
 
 }

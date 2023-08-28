@@ -6,18 +6,15 @@ import java.util.List;
 import com.cafe.website.entity.Area;
 import com.cafe.website.entity.BaseEntity;
 import com.cafe.website.entity.Convenience;
-import com.cafe.website.entity.Image;
 import com.cafe.website.entity.Kind;
-import com.cafe.website.entity.Menu;
 import com.cafe.website.entity.ProductSchedule;
 import com.cafe.website.entity.Purpose;
-import com.cafe.website.entity.Review;
 
 public class ProductDTO extends BaseEntity {
-	private List<Purpose> purposes;
-	private List<Area> areas;
-	private List<Kind> kinds;
-	private List<Convenience> conveniences;
+	private List<Purpose> purposesDto;
+	private List<AreaDTO> areasDto;
+	private List<Kind> kindsDto;
+	private List<Convenience> conveniencesDto;
 	private List<ProductSchedule> schedules;
 	private String name;
 	private String slug;
@@ -33,15 +30,16 @@ public class ProductDTO extends BaseEntity {
 	private String location;
 	private List<ImageDTO> listImage = new ArrayList<>();
 
-	public ProductDTO(int id, int status, Long createdAt, Long updatedAt, List<Purpose> purposes, List<Area> areas,
-			List<Kind> kinds, List<Convenience> conveniences, List<ProductSchedule> schedules, String name, String slug,
-			String phone, int status2, int priceMin, int priceMax, int outstanding, String coordinates, String email,
-			String facebook, String description, String location, List<ImageDTO> listImage) {
+	public ProductDTO(int id, int status, Long createdAt, Long updatedAt, List<Purpose> purposesDto,
+			List<AreaDTO> areasDto, List<Kind> kindsDto, List<Convenience> conveniencesDto,
+			List<ProductSchedule> schedules, String name, String slug, String phone, int status2, int priceMin,
+			int priceMax, int outstanding, String coordinates, String email, String facebook, String description,
+			String location, List<ImageDTO> listImage) {
 		super(id, status, createdAt, updatedAt);
-		this.purposes = purposes;
-		this.areas = areas;
-		this.kinds = kinds;
-		this.conveniences = conveniences;
+		this.purposesDto = purposesDto;
+		this.areasDto = areasDto;
+		this.kindsDto = kindsDto;
+		this.conveniencesDto = conveniencesDto;
 		this.schedules = schedules;
 		this.name = name;
 		this.slug = slug;
@@ -62,44 +60,36 @@ public class ProductDTO extends BaseEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	public List<ImageDTO> getListImage() {
-		return listImage;
+	public List<Purpose> getPurposesDto() {
+		return purposesDto;
 	}
 
-	public void setListImage(List<ImageDTO> listImage) {
-		this.listImage = listImage;
+	public void setPurposesDto(List<Purpose> purposesDto) {
+		this.purposesDto = purposesDto;
 	}
 
-	public List<Purpose> getPurposes() {
-		return purposes;
+	public List<AreaDTO> getAreasDto() {
+		return areasDto;
 	}
 
-	public void setPurposes(List<Purpose> purposes) {
-		this.purposes = purposes;
+	public void setAreasDto(List<AreaDTO> areasDto) {
+		this.areasDto = areasDto;
 	}
 
-	public List<Area> getAreas() {
-		return areas;
+	public List<Kind> getKindsDto() {
+		return kindsDto;
 	}
 
-	public void setAreas(List<Area> areas) {
-		this.areas = areas;
+	public void setKindsDto(List<Kind> kindsDto) {
+		this.kindsDto = kindsDto;
 	}
 
-	public List<Kind> getKinds() {
-		return kinds;
+	public List<Convenience> getConveniencesDto() {
+		return conveniencesDto;
 	}
 
-	public void setKinds(List<Kind> kinds) {
-		this.kinds = kinds;
-	}
-
-	public List<Convenience> getConveniences() {
-		return conveniences;
-	}
-
-	public void setConveniences(List<Convenience> conveniences) {
-		this.conveniences = conveniences;
+	public void setConveniencesDto(List<Convenience> conveniencesDto) {
+		this.conveniencesDto = conveniencesDto;
 	}
 
 	public List<ProductSchedule> getSchedules() {
@@ -204,5 +194,13 @@ public class ProductDTO extends BaseEntity {
 
 	public void setLocation(String location) {
 		this.location = location;
+	}
+
+	public List<ImageDTO> getListImage() {
+		return listImage;
+	}
+
+	public void setListImage(List<ImageDTO> listImage) {
+		this.listImage = listImage;
 	}
 }

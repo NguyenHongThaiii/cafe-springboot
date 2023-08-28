@@ -19,4 +19,6 @@ public interface ProductService {
 	ProductDTO getProductBySlug(String slug);
 
 	void deleteProduct(int id) throws IOException;
+
+	Float getRateReviewByProduct(Integer productId);
 }

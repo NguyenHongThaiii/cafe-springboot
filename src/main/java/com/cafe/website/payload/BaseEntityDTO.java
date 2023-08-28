@@ -1,6 +1,5 @@
 package com.cafe.website.payload;
 
-
 public class BaseEntityDTO {
 	private int id;
 
@@ -17,9 +16,10 @@ public class BaseEntityDTO {
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 	}
-	
+
 	public BaseEntityDTO() {
 		super();
+		this.setStatus(1);
 	}
 
 	public int getId() {

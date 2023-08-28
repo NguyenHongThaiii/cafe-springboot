@@ -14,12 +14,11 @@ public class UserDTO {
 	private String address;
 	private String phone;
 	private String slug;
-	private List<Product> listProductSaved;
 	private List<Role> roles;
-	private ImageDTO listImages;
+	private ImageDTO imageDto;
 
 	public UserDTO(int id, int status, String email, String name, String address, String phone, String slug,
-			List<Product> listProductSaved, List<Role> roles, ImageDTO listImages) {
+			List<Role> roles, ImageDTO imageDto) {
 		super();
 		this.id = id;
 		this.status = status;
@@ -28,21 +27,20 @@ public class UserDTO {
 		this.address = address;
 		this.phone = phone;
 		this.slug = slug;
-		this.listProductSaved = listProductSaved;
 		this.roles = roles;
-		this.listImages = listImages;
+		this.imageDto = imageDto;
 	}
 
 	public UserDTO() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ImageDTO getListImages() {
-		return listImages;
+	public ImageDTO getImageDto() {
+		return imageDto;
 	}
 
-	public void setListImages(ImageDTO listImages) {
-		this.listImages = listImages;
+	public void setImageDto(ImageDTO imageDto) {
+		this.imageDto = imageDto;
 	}
 
 	public int getId() {
@@ -99,14 +97,6 @@ public class UserDTO {
 
 	public void setSlug(String slug) {
 		this.slug = slug;
-	}
-
-	public List<Product> getListProductSaved() {
-		return listProductSaved;
-	}
-
-	public void setListProductSaved(List<Product> listProductSaved) {
-		this.listProductSaved = listProductSaved;
 	}
 
 	public List<Role> getRoles() {

@@ -13,6 +13,8 @@ public interface ReviewService {
 	List<ReviewDTO> getListReviews(int limit, int page, String name, Integer productId, Integer userId,
 			Integer ratingId, String sortBy);
 
+	List<ReviewDTO> getListReviewsByProductId(int limit, int page, Integer productId, String sortBy);
+
 	ReviewDTO getReviewById(int id);
 
 	ReviewDTO createReview(ReviewCreateDTO areaCreateDto) throws IOException;
@@ -21,5 +23,6 @@ public interface ReviewService {
 
 	void deleteReview(int id) throws IOException;
 
-	Integer getRatingByReviewId(int id);
+	Float getRatingByReviewId(int id);
+
 }

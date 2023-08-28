@@ -6,12 +6,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.cafe.website.constant.SortField;
+import com.cafe.website.entity.Favorite;
 import com.cafe.website.entity.Image;
 import com.cafe.website.entity.Product;
 import com.cafe.website.entity.Rating;
@@ -22,6 +25,7 @@ import com.cafe.website.payload.ImageDTO;
 import com.cafe.website.payload.ReviewCreateDTO;
 import com.cafe.website.payload.ReviewDTO;
 import com.cafe.website.payload.ReviewUpdateDTO;
+import com.cafe.website.repository.FavoriterRepository;
 import com.cafe.website.repository.ImageRepository;
 import com.cafe.website.repository.ProductRepository;
 import com.cafe.website.repository.RatingRepository;
@@ -34,23 +38,29 @@ import com.cafe.website.util.ReviewMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @Service
 public class ReviewSerivceImp implements ReviewService {
+	@PersistenceContext
+	private EntityManager entityManager;
 	private ReviewRepository reviewRepository;
 	private CloudinaryService cloudinaryService;
 	private RatingRepository ratingRepository;
 	private ProductRepository productRepository;
 	private UserRepository userRepository;
 	private ImageRepository imageRepository;
+	private FavoriterRepository favoriteRepository;
 
 	private ReviewMapper reviewMapper;
 	ObjectMapper objMapper = new ObjectMapper();
 	String path_reviews = "cafe-springboot/reviews/";
+	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 
 	public ReviewSerivceImp(ReviewRepository reviewRepository, CloudinaryService cloudinaryService,
 			RatingRepository ratingRepository, ProductRepository productRepository, UserRepository userRepository,
-			ReviewMapper reviewMapper, ImageRepository imageRepository) {
+			ReviewMapper reviewMapper, ImageRepository imageRepository, FavoriterRepository favoriteRepository) {
 		super();
 		this.reviewRepository = reviewRepository;
 		this.cloudinaryService = cloudinaryService;
@@ -59,6 +69,7 @@ public class ReviewSerivceImp implements ReviewService {
 		this.userRepository = userRepository;
 		this.reviewMapper = reviewMapper;
 		this.imageRepository = imageRepository;
+		this.favoriteRepository = favoriteRepository;
 	}
 
 	@Override
@@ -94,34 +105,7 @@ public class ReviewSerivceImp implements ReviewService {
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
-		if (name != null && productId != null && userId != null && ratingId != null) {
-			listReview = reviewRepository.findByNameContainingIgnoreCaseAndProductIdAndUserIdAndRatingId(name,
-					productId, userId, ratingId, pageable).getContent();
-		} else if (name != null && productId != null && userId != null) {
-			listReview = reviewRepository
-					.findByNameContainingIgnoreCaseAndProductIdAndUserId(name, productId, userId, pageable)
-					.getContent();
-		} else if (name != null && productId != null && ratingId != null) {
-			listReview = reviewRepository
-					.findByNameContainingIgnoreCaseAndProductIdAndRatingId(name, productId, ratingId, pageable)
-					.getContent();
-		} else if (name != null && userId != null && ratingId != null) {
-			listReview = reviewRepository
-					.findByNameContainingIgnoreCaseAndUserIdAndRatingId(name, userId, ratingId, pageable).getContent();
-		} else if (name != null && productId != null) {
-			listReview = reviewRepository.findByNameContainingIgnoreCaseAndProductId(name, productId, pageable)
-					.getContent();
-		} else if (name != null && userId != null) {
-			listReview = reviewRepository.findByNameContainingIgnoreCaseAndUserId(name, userId, pageable).getContent();
-		} else if (name != null && ratingId != null) {
-			listReview = reviewRepository.findByNameContainingIgnoreCaseAndRatingId(name, ratingId, pageable)
-					.getContent();
-		} else if (name != null) {
-			listReview = reviewRepository.findByNameContainingIgnoreCase(name, pageable).getContent();
-		} else {
-			listReview = reviewRepository.findAll(pageable).getContent();
-		}
-
+		listReview = reviewRepository.findWithFilters(name, productId, userId, ratingId, pageable, entityManager);
 		listReviewDto = listReview.stream().map(review -> {
 			ReviewDTO reviewDto = MapperUtils.mapToDTO(review, ReviewDTO.class);
 			List<Image> listEntityImages = imageRepository.findAllImageByReviewId(review.getId());
@@ -159,7 +143,6 @@ public class ReviewSerivceImp implements ReviewService {
 		rating.setPrice(reviewCreateDto.getPrice());
 		rating.setService(reviewCreateDto.getService());
 		rating.setSpace(reviewCreateDto.getSpace());
-		rating.setStatus(1);
 
 		Product product = productRepository.findById(reviewCreateDto.getProductId())
 				.orElseThrow(() -> new ResourceNotFoundException("Product", "id", reviewCreateDto.getProductId()));
@@ -177,7 +160,6 @@ public class ReviewSerivceImp implements ReviewService {
 		review.setName(reviewCreateDto.getName());
 		review.setProduct(product);
 		review.setUser(user);
-		review.setStatus(1);
 		review.setRating(rating);
 
 		reviewRepository.save(review);
@@ -242,9 +224,27 @@ public class ReviewSerivceImp implements ReviewService {
 	}
 
 	@Override
-	public Integer getRatingByReviewId(int id) {
-		// TODO Auto-generated method stub
+	public Float getRatingByReviewId(int productId) {
+		List<Review> listReviews = reviewRepository.findReviewByProductId(productId);
+		if (listReviews == null)
+			return null;
+		float total = 0;
+		for (Review review : listReviews) {
+			total += (review.getRating().getFood() + review.getRating().getLocation() + review.getRating().getPrice()
+					+ review.getRating().getSpace() + review.getRating().getService()) / 5;
+		}
 		return null;
+//		return total / listReviews.size();
+	}
+
+	@Override
+	public List<ReviewDTO> getListReviewsByProductId(int limit, int page, Integer productId, String sortBy) {
+		Product product = productRepository.findById(productId).orElse(null);
+		if (product == null)
+			return null;
+		List<ReviewDTO> listReviewsDto = this.getListReviews(limit, page, null, productId, null, null, sortBy);
+		// TODO Auto-generated method stub
+		return listReviewsDto;
 	}
 
 }

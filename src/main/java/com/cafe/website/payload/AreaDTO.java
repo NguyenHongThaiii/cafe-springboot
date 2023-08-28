@@ -1,10 +1,8 @@
 package com.cafe.website.payload;
 
-public class AreaDTO {
-	private int id;
-	private Long createdAt;
-	private Long updatedAt;
-	private int status;
+import com.cafe.website.entity.BaseEntity;
+
+public class AreaDTO extends BaseEntity implements HasImageDTO {
 
 	private String name;
 
@@ -13,11 +11,7 @@ public class AreaDTO {
 	private ImageDTO imageDto;
 
 	public AreaDTO(int id, int status, Long createdAt, Long updatedAt, String name, String slug, ImageDTO imageDto) {
-		super();
-		this.id = id;
-		this.status = status;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
+		super(id, status, createdAt, updatedAt);
 		this.name = name;
 		this.slug = slug;
 		this.imageDto = imageDto;
@@ -25,38 +19,6 @@ public class AreaDTO {
 
 	public AreaDTO() {
 		super();
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public int getStatus() {
-		return status;
-	}
-
-	public void setStatus(int status) {
-		this.status = status;
-	}
-
-	public Long getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(Long createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public Long getUpdatedAt() {
-		return updatedAt;
-	}
-
-	public void setUpdatedAt(Long updatedAt) {
-		this.updatedAt = updatedAt;
 	}
 
 	public String getName() {

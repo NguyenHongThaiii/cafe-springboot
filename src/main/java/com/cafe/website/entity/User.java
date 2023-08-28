@@ -27,13 +27,9 @@ public class User extends BaseEntity {
 	private String name;
 	private String address;
 	private String phone;
-	
+
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
 	private Image avatar;
-
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "products_saved", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"))
-	private List<Product> listProductSaved;
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
@@ -46,8 +42,8 @@ public class User extends BaseEntity {
 	private List<Token> tokens;
 
 	public User(int id, int status, Long createdAt, Long updatedAt, String name, String address, Image avartar,
-			String phone, String email, String password, List<Product> listProductSaved, List<Role> roles,
-			List<Review> reviews, List<Token> tokens, String slug) {
+			String phone, String email, String password, List<Role> roles, List<Review> reviews, List<Token> tokens,
+			String slug) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;
 		this.address = address;
@@ -55,7 +51,6 @@ public class User extends BaseEntity {
 		this.phone = phone;
 		this.email = email;
 		this.password = password;
-		this.listProductSaved = listProductSaved;
 		this.roles = roles;
 		this.reviews = reviews;
 		this.tokens = tokens;
@@ -124,14 +119,6 @@ public class User extends BaseEntity {
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	public List<Product> getListProductSaved() {
-		return listProductSaved;
-	}
-
-	public void setListProductSaved(List<Product> listProductSaved) {
-		this.listProductSaved = listProductSaved;
 	}
 
 	public List<Role> getRoles() {

@@ -10,7 +10,7 @@ import jakarta.persistence.Table;
 @Table(name = "schedules")
 @Entity
 public class ProductSchedule extends BaseEntity {
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "product_id", nullable = false)
 	private Product product;
 

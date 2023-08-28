@@ -13,13 +13,12 @@ import jakarta.transaction.Transactional;
 
 public interface MenuRepository extends JpaRepository<Menu, Integer> {
 	Optional<Menu> findMenuByProductId(Integer productId);
+
 	@Transactional
 	@Modifying
 	@Query("DELETE FROM Menu i WHERE i.product.id = :productId")
 	void deleteAllMenuByProductId(Integer productId);
 
-	
-	
 	List<Menu> findAllMenuByProductId(Integer productId);
 
 }

@@ -34,7 +34,7 @@ public class AreaController {
 
 	@GetMapping("")
 	public ResponseEntity<List<AreaDTO>> getListAreas(@RequestParam(defaultValue = "5") int limit,
-			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false, defaultValue = "") String name,
+			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false) String name,
 			@RequestParam(required = false, defaultValue = "") String sortBy) {
 		List<AreaDTO> listAreasDto = areaService.getListAreas(limit, page, name, sortBy);
 		return new ResponseEntity<>(listAreasDto, HttpStatus.OK);

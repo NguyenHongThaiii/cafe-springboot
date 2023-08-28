@@ -15,7 +15,7 @@ public class ReviewUpdateDTO {
 	private String name;
 
 	private int status;
-
+	
 	public ReviewUpdateDTO(Rating rating, List<MultipartFile> listImageFiles, String name, int status) {
 		super();
 		this.rating = rating;
@@ -26,6 +26,8 @@ public class ReviewUpdateDTO {
 
 	public ReviewUpdateDTO() {
 		// TODO Auto-generated constructor stub
+//		this.status = 1;
+
 	}
 
 	public Rating getRating() {

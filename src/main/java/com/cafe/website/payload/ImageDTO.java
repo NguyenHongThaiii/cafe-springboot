@@ -3,10 +3,15 @@ package com.cafe.website.payload;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.cafe.website.entity.Image;
-import com.cafe.website.util.MapperUtils;
+import com.cafe.website.serviceImp.ProductServiceImp;
 
 public class ImageDTO extends BaseImage {
+	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
+
 	private ImageDTO(String url) {
 		super(url);
 	}
@@ -45,4 +50,5 @@ public class ImageDTO extends BaseImage {
 
 		return new ImageDTO.Builder().setUrl(image.getImage()).build();
 	}
+
 }

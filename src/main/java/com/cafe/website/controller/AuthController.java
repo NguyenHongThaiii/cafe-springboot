@@ -1,5 +1,7 @@
 package com.cafe.website.controller;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cafe.website.payload.ForgotPasswordDTO;
@@ -43,6 +46,15 @@ public class AuthController {
 
 	public AuthController(AuthService authService) {
 		this.authService = authService;
+	}
+
+	@GetMapping("/users")
+	public ResponseEntity<List<UserDTO>> getListUsers(@RequestParam(defaultValue = "5") int limit,
+			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false) String name,
+			@RequestParam(required = false) String email,
+			@RequestParam(required = false, defaultValue = "") String sortBy) {
+		List<UserDTO> listUserDto = authService.getListUser(limit, page, name, email, sortBy);
+		return ResponseEntity.ok(listUserDto);
 	}
 
 	@PostMapping(value = { "/login", "/signin" })

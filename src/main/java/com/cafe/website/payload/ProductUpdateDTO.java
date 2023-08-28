@@ -94,6 +94,8 @@ public class ProductUpdateDTO {
 
 	public ProductUpdateDTO() {
 		// TODO Auto-generated constructor stub
+		this.status = 1;
+
 	}
 
 	public int getId() {

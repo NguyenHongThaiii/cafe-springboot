@@ -1,35 +1,53 @@
 package com.cafe.website.repository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.cafe.website.entity.Review;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
-	Slice<Review> findByNameContainingIgnoreCaseAndProductIdAndUserIdAndRatingId(String name, Integer productId,
-			Integer userId, Integer ratingId, Pageable pageable);
+	List<Review> findReviewByProductId(Integer productId);
 
-	Slice<Review> findByNameContainingIgnoreCaseAndProductIdAndUserId(String name, Integer productId, Integer userId,
-			Pageable pageable);
+	@Query
+	default List<Review> findWithFilters(String name, Integer productId, Integer userId, Integer ratingId,
+			Pageable pageable, EntityManager entityManager) {
 
-	Slice<Review> findByNameContainingIgnoreCaseAndProductIdAndRatingId(String name, Integer productId,
-			Integer ratingId, Pageable pageable);
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Review> cq = cb.createQuery(Review.class);
 
-	Slice<Review> findByNameContainingIgnoreCaseAndUserIdAndRatingId(String name, Integer userId, Integer ratingId,
-			Pageable pageable);
+		Root<Review> review = cq.from(Review.class);
+		List<Predicate> predicates = new ArrayList<>();
 
-	Slice<Review> findByNameContainingIgnoreCaseAndProductId(String name, Integer productId, Pageable pageable);
+		if (name != null) {
+			predicates.add(cb.like(cb.lower(review.get("name")), "%" + name.toLowerCase() + "%"));
+		}
+		if (productId != null) {
+			predicates.add(cb.equal(review.get("product").get("id"), productId));
+		}
+		if (userId != null) {
+			predicates.add(cb.equal(review.get("user").get("id"), userId));
+		}
+		if (ratingId != null) {
+			predicates.add(cb.equal(review.get("rating").get("id"), ratingId));
+		}
 
-	Slice<Review> findByNameContainingIgnoreCaseAndUserId(String name, Integer userId, Pageable pageable);
+		cq.where(predicates.toArray(new Predicate[0]));
 
-	Slice<Review> findByNameContainingIgnoreCaseAndRatingId(String name, Integer ratingId, Pageable pageable);
-
-	Slice<Review> findByNameContainingIgnoreCase(String name, Pageable pageable);
-
-	Optional<Review> findByName(String name);
-
+		return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
+				.setMaxResults(pageable.getPageSize()).getResultList();
+	}
 }

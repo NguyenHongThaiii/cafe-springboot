@@ -35,6 +35,12 @@ public class UserUpdateDTO {
 		this.slug = slug;
 	}
 
+	public UserUpdateDTO() {
+		// TODO Auto-generated constructor stub
+		this.status = 1;
+
+	}
+
 	public String getSlug() {
 		return slug;
 	}

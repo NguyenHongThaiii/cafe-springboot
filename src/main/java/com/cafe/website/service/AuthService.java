@@ -1,6 +1,9 @@
 package com.cafe.website.service;
 
 import java.io.IOException;
+import java.util.List;
+
+import org.springframework.data.domain.Pageable;
 
 import com.cafe.website.payload.LoginDTO;
 import com.cafe.website.payload.RegisterDTO;
@@ -12,10 +15,13 @@ import com.cafe.website.payload.UserUpdateDTO;
 import com.cafe.website.payload.ValidateOtpDTO;
 
 import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public interface AuthService {
+	List<UserDTO> getListUser(int limit, int page, String name, String email, String sortBy);
+
 	String login(LoginDTO loginDto);
 
 	String refreshToken(HttpServletRequest request, HttpServletResponse response);
@@ -45,4 +51,6 @@ public interface AuthService {
 	void deleteUserBySlug(String slug) throws IOException;
 
 	UserDTO getUserBySlug(String slug);
+
+
 }

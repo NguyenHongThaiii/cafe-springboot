@@ -56,12 +56,15 @@ INSERT INTO products_areas(product_id,area_id) values (3,3);
 -- INSERT DATA TO RATING TABLE
 INSERT INTO ratings (created_at,updated_at,status,food,location,service,price,space) values (now(),now(),1,1,1,1,1,1);
 INSERT INTO ratings (created_at,updated_at,status,food,location,service,price,space) values (now(),now(),2,2,2,2,2,2);
+INSERT INTO ratings (created_at,updated_at,status,food,location,service,price,space) values (now(),now(),1,2,1,3,2,4);
 
 -- INSERT DATA TO REVIEWS TABLE
 INSERT INTO reviews ( `created_at`, `status`, `updated_at`,  `name`, `product_id`, `rating_id`, `user_id`) 
 VALUES ( NOW(), 1, NOW(),'ádasdsad', 1, 1, 1);
 INSERT INTO reviews ( `created_at`, `status`, `updated_at`, `name`, `product_id`, `rating_id`, `user_id`) 
 VALUES ( NOW(), 1, NOW(),'qưeqwe', 2, 2, 2);
+INSERT INTO reviews ( `created_at`, `status`, `updated_at`,  `name`, `product_id`, `rating_id`, `user_id`) 
+VALUES ( NOW(), 1, NOW(),'123123213', 1, 3, 1);
 -- INSERT DATA TO IMAGES TABLE
 INSERT INTO IMAGES(image, product_id) values('https://res.cloudinary.com/th-i-nguy-n/image/upload/v1690976979/cafe-springboot/menu/Seven-Coffee-menu-2_m4jxbs.jpg',1);
 INSERT INTO IMAGES(image, product_id) values('https://res.cloudinary.com/th-i-nguy-n/image/upload/v1690976978/cafe-springboot/menu/Seven-Coffee-menu-1_ujnjhn.jpg',2);

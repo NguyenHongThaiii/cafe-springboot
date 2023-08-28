@@ -28,6 +28,7 @@ import com.cafe.website.entity.Purpose;
 import com.cafe.website.entity.Review;
 import com.cafe.website.exception.CafeAPIException;
 import com.cafe.website.exception.ResourceNotFoundException;
+import com.cafe.website.payload.AreaDTO;
 import com.cafe.website.payload.BaseImage;
 import com.cafe.website.payload.ImageDTO;
 import com.cafe.website.payload.ProductCreateDTO;
@@ -43,15 +44,20 @@ import com.cafe.website.repository.PurposeRepository;
 import com.cafe.website.repository.ReviewRepository;
 import com.cafe.website.service.CloudinaryService;
 import com.cafe.website.service.ProductService;
+import com.cafe.website.util.AreaMapper;
 import com.cafe.website.util.MapperUtils;
 import com.cafe.website.util.ProductMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.slugify.Slugify;
 
 import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @Service
 public class ProductServiceImp implements ProductService {
+	@PersistenceContext
+	private EntityManager entityManager;
 	private ProductRepository productRepository;
 	private AreaRepository areaRepository;
 	private KindRepository kindRepository;
@@ -62,25 +68,27 @@ public class ProductServiceImp implements ProductService {
 	private MenuRepository menuRepository;
 	private ProductMapper productMapper;
 	private CloudinaryService cloudinaryService;
+	private AreaMapper areaMapper;
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 	ObjectMapper objMapper = new ObjectMapper();
 	private Slugify slugify = Slugify.builder().build();
 
 	public ProductServiceImp(ProductRepository productRepository, AreaRepository areaRepository,
 			KindRepository kindRepository, PurposeRepository purposeRepository, ConvenienceRepository conveRepository,
-			ProductMapper productMapper, CloudinaryService cloudinaryService, ReviewRepository reviewRepository,
-			MenuRepository menuRepository, ImageRepository imageRepository) {
+			ReviewRepository reviewRepository, ImageRepository imageRepository, MenuRepository menuRepository,
+			ProductMapper productMapper, CloudinaryService cloudinaryService, AreaMapper areaMapper) {
 		super();
 		this.productRepository = productRepository;
 		this.areaRepository = areaRepository;
 		this.kindRepository = kindRepository;
 		this.purposeRepository = purposeRepository;
 		this.conveRepository = conveRepository;
-		this.productMapper = productMapper;
-		this.cloudinaryService = cloudinaryService;
 		this.reviewRepository = reviewRepository;
 		this.imageRepository = imageRepository;
 		this.menuRepository = menuRepository;
+		this.productMapper = productMapper;
+		this.cloudinaryService = cloudinaryService;
+		this.areaMapper = areaMapper;
 	}
 
 	@Override
@@ -115,15 +123,13 @@ public class ProductServiceImp implements ProductService {
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
-		if (name != null && !name.isEmpty())
-			productList = productRepository.findByNameContainingIgnoreCase(name, pageable).getContent();
-		else
-			productList = productRepository.findAll(pageable).getContent();
-
+		productList = productRepository.findWithFilters(name, pageable, entityManager);
 		listProductDto = productList.stream().map(product -> {
 			ProductDTO pdto = MapperUtils.mapToDTO(product, ProductDTO.class);
 			List<Image> listEntityImages = imageRepository.findAllImageByProductId(product.getId());
-
+			List<AreaDTO> listArea = MapperUtils.loppMapToDTO(product.getAreas(), AreaDTO.class);
+			// more
+			pdto.setAreasDto(listArea);
 			pdto.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
 			return pdto;
 		}).collect(Collectors.toList());
@@ -146,16 +152,15 @@ public class ProductServiceImp implements ProductService {
 		ProductDTO pdto = MapperUtils.mapToEntity(productCreateDto, ProductDTO.class);
 		Product product = new Product();
 
-		List<Area> listAreas = this.getListFromIds(productCreateDto.getArea_id(), areaRepository, "area");
-		List<Purpose> listPurposes = this.getListFromIds(productCreateDto.getPurpose_id(), purposeRepository,
-				"purpose");
-		List<Kind> listKinds = this.getListFromIds(productCreateDto.getArea_id(), kindRepository, "kind");
-		List<Convenience> listCon = this.getListFromIds(productCreateDto.getArea_id(), conveRepository, "convenience");
+		List<Area> listAreas = this.getListFromIds(productCreateDto.getArea_id(), areaRepository, "area",
+				AreaDTO.class);
+		List<AreaDTO> listAreaDto = MapperUtils.loppMapToDTO(listAreas, AreaDTO.class);
 
-		pdto.setAreas(listAreas);
-		pdto.setKinds(listKinds);
-		pdto.setPurposes(listPurposes);
-		pdto.setConveniences(listCon);
+//		List<Purpose> listPurposes = this.getListFromIds(productCreateDto.getPurpose_id(), purposeRepository,
+//				"purpose");
+//		List<Kind> listKinds = this.getListFromIds(productCreateDto.getArea_id(), kindRepository, "kind");
+//		List<Convenience> listCon = this.getListFromIds(productCreateDto.getArea_id(), conveRepository, "convenience");
+
 		pdto.setSlug(slugify.slugify(productCreateDto.getSlug()));
 		productMapper.updateProductFromDto(pdto, product);
 
@@ -178,6 +183,11 @@ public class ProductServiceImp implements ProductService {
 			listMenus.add(menuItem);
 		});
 
+		if (listAreas.size() > 0)
+			product.setAreas(listAreas);
+//		product.setConveniences(null);
+//		product.setKinds(null);
+//		product.setPurposes(null);
 		productRepository.save(product);
 		menuRepository.saveAll(listMenus);
 		imageRepository.saveAll(listImages);
@@ -187,7 +197,7 @@ public class ProductServiceImp implements ProductService {
 		List<Image> listEntityImages = imageRepository.findAllImageByProductId(res.getId());
 
 		res.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
-
+		res.setAreasDto(listAreaDto);
 		return res;
 	}
 
@@ -205,16 +215,15 @@ public class ProductServiceImp implements ProductService {
 		productUpdateDto.setId(id);
 		productMapper.updateProductDtoFromProductUpdateDto(pdto, productUpdateDto);
 
-		List<Area> listAreas = this.getListFromIds(productUpdateDto.getArea_id(), areaRepository, "area");
-		List<Purpose> listPurposes = this.getListFromIds(productUpdateDto.getPurpose_id(), purposeRepository,
-				"purpose");
-		List<Kind> listKinds = this.getListFromIds(productUpdateDto.getArea_id(), kindRepository, "kind");
-		List<Convenience> listCon = this.getListFromIds(productUpdateDto.getArea_id(), conveRepository, "convenience");
+		List<Area> listAreas = this.getListFromIds(productUpdateDto.getArea_id(), areaRepository, "area",
+				AreaDTO.class);
+		List<AreaDTO> listAreaDto = MapperUtils.loppMapToDTO(listAreas, AreaDTO.class);
 
-		pdto.setAreas(listAreas);
-		pdto.setKinds(listKinds);
-		pdto.setPurposes(listPurposes);
-		pdto.setConveniences(listCon);
+//		List<Purpose> listPurposes = this.getListFromIds(productUpdateDto.getPurpose_id(), purposeRepository,
+//				"purpose");
+//		List<Kind> listKinds = this.getListFromIds(productUpdateDto.getArea_id(), kindRepository, "kind");
+//		List<Convenience> listCon = this.getListFromIds(productUpdateDto.getArea_id(), conveRepository, "convenience");
+
 		pdto.setSlug(slugify.slugify(productUpdateDto.getSlug()));
 
 		if (productUpdateDto.getListMenuFile() != null) {
@@ -258,11 +267,16 @@ public class ProductServiceImp implements ProductService {
 		}
 
 		productMapper.updateProductFromDto(pdto, product);
+		if (listAreas.size() > 0)
+			product.setAreas(listAreas);
+//		product.setConveniences(null);
+//		product.setKinds(null);
+//		product.setPurposes(null);
 		productRepository.save(product);
 
 		List<Image> listEntityImages = imageRepository.findAllImageByProductId(id);
 		pdto.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
-
+		pdto.setAreasDto(listAreaDto);
 		return pdto;
 	}
 
@@ -272,7 +286,9 @@ public class ProductServiceImp implements ProductService {
 				.orElseThrow(() -> new ResourceNotFoundException("Product", "id", id + ""));
 		ProductDTO productDto = MapperUtils.mapToDTO(product, ProductDTO.class);
 		List<Image> listEntityImages = imageRepository.findAllImageByProductId(id);
-
+		List<AreaDTO> listArea = MapperUtils.loppMapToDTO(product.getAreas(), AreaDTO.class);
+		// more
+		productDto.setAreasDto(listArea);
 		productDto.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
 
 		return productDto;
@@ -298,9 +314,11 @@ public class ProductServiceImp implements ProductService {
 
 	}
 
-	private <T> List<T> getListFromIds(List<Integer> ids, JpaRepository<T, Integer> repository, String entityName) {
+	private <T, U> List<T> getListFromIds(List<Integer> ids, JpaRepository<T, Integer> repository, String entityName,
+			Class<U> entityClass) {
 		List<T> resultList = new ArrayList<>();
 		if (ids != null)
+
 			ids.forEach(id -> {
 				T entity = repository.findById(id).orElse(null);
 				if (entity != null)
@@ -320,5 +338,21 @@ public class ProductServiceImp implements ProductService {
 		productDto.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
 
 		return productDto;
+	}
+
+	@Override
+	public Float getRateReviewByProduct(Integer productId) {
+		List<Review> listReviews = reviewRepository.findReviewByProductId(productId);
+		logger.info(listReviews.size() + "");
+
+		if (listReviews == null || listReviews.size() < 1)
+			return 0f;
+		float total = 0;
+		for (Review review : listReviews) {
+			total += (review.getRating().getFood() + review.getRating().getLocation() + review.getRating().getPrice()
+					+ review.getRating().getSpace() + review.getRating().getService()) / 5;
+		}
+
+		return total / listReviews.size();
 	}
 }

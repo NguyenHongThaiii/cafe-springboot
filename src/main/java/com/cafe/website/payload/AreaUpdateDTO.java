@@ -22,6 +22,8 @@ public class AreaUpdateDTO {
 
 	public AreaUpdateDTO() {
 		super();
+		this.status = 1;
+
 	}
 
 	public int getStatus() {

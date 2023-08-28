@@ -12,12 +12,23 @@ public class ReviewDTO extends BaseEntity {
 	private String name;
 	private List<ImageDTO> listImages;
 
+	private int favorite;
+
 	public ReviewDTO(int id, int status, Long createdAt, Long updatedAt, Rating rating, String name,
-			List<ImageDTO> listImages) {
+			List<ImageDTO> listImages, int favorite) {
 		super(id, status, createdAt, updatedAt);
 		this.rating = rating;
 		this.name = name;
 		this.listImages = listImages;
+		this.favorite = favorite;
+	}
+
+	public int getFavorite() {
+		return favorite;
+	}
+
+	public void setFavorite(int favorite) {
+		this.favorite = favorite;
 	}
 
 	public ReviewDTO() {

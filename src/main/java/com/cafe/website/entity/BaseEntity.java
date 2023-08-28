@@ -1,6 +1,5 @@
 package com.cafe.website.entity;
 
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -36,6 +35,7 @@ public class BaseEntity {
 
 	public BaseEntity() {
 		super();
+		this.status = 1;
 	}
 
 	public int getId() {

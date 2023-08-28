@@ -1,0 +1,47 @@
+package com.cafe.website.repository;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import com.cafe.website.entity.Comment;
+import com.cafe.website.entity.Review;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+
+public interface CommentRepository extends JpaRepository<Comment, Integer> {
+
+	@Query
+	default List<Comment> findWithFilters(String name, Integer reviewId, Integer userId, Pageable pageable,
+			EntityManager entityManager) {
+
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Comment> cq = cb.createQuery(Comment.class);
+
+		Root<Comment> comment = cq.from(Comment.class);
+		List<Predicate> predicates = new ArrayList<>();
+
+		if (name != null) {
+			predicates.add(cb.like(cb.lower(comment.get("name")), "%" + name.toLowerCase() + "%"));
+		}
+		if (reviewId != null) {
+			predicates.add(cb.equal(comment.get("review").get("id"), reviewId));
+		}
+		if (userId != null) {
+			predicates.add(cb.equal(comment.get("user").get("id"), userId));
+		}
+
+		cq.where(predicates.toArray(new Predicate[0]));
+
+		return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
+				.setMaxResults(pageable.getPageSize()).getResultList();
+	}
+}

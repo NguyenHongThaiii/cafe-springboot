@@ -39,7 +39,7 @@ public class ProductController {
 
 	@GetMapping("")
 	public ResponseEntity<List<ProductDTO>> getListProducts(@RequestParam(defaultValue = "5") int limit,
-			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false, defaultValue = "") String name,
+			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false) String name,
 			@RequestParam(required = false, defaultValue = "") String sortBy) {
 		List<ProductDTO> listproducts = productService.getListProducts(limit, page, name, sortBy);
 		return new ResponseEntity<>(listproducts, HttpStatus.OK);
@@ -82,6 +82,12 @@ public class ProductController {
 	public ResponseEntity<String> deleteProduct(@PathVariable(name = "id") int id) throws IOException {
 		productService.deleteProduct(id);
 		return new ResponseEntity<String>("Delete successfully", HttpStatus.OK);
+	}
+
+	@GetMapping("/{id}/ratings")
+	public ResponseEntity<Float> getRatingByReviewId(@PathVariable(name = "id") int id) throws IOException {
+		Float number = productService.getRateReviewByProduct(id);
+		return new ResponseEntity<>(number, HttpStatus.OK);
 	}
 
 }

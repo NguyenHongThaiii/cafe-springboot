@@ -20,4 +20,9 @@ public class BaseImage {
 		this.url = url;
 	}
 
+	@Override
+	public String toString() {
+		return "BaseImage [url=" + url + "]";
+	}
+
 }

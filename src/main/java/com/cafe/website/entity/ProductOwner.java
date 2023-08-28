@@ -4,22 +4,26 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "owners")
+@Table(name = "owners", uniqueConstraints = @UniqueConstraint(columnNames = { "product_id", "user_id" }))
 public class ProductOwner extends BaseEntity {
-	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "product_id", nullable = false)
 	private Product product;
 
-	private String name;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
 
-	public ProductOwner(int id, int status, Long createdAt, Long updatedAt, Product product, String name) {
+	public ProductOwner(int id, int status, Long createdAt, Long updatedAt, Product product, User user) {
 		super(id, status, createdAt, updatedAt);
 		this.product = product;
-		this.name = name;
+		this.user = user;
 	}
 
 	public ProductOwner() {
@@ -34,12 +38,12 @@ public class ProductOwner extends BaseEntity {
 		this.product = product;
 	}
 
-	public String getName() {
-		return name;
+	public User getUser() {
+		return user;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 }

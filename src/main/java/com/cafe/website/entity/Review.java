@@ -5,6 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -37,12 +38,12 @@ public class Review extends BaseEntity {
 	private List<Image> listImages;
 	private String name;
 
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "review_favorites", joinColumns = @JoinColumn(name = "review_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
-	private List<User> favoritedBy;
+	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@Column(unique = true)
+	private List<Favorite> favorites;
 
 	public Review(int id, int status, Long createdAt, Long updatedAt, User user, Product product, Rating rating,
-			List<Comment> comments, List<Image> listImages, String name, List<User> favoritedBy) {
+			List<Comment> comments, List<Image> listImages, String name, List<Favorite> favorites) {
 		super(id, status, createdAt, updatedAt);
 		this.user = user;
 		this.product = product;
@@ -50,7 +51,7 @@ public class Review extends BaseEntity {
 		this.comments = comments;
 		this.listImages = listImages;
 		this.name = name;
-		this.favoritedBy = favoritedBy;
+		this.favorites = favorites;
 	}
 
 	public Review() {
@@ -97,12 +98,12 @@ public class Review extends BaseEntity {
 		this.listImages = listImages;
 	}
 
-	public List<User> getFavoritedBy() {
-		return favoritedBy;
+	public List<Favorite> getFavorites() {
+		return favorites;
 	}
 
-	public void setFavoritedBy(List<User> favoritedBy) {
-		this.favoritedBy = favoritedBy;
+	public void setFavorites(List<Favorite> favorites) {
+		this.favorites = favorites;
 	}
 
 	public String getName() {
@@ -113,18 +114,10 @@ public class Review extends BaseEntity {
 		this.name = name;
 	}
 
-	public List<User> getFavorite() {
-		return favoritedBy;
-	}
-
-	public void setFavorite(List<User> favoritedBy) {
-		this.favoritedBy = favoritedBy;
-	}
-
 	@Override
 	public String toString() {
 		return "Review [user=" + user + ", product=" + product + ", rating=" + rating + ", comments=" + comments
-				+ ", listImages=" + listImages + ", name=" + name + ", favoritedBy=" + favoritedBy + "]";
+				+ ", listImages=" + listImages + ", name=" + name + ", favorites=" + favorites + "]";
 	}
 
 }
