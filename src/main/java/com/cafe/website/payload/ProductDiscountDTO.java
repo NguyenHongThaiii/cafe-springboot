@@ -1,13 +1,14 @@
 package com.cafe.website.payload;
 
-public class ProductDiscountDTO {
+public class ProductDiscountDTO extends BaseEntityDTO {
 	private ProductDTO productDto;
 	private Integer percent;
 	private String name;
 	private Long expiryDate;
 
-	public ProductDiscountDTO(ProductDTO productDto, Integer percent, String name, Long expiryDate) {
-		super();
+	public ProductDiscountDTO(int id, Integer status, Long createdAt, Long updatedAt, ProductDTO productDto,
+			Integer percent, String name, Long expiryDate) {
+		super(id, status, createdAt, updatedAt);
 		this.productDto = productDto;
 		this.percent = percent;
 		this.name = name;

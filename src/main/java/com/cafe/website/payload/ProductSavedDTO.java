@@ -2,7 +2,7 @@ package com.cafe.website.payload;
 
 import java.util.List;
 
-public class ProductSavedDTO {
+public class ProductSavedDTO extends BaseEntityDTO {
 	private UserDTO userDto;
 	private List<ProductDTO> listProductDto;
 

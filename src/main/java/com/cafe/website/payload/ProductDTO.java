@@ -10,7 +10,7 @@ import com.cafe.website.entity.Kind;
 import com.cafe.website.entity.ProductSchedule;
 import com.cafe.website.entity.Purpose;
 
-public class ProductDTO extends BaseEntity {
+public class ProductDTO extends BaseEntityDTO {
 	private List<Purpose> purposesDto;
 	private List<AreaDTO> areasDto;
 	private List<Kind> kindsDto;
@@ -124,11 +124,11 @@ public class ProductDTO extends BaseEntity {
 		this.phone = phone;
 	}
 
-	public int getStatus() {
+	public Integer getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 

@@ -3,13 +3,13 @@ package com.cafe.website.payload;
 public class BaseEntityDTO {
 	private int id;
 
-	private int status;
+	private Integer status;
 
 	private Long createdAt;
 
 	private Long updatedAt;
 
-	public BaseEntityDTO(int id, int status, Long createdAt, Long updatedAt) {
+	public BaseEntityDTO(int id, Integer status, Long createdAt, Long updatedAt) {
 		super();
 		this.id = id;
 		this.status = status;
@@ -30,11 +30,11 @@ public class BaseEntityDTO {
 		this.id = id;
 	}
 
-	public int getStatus() {
+	public Integer getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 

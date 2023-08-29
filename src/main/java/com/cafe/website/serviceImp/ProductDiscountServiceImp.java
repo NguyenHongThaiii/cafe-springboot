@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -24,10 +26,12 @@ import com.cafe.website.payload.ImageDTO;
 import com.cafe.website.payload.ProductDTO;
 import com.cafe.website.payload.ProductDiscountCreateDTO;
 import com.cafe.website.payload.ProductDiscountDTO;
+import com.cafe.website.payload.ProductDiscountUpdateDTO;
 import com.cafe.website.repository.ProductDiscountRepository;
 import com.cafe.website.repository.ProductRepository;
 import com.cafe.website.service.ProductDiscountService;
 import com.cafe.website.util.MapperUtils;
+import com.cafe.website.util.ProductDiscountMapper;
 
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
@@ -39,25 +43,31 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 	private EntityManager entityManager;
 	private ProductDiscountRepository productDiscountRepository;
 	private ProductRepository productRepository;
+	private ProductDiscountMapper productDiscountMapper;
+	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 
-	public ProductDiscountServiceImp(ProductDiscountRepository productDiscountRepository,
-			ProductRepository productRepository) {
+	public ProductDiscountServiceImp(EntityManager entityManager, ProductDiscountRepository productDiscountRepository,
+			ProductRepository productRepository, ProductDiscountMapper productDiscountMapper) {
 		super();
+		this.entityManager = entityManager;
 		this.productDiscountRepository = productDiscountRepository;
 		this.productRepository = productRepository;
+		this.productDiscountMapper = productDiscountMapper;
 	}
 
 	@Override
 	public ProductDiscountDTO createProductDiscount(ProductDiscountCreateDTO productDiscountCreateDto) {
 		Product product = productRepository.findById(productDiscountCreateDto.getProductId()).orElseThrow(
 				() -> new ResourceNotFoundException("Product", "id", productDiscountCreateDto.getProductId()));
-		ProductDiscount productDiscountEntity = productDiscountRepository.findByProductId(product.getId())
-				.orElseThrow(() -> new ResourceNotFoundException("ProductDiscount", "id_product", product.getId()));
-		if (new Date().getTime() > productDiscountEntity.getExpiryDate())
-			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Product going on other events");
 
+		ProductDiscount productDiscountEntity = productDiscountRepository.findByProductId(product.getId()).orElse(null);
+		if (productDiscountEntity != null && new Date().getTime() < productDiscountEntity.getExpiryDate())
+			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Product going on other events");
+		if (productDiscountEntity != null) {
+			productDiscountRepository.deleteById(productDiscountEntity.getId());
+		}
 		ProductDiscount productDiscount = new ProductDiscount();
-		productDiscount.setName(productDiscount.getName());
+		productDiscount.setName(productDiscountCreateDto.getName());
 		productDiscount.setProduct(product);
 		productDiscount.setPercent(productDiscountCreateDto.getPercent());
 		productDiscount.setExpiryDate(new Date().getTime() + productDiscountCreateDto.getExpiryDate());
@@ -122,11 +132,31 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 
 		productDiscountList = productDiscountRepository.findWithFilters(name, expriteDays, percent, pageable,
 				entityManager);
-		listProductDiscountDto = productDiscountList.stream()
-				.map(product -> MapperUtils.mapToDTO(product, ProductDiscountDTO.class)).collect(Collectors.toList());
+		listProductDiscountDto = productDiscountList.stream().map(productDiscount -> {
+			ProductDiscountDTO temp = MapperUtils.mapToDTO(productDiscount, ProductDiscountDTO.class);
+			temp.setProductDto(MapperUtils.mapToDTO(productDiscount.getProduct(), ProductDTO.class));
+			return temp;
+		}).collect(Collectors.toList());
 
 		return listProductDiscountDto;
 
+	}
+
+	@Override
+	public ProductDiscountDTO updateProductDiscount(Integer productId,
+			ProductDiscountUpdateDTO productDiscountUpdateDto) {
+		ProductDiscount productDiscount = productDiscountRepository.findByProductId(productId)
+				.orElseThrow(() -> new ResourceNotFoundException("ProductDiscount", "id_product", productId));
+		ProductDiscountDTO productDiscountDto = MapperUtils.mapToDTO(productDiscountUpdateDto,
+				ProductDiscountDTO.class);
+
+		productDiscountDto.setId(productDiscount.getId());
+		productDiscountMapper.updateProductDiscountFromDto(productDiscountDto, productDiscount);
+		productDiscountRepository.save(productDiscount);
+
+		ProductDiscountDTO res = MapperUtils.mapToDTO(productDiscount, ProductDiscountDTO.class);
+		res.setProductDto(MapperUtils.mapToDTO(productDiscount.getProduct(), ProductDTO.class));
+		return res;
 	}
 
 }

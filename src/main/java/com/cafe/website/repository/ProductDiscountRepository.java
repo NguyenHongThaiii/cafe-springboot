@@ -39,11 +39,11 @@ public interface ProductDiscountRepository extends JpaRepository<ProductDiscount
 		if (percent != null) {
 			predicates.add(cb.equal(productDiscount.get("percent"), percent));
 		}
-		if (isExpired == true) {
-			predicates.add(cb.greaterThan(productDiscount.get("expireDays"), new Date().getTime()));
+		if (isExpired != null && isExpired == false) {
+			predicates.add(cb.greaterThan(productDiscount.get("expiryDate"), new Date().getTime()));
 		}
-		if (isExpired == false) {
-			predicates.add(cb.lessThan(productDiscount.get("expireDays"), new Date().getTime()));
+		if (isExpired != null && isExpired == true) {
+			predicates.add(cb.lessThan(productDiscount.get("expiryDate"), new Date().getTime()));
 		}
 
 		cq.where(predicates.toArray(new Predicate[0]));
