@@ -1,5 +1,6 @@
 package com.cafe.website.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -18,7 +19,7 @@ public class Comment extends BaseEntity {
 // productId
 
 	@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Favorite> favorites;
+	private List<Favorite> favorites = new ArrayList<>();
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)

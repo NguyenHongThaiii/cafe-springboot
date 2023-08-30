@@ -1,5 +1,6 @@
 package com.cafe.website.payload;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +17,7 @@ public class UserUpdateDTO {
 	private String phone;
 	private int status;
 	private String slug;
-	private List<Product> listProductSaved;
+	private List<Product> listProductSaved = new ArrayList<>();
 
 	private List<Role> roles;
 

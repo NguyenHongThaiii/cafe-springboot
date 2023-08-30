@@ -11,11 +11,11 @@ import com.cafe.website.entity.ProductSchedule;
 import com.cafe.website.entity.Purpose;
 
 public class ProductDTO extends BaseEntityDTO {
-	private List<Purpose> purposesDto;
-	private List<AreaDTO> areasDto;
-	private List<Kind> kindsDto;
-	private List<Convenience> conveniencesDto;
-	private List<ProductSchedule> schedules;
+	private List<Purpose> purposesDto = new ArrayList<>();
+	private List<AreaDTO> areasDto = new ArrayList<>();
+	private List<Kind> kindsDto = new ArrayList<>();
+	private List<Convenience> conveniencesDto = new ArrayList<>();
+	private List<ProductScheduleDTO> schedules = new ArrayList<>();
 	private String name;
 	private String slug;
 	private String phone;
@@ -32,7 +32,7 @@ public class ProductDTO extends BaseEntityDTO {
 
 	public ProductDTO(int id, int status, Long createdAt, Long updatedAt, List<Purpose> purposesDto,
 			List<AreaDTO> areasDto, List<Kind> kindsDto, List<Convenience> conveniencesDto,
-			List<ProductSchedule> schedules, String name, String slug, String phone, int status2, int priceMin,
+			List<ProductScheduleDTO> schedules, String name, String slug, String phone, int status2, int priceMin,
 			int priceMax, int outstanding, String coordinates, String email, String facebook, String description,
 			String location, List<ImageDTO> listImage) {
 		super(id, status, createdAt, updatedAt);
@@ -92,11 +92,11 @@ public class ProductDTO extends BaseEntityDTO {
 		this.conveniencesDto = conveniencesDto;
 	}
 
-	public List<ProductSchedule> getSchedules() {
+	public List<ProductScheduleDTO> getSchedules() {
 		return schedules;
 	}
 
-	public void setSchedules(List<ProductSchedule> schedules) {
+	public void setSchedules(List<ProductScheduleDTO> schedules) {
 		this.schedules = schedules;
 	}
 

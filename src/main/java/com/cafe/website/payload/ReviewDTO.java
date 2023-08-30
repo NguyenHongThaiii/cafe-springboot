@@ -1,5 +1,6 @@
 package com.cafe.website.payload;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.cafe.website.entity.BaseEntity;
@@ -10,7 +11,7 @@ public class ReviewDTO extends BaseEntity {
 	private Rating rating;
 
 	private String name;
-	private List<ImageDTO> listImages;
+	private List<ImageDTO> listImages = new ArrayList<>();
 
 	private int favorite;
 

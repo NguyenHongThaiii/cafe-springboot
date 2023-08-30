@@ -1,5 +1,6 @@
 package com.cafe.website.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -24,31 +25,31 @@ public class Product extends BaseEntity {
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "products_purposes", joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "purpose_id", referencedColumnName = "id"))
-	private List<Purpose> purposes;
+	private List<Purpose> purposes  = new ArrayList<>();
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "products_areas", joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "area_id", referencedColumnName = "id"))
-	private List<Area> areas;
+	private List<Area> areas = new ArrayList<>();
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "products_kinds", joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "kind_id", referencedColumnName = "id"))
-	private List<Kind> kinds;
+	private List<Kind> kinds = new ArrayList<>();
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "products_conveniences", joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "convenience_id", referencedColumnName = "id"))
-	private List<Convenience> conveniences;
+	private List<Convenience> conveniences = new ArrayList<>();
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private List<Review> reviews;
+	private List<Review> reviews = new ArrayList<>();
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private List<ProductSchedule> schedules;
+	private List<ProductSchedule> schedules = new ArrayList<>();
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private List<Menu> listMenus;
+	private List<Menu> listMenus = new ArrayList<>();
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private List<Image> listImages;
+	private List<Image> listImages = new ArrayList<>();
 
 	private int priceMin;
 	private int priceMax;

@@ -63,7 +63,7 @@ public class ProductController {
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PostMapping("")
-	public ResponseEntity<ProductDTO> createProduct(@ModelAttribute ProductCreateDTO productCreateDto)
+	public ResponseEntity<ProductDTO> createProduct(@Valid @ModelAttribute ProductCreateDTO productCreateDto)
 			throws IOException {
 		ProductDTO product = productService.createProduct(productCreateDto);
 		return new ResponseEntity<ProductDTO>(product, HttpStatus.CREATED);
@@ -78,7 +78,7 @@ public class ProductController {
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/id/{id}")
 	public ResponseEntity<String> deleteProduct(@PathVariable(name = "id") int id) throws IOException {
 		productService.deleteProduct(id);
 		return new ResponseEntity<String>("Delete successfully", HttpStatus.OK);

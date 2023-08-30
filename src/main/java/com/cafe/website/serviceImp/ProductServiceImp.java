@@ -24,6 +24,7 @@ import com.cafe.website.entity.Image;
 import com.cafe.website.entity.Kind;
 import com.cafe.website.entity.Menu;
 import com.cafe.website.entity.Product;
+import com.cafe.website.entity.ProductSchedule;
 import com.cafe.website.entity.Purpose;
 import com.cafe.website.entity.Review;
 import com.cafe.website.exception.CafeAPIException;
@@ -33,6 +34,7 @@ import com.cafe.website.payload.BaseImage;
 import com.cafe.website.payload.ImageDTO;
 import com.cafe.website.payload.ProductCreateDTO;
 import com.cafe.website.payload.ProductDTO;
+import com.cafe.website.payload.ProductScheduleDTO;
 import com.cafe.website.payload.ProductUpdateDTO;
 import com.cafe.website.repository.AreaRepository;
 import com.cafe.website.repository.ConvenienceRepository;
@@ -40,6 +42,7 @@ import com.cafe.website.repository.ImageRepository;
 import com.cafe.website.repository.KindRepository;
 import com.cafe.website.repository.MenuRepository;
 import com.cafe.website.repository.ProductRepository;
+import com.cafe.website.repository.ProductScheduleRepository;
 import com.cafe.website.repository.PurposeRepository;
 import com.cafe.website.repository.ReviewRepository;
 import com.cafe.website.service.CloudinaryService;
@@ -47,6 +50,7 @@ import com.cafe.website.service.ProductService;
 import com.cafe.website.util.AreaMapper;
 import com.cafe.website.util.MapperUtils;
 import com.cafe.website.util.ProductMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.slugify.Slugify;
 
@@ -66,6 +70,7 @@ public class ProductServiceImp implements ProductService {
 	private ReviewRepository reviewRepository;
 	private ImageRepository imageRepository;
 	private MenuRepository menuRepository;
+	private ProductScheduleRepository productScheduleRepository;
 	private ProductMapper productMapper;
 	private CloudinaryService cloudinaryService;
 	private AreaMapper areaMapper;
@@ -73,11 +78,13 @@ public class ProductServiceImp implements ProductService {
 	ObjectMapper objMapper = new ObjectMapper();
 	private Slugify slugify = Slugify.builder().build();
 
-	public ProductServiceImp(ProductRepository productRepository, AreaRepository areaRepository,
-			KindRepository kindRepository, PurposeRepository purposeRepository, ConvenienceRepository conveRepository,
-			ReviewRepository reviewRepository, ImageRepository imageRepository, MenuRepository menuRepository,
+	public ProductServiceImp(EntityManager entityManager, ProductRepository productRepository,
+			AreaRepository areaRepository, KindRepository kindRepository, PurposeRepository purposeRepository,
+			ConvenienceRepository conveRepository, ReviewRepository reviewRepository, ImageRepository imageRepository,
+			MenuRepository menuRepository, ProductScheduleRepository productScheduleRepository,
 			ProductMapper productMapper, CloudinaryService cloudinaryService, AreaMapper areaMapper) {
 		super();
+		this.entityManager = entityManager;
 		this.productRepository = productRepository;
 		this.areaRepository = areaRepository;
 		this.kindRepository = kindRepository;
@@ -86,6 +93,7 @@ public class ProductServiceImp implements ProductService {
 		this.reviewRepository = reviewRepository;
 		this.imageRepository = imageRepository;
 		this.menuRepository = menuRepository;
+		this.productScheduleRepository = productScheduleRepository;
 		this.productMapper = productMapper;
 		this.cloudinaryService = cloudinaryService;
 		this.areaMapper = areaMapper;
@@ -128,9 +136,16 @@ public class ProductServiceImp implements ProductService {
 			ProductDTO pdto = MapperUtils.mapToDTO(product, ProductDTO.class);
 			List<Image> listEntityImages = imageRepository.findAllImageByProductId(product.getId());
 			List<AreaDTO> listArea = MapperUtils.loppMapToDTO(product.getAreas(), AreaDTO.class);
+			List<ProductScheduleDTO> listScheduleDto = new ArrayList<>();
+
+			for (ProductSchedule schedule : product.getSchedules()) {
+				ProductScheduleDTO scheduleDto = MapperUtils.mapToDTO(schedule, ProductScheduleDTO.class);
+				listScheduleDto.add(scheduleDto);
+			}
 			// more
 			pdto.setAreasDto(listArea);
 			pdto.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
+			pdto.setSchedules(listScheduleDto);
 			return pdto;
 		}).collect(Collectors.toList());
 
@@ -149,6 +164,11 @@ public class ProductServiceImp implements ProductService {
 		List<String> menus = new ArrayList<>();
 		List<Image> listImages = new ArrayList<>();
 		List<String> images = new ArrayList<>();
+		List<ProductSchedule> listSchedule = new ArrayList<>();
+		List<ProductScheduleDTO> listScheduleDto = new ArrayList<>();
+		List<ProductScheduleDTO> listScheduleParse = new ObjectMapper().readValue(productCreateDto.getListScheduleDto(),
+				new TypeReference<List<ProductScheduleDTO>>() {
+				});
 		ProductDTO pdto = MapperUtils.mapToEntity(productCreateDto, ProductDTO.class);
 		Product product = new Product();
 
@@ -192,12 +212,23 @@ public class ProductServiceImp implements ProductService {
 		menuRepository.saveAll(listMenus);
 		imageRepository.saveAll(listImages);
 
+		for (ProductScheduleDTO scheduleDto : listScheduleParse) {
+			ProductSchedule schedule = new ProductSchedule();
+			schedule.setDayOfWeek(scheduleDto.getDayOfWeek());
+			schedule.setEndTime(scheduleDto.getEndTime());
+			schedule.setStartTime(scheduleDto.getStartTime());
+			schedule.setProduct(product);
+			listSchedule.add(schedule);
+			listScheduleDto.add(MapperUtils.mapToDTO(schedule, ProductScheduleDTO.class));
+		}
+		productScheduleRepository.saveAll(listSchedule);
 		ProductDTO res = MapperUtils.mapToDTO(product, ProductDTO.class);
 
 		List<Image> listEntityImages = imageRepository.findAllImageByProductId(res.getId());
 
 		res.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
 		res.setAreasDto(listAreaDto);
+		res.setSchedules(listScheduleDto);
 		return res;
 	}
 
@@ -206,11 +237,17 @@ public class ProductServiceImp implements ProductService {
 		ProductDTO pdto = this.getProductById(id);
 		String path_menu = "cafe-springboot/menu/";
 		String path_blogs = "cafe-springboot/blogs/";
+
 		if (productRepository.existsBySlugAndIdNot(slugify.slugify(productUpdateDto.getSlug()), pdto.getId()))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Slug is already exists!");
 		if (productRepository.existsByNameAndIdNot(productUpdateDto.getName(), pdto.getId()))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
 
+		List<ProductSchedule> listSchedule = new ArrayList<>();
+		List<ProductScheduleDTO> listScheduleDto = new ArrayList<>();
+		List<ProductScheduleDTO> listScheduleParse = new ObjectMapper().readValue(productUpdateDto.getListScheduleDto(),
+				new TypeReference<List<ProductScheduleDTO>>() {
+				});
 		Product product = MapperUtils.mapToEntity(pdto, Product.class);
 		productUpdateDto.setId(id);
 		productMapper.updateProductDtoFromProductUpdateDto(pdto, productUpdateDto);
@@ -265,18 +302,31 @@ public class ProductServiceImp implements ProductService {
 			imageRepository.deleteAllImageByProductId(id);
 			product.setlistImages(listImages);
 		}
+		for (ProductScheduleDTO scheduleDto : listScheduleParse) {
+			ProductSchedule schedule = new ProductSchedule();
+			schedule.setDayOfWeek(scheduleDto.getDayOfWeek());
+			schedule.setEndTime(scheduleDto.getEndTime());
+			schedule.setStartTime(scheduleDto.getStartTime());
+			schedule.setProduct(product);
+			listSchedule.add(schedule);
+			listScheduleDto.add(MapperUtils.mapToDTO(schedule, ProductScheduleDTO.class));
+		}
 
+		productScheduleRepository.deleteAllScheduleByProductId(product.getId());
 		productMapper.updateProductFromDto(pdto, product);
 		if (listAreas.size() > 0)
 			product.setAreas(listAreas);
 //		product.setConveniences(null);
 //		product.setKinds(null);
 //		product.setPurposes(null);
+
+		product.setSchedules(listSchedule);
 		productRepository.save(product);
 
 		List<Image> listEntityImages = imageRepository.findAllImageByProductId(id);
 		pdto.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
 		pdto.setAreasDto(listAreaDto);
+		pdto.setSchedules(listScheduleDto);
 		return pdto;
 	}
 

@@ -1,5 +1,6 @@
 package com.cafe.website.payload;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -10,7 +11,7 @@ public class ReviewUpdateDTO {
 
 	private Rating rating;
 
-	private List<MultipartFile> listImageFiles;
+	private List<MultipartFile> listImageFiles = new ArrayList<>();
 
 	private String name;
 

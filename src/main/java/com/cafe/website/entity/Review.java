@@ -1,5 +1,6 @@
 package com.cafe.website.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -32,15 +33,15 @@ public class Review extends BaseEntity {
 	private Rating rating;
 
 	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Comment> comments;
+	private List<Comment> comments = new ArrayList<>();
 
 	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Image> listImages;
+	private List<Image> listImages = new ArrayList<>();
 	private String name;
 
 	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@Column(unique = true)
-	private List<Favorite> favorites;
+	private List<Favorite> favorites = new ArrayList<>();
 
 	public Review(int id, int status, Long createdAt, Long updatedAt, User user, Product product, Rating rating,
 			List<Comment> comments, List<Image> listImages, String name, List<Favorite> favorites) {

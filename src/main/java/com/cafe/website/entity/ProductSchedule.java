@@ -14,21 +14,21 @@ public class ProductSchedule extends BaseEntity {
 	@JoinColumn(name = "product_id", nullable = false)
 	private Product product;
 
-	private String dayOfWeek;
-	private String startTime;
-	private String end_time;
+	private Long dayOfWeek;
+	private Long startTime;
+	private Long endTime;
 
 	public ProductSchedule() {
 
 	}
 
-	public ProductSchedule(int id, int status, Long createdAt, Long updatedAt, Product product, String dayOfWeek,
-			String startTime, String end_time) {
+	public ProductSchedule(int id, int status, Long createdAt, Long updatedAt, Product product, Long dayOfWeek,
+			Long startTime, Long endTime) {
 		super(id, status, createdAt, updatedAt);
 		this.product = product;
 		this.dayOfWeek = dayOfWeek;
 		this.startTime = startTime;
-		this.end_time = end_time;
+		this.endTime = endTime;
 	}
 
 	public Product getProduct() {
@@ -39,28 +39,28 @@ public class ProductSchedule extends BaseEntity {
 		this.product = product;
 	}
 
-	public String getDayOfWeek() {
+	public Long getDayOfWeek() {
 		return dayOfWeek;
 	}
 
-	public void setDayOfWeek(String dayOfWeek) {
+	public void setDayOfWeek(Long dayOfWeek) {
 		this.dayOfWeek = dayOfWeek;
 	}
 
-	public String getStartTime() {
+	public Long getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(String startTime) {
+	public void setStartTime(Long startTime) {
 		this.startTime = startTime;
 	}
 
-	public String getEnd_time() {
-		return end_time;
+	public Long getEndTime() {
+		return endTime;
 	}
 
-	public void setEnd_time(String end_time) {
-		this.end_time = end_time;
+	public void setEndTime(Long endTime) {
+		this.endTime = endTime;
 	}
 
 }

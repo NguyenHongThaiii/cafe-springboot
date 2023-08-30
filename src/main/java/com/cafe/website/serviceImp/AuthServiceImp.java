@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -23,15 +22,12 @@ import org.springframework.stereotype.Service;
 
 import com.cafe.website.constant.SortField;
 import com.cafe.website.constant.TokenType;
-import com.cafe.website.entity.Area;
 import com.cafe.website.entity.Image;
-import com.cafe.website.entity.Product;
 import com.cafe.website.entity.Role;
 import com.cafe.website.entity.Token;
 import com.cafe.website.entity.User;
 import com.cafe.website.exception.CafeAPIException;
 import com.cafe.website.exception.ResourceNotFoundException;
-import com.cafe.website.payload.AreaDTO;
 import com.cafe.website.payload.ImageDTO;
 import com.cafe.website.payload.LoginDTO;
 import com.cafe.website.payload.RegisterDTO;
@@ -160,12 +156,11 @@ public class AuthServiceImp implements AuthService {
 	@Override
 	public RegisterResponse validateRegister(ValidateOtpDTO validateDto) {
 		String otpCache = otpService.getOtpByEmail(validateDto.getEmail());
-		String token = null;
 		this.validateOtp(validateDto.getOtp(), otpCache);
 		// update token
 		User user = userRepository.findByEmail(validateDto.getEmail())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "email", validateDto.getEmail()));
-		token = jwtTokenProvider.generateToken(user.getName());
+		String token = jwtTokenProvider.generateToken(user.getName());
 
 		revokeAllUserTokens(user);
 		saveUserToken(user, token);
@@ -338,7 +333,6 @@ public class AuthServiceImp implements AuthService {
 	@Override
 	public void deleteUserById(Integer id) throws IOException {
 		this.getUserById(id);
-		// TODO Auto-generated method stub
 		Image image = imageRepository.findImageByUserId(id).orElse(null);
 		if (image != null)
 			cloudinaryService.removeImageFromCloudinary(image.getImage(), path_user);
@@ -348,7 +342,6 @@ public class AuthServiceImp implements AuthService {
 
 	@Override
 	public void deleteUserBySlug(String slug) throws IOException {
-		// TODO Auto-generated method stub
 		UserDTO userDto = this.getUserBySlug(slug);
 		Image image = imageRepository.findImageByUserId(userDto.getId()).orElse(null);
 		if (image != null)

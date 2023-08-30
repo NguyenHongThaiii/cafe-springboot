@@ -1,5 +1,6 @@
 package com.cafe.website.payload;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.cafe.website.entity.Product;
@@ -14,7 +15,7 @@ public class UserDTO {
 	private String address;
 	private String phone;
 	private String slug;
-	private List<Role> roles;
+	private List<Role> roles = new ArrayList<>();
 	private ImageDTO imageDto;
 
 	public UserDTO(int id, int status, String email, String name, String address, String phone, String slug,

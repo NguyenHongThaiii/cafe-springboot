@@ -1,10 +1,11 @@
 package com.cafe.website.payload;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProductSavedDTO extends BaseEntityDTO {
 	private UserDTO userDto;
-	private List<ProductDTO> listProductDto;
+	private List<ProductDTO> listProductDto = new ArrayList<>();
 
 	public ProductSavedDTO(UserDTO userDto, List<ProductDTO> listProductDto) {
 		super();

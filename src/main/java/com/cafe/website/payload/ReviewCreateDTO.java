@@ -1,5 +1,6 @@
 package com.cafe.website.payload;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -13,7 +14,7 @@ public class ReviewCreateDTO {
 	private Integer productId;
 
 	@NotNull
-	private List<MultipartFile> listImageFiles;
+	private List<MultipartFile> listImageFiles = new ArrayList<>();
 	@NotNull
 	private String name;
 	@NotNull

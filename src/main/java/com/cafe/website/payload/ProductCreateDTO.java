@@ -1,5 +1,6 @@
 package com.cafe.website.payload;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -13,16 +14,16 @@ public class ProductCreateDTO {
 	private int id;
 
 	@NotNull
-	private List<Integer> area_id;
+	private List<Integer> area_id = new ArrayList<>();
 
-	@NotNull
-	private List<Integer> kind_id;
+//	@NotNull
+	private List<Integer> kind_id = new ArrayList<>();
 
-	@NotNull
-	private List<Integer> convenience_id;
+//	@NotNull
+	private List<Integer> convenience_id = new ArrayList<>();
 
-	@NotNull
-	private List<Integer> purpose_id;
+//	@NotNull
+	private List<Integer> purpose_id = new ArrayList<>();
 
 	@NotNull
 	private String name;
@@ -47,26 +48,30 @@ public class ProductCreateDTO {
 	@Max(value = 1, message = "status should not be greater than 1")
 	private int outstanding;
 
-	@NotEmpty(message = "listMenuFile list cannot be empty")
-	private List<MultipartFile> listMenuFile;
+//	@NotEmpty(message = "listMenuFile list cannot be empty")
+	private List<MultipartFile> listMenuFile = new ArrayList<>();
 
-	@NotNull
+//	@NotNull
 	private String coordinates;
 
-	@NotNull
+//	@NotNull
 	private String description;
 
-	@NotNull
+//	@NotNull
 	private String location;
 
 	private String email;
 	private String facebook;
 
-	@NotEmpty(message = "listImageFile list cannot be empty")
-	private List<MultipartFile> listImageFile;
+//	@NotEmpty(message = "listImageFile list cannot be empty")
+	private List<MultipartFile> listImageFile = new ArrayList<>();
 
-	public ProductCreateDTO(int id, @NotNull List<Integer> area_id, List<Integer> kind_id, List<Integer> convenience_id,
-			List<Integer> purpose_id, @NotNull String name, @NotNull String slug, @NotNull String phone,
+	@NotNull
+	private String listScheduleDto;
+
+	public ProductCreateDTO(int id, @NotNull List<Integer> area_id, @NotNull List<Integer> kind_id,
+			@NotNull List<Integer> convenience_id, @NotNull List<Integer> purpose_id, @NotNull String name,
+			@NotNull String slug, @NotNull String phone,
 			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") int status,
 			@Min(value = 0, message = "priceMin should not be less than 0") int priceMin,
 			@Min(value = 0, message = "priceMax should not be less than 0") int priceMax,
@@ -74,7 +79,8 @@ public class ProductCreateDTO {
 			@NotEmpty(message = "listMenuFile list cannot be empty") List<MultipartFile> listMenuFile,
 			@NotNull String coordinates, @NotNull String description, @NotNull String location, String email,
 			String facebook,
-			@NotEmpty(message = "listImageFile list cannot be empty") List<MultipartFile> listImageFile) {
+			@NotEmpty(message = "listImageFile list cannot be empty") List<MultipartFile> listImageFile,
+			@NotNull String listScheduleDto) {
 		super();
 		this.id = id;
 		this.area_id = area_id;
@@ -95,10 +101,19 @@ public class ProductCreateDTO {
 		this.email = email;
 		this.facebook = facebook;
 		this.listImageFile = listImageFile;
+		this.listScheduleDto = listScheduleDto;
 	}
 
 	public ProductCreateDTO() {
 		// TODO Auto-generated constructor stub
+	}
+
+	public String getListScheduleDto() {
+		return listScheduleDto;
+	}
+
+	public void setListScheduleDto(String listScheduleDto) {
+		this.listScheduleDto = listScheduleDto;
 	}
 
 	public int getId() {

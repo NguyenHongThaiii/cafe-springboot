@@ -1,5 +1,6 @@
 package com.cafe.website.payload;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -12,16 +13,16 @@ public class ProductUpdateDTO {
 	private int id;
 
 	// @NotNull
-	private List<Integer> area_id;
+	private List<Integer> area_id = new ArrayList<>();
 
 	// @NotNull
-	private List<Integer> kind_id;
+	private List<Integer> kind_id = new ArrayList<>();
 
 	// @NotNull
-	private List<Integer> convenience_id;
+	private List<Integer> convenience_id = new ArrayList<>();
 
 	// @NotNull
-	private List<Integer> purpose_id;
+	private List<Integer> purpose_id = new ArrayList<>();
 
 	// @NotNull
 	private String name;
@@ -45,8 +46,8 @@ public class ProductUpdateDTO {
 	@Max(value = 1, message = "status should not be greater than 1")
 	private int outstanding;
 
-	private List<MultipartFile> listMenuFile;
-	private List<MultipartFile> listImageFile;
+	private List<MultipartFile> listMenuFile = new ArrayList<>();
+	private List<MultipartFile> listImageFile = new ArrayList<>();
 
 	// @NotNull
 	private String coordinates;
@@ -59,8 +60,12 @@ public class ProductUpdateDTO {
 
 	private String email;
 	private String facebook;
+	
+	private String listScheduleDto;
 
 	
+
+
 
 	public ProductUpdateDTO(int id, List<Integer> area_id, List<Integer> kind_id, List<Integer> convenience_id,
 			List<Integer> purpose_id, String name, String slug, String phone,
@@ -69,7 +74,7 @@ public class ProductUpdateDTO {
 			@Min(value = 0, message = "priceMax should not be less than 0") int priceMax,
 			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") int outstanding,
 			List<MultipartFile> listMenuFile, List<MultipartFile> listImageFile, String coordinates, String description,
-			String location, String email, String facebook) {
+			String location, String email, String facebook, String listScheduleDto) {
 		super();
 		this.id = id;
 		this.area_id = area_id;
@@ -90,12 +95,21 @@ public class ProductUpdateDTO {
 		this.location = location;
 		this.email = email;
 		this.facebook = facebook;
+		this.listScheduleDto = listScheduleDto;
 	}
 
 	public ProductUpdateDTO() {
 		// TODO Auto-generated constructor stub
 		this.status = 1;
 
+	}
+
+	public String getListScheduleDto() {
+		return listScheduleDto;
+	}
+
+	public void setListScheduleDto(String listScheduleDto) {
+		this.listScheduleDto = listScheduleDto;
 	}
 
 	public int getId() {

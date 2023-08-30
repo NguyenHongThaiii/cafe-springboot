@@ -1,5 +1,6 @@
 package com.cafe.website.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -33,13 +34,13 @@ public class User extends BaseEntity {
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-	private List<Role> roles;
+	private List<Role> roles = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Review> reviews;
+	private List<Review> reviews = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-	private List<Token> tokens;
+	private List<Token> tokens = new ArrayList<>();
 
 	public User(int id, int status, Long createdAt, Long updatedAt, String name, String address, Image avartar,
 			String phone, String email, String password, List<Role> roles, List<Review> reviews, List<Token> tokens,
