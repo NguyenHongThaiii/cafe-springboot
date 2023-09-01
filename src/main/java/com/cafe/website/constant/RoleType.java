@@ -1,11 +1,11 @@
 package com.cafe.website.constant;
 
-public enum SearchField {
-	NAME("name"), ID("id"), PRICEMIN("priceMin"), PRICEMAX("priceMax"), SLUG("slug");
+public enum RoleType {
+	ROLE_ADMIN("ROLE_ADMIN"), ROLE_MOD("ROLE_MOD"), ROLE_USER("ROLE_USER");
 
 	private final String value;
 
-	SearchField(String value) {
+	RoleType(String value) {
 		this.value = value;
 	}
 

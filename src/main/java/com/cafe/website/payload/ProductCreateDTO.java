@@ -68,19 +68,22 @@ public class ProductCreateDTO {
 
 	@NotNull
 	private String listScheduleDto;
+	@NotNull
+	private Integer userId;
 
-	public ProductCreateDTO(int id, @NotNull List<Integer> area_id, @NotNull List<Integer> kind_id,
-			@NotNull List<Integer> convenience_id, @NotNull List<Integer> purpose_id, @NotNull String name,
-			@NotNull String slug, @NotNull String phone,
+	public ProductCreateDTO() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public ProductCreateDTO(int id, @NotNull List<Integer> area_id, List<Integer> kind_id, List<Integer> convenience_id,
+			List<Integer> purpose_id, @NotNull String name, @NotNull String slug, @NotNull String phone,
 			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") int status,
 			@Min(value = 0, message = "priceMin should not be less than 0") int priceMin,
 			@Min(value = 0, message = "priceMax should not be less than 0") int priceMax,
 			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") int outstanding,
-			@NotEmpty(message = "listMenuFile list cannot be empty") List<MultipartFile> listMenuFile,
-			@NotNull String coordinates, @NotNull String description, @NotNull String location, String email,
-			String facebook,
-			@NotEmpty(message = "listImageFile list cannot be empty") List<MultipartFile> listImageFile,
-			@NotNull String listScheduleDto) {
+			List<MultipartFile> listMenuFile, String coordinates, String description, String location, String email,
+			String facebook, List<MultipartFile> listImageFile, @NotNull String listScheduleDto,
+			@NotNull Integer userId) {
 		super();
 		this.id = id;
 		this.area_id = area_id;
@@ -102,10 +105,15 @@ public class ProductCreateDTO {
 		this.facebook = facebook;
 		this.listImageFile = listImageFile;
 		this.listScheduleDto = listScheduleDto;
+		this.userId = userId;
 	}
 
-	public ProductCreateDTO() {
-		// TODO Auto-generated constructor stub
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
 
 	public String getListScheduleDto() {

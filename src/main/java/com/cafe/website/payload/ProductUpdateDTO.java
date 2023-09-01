@@ -34,7 +34,7 @@ public class ProductUpdateDTO {
 
 	@Min(value = 0, message = "status should not be less than 0")
 	@Max(value = 1, message = "status should not be greater than 1")
-	private int status;
+	private Integer status;
 
 	@Min(value = 0, message = "priceMin should not be less than 0")
 	private int priceMin;
@@ -60,21 +60,18 @@ public class ProductUpdateDTO {
 
 	private String email;
 	private String facebook;
-	
+
 	private String listScheduleDto;
-
-	
-
-
+	private Integer userId;
 
 	public ProductUpdateDTO(int id, List<Integer> area_id, List<Integer> kind_id, List<Integer> convenience_id,
 			List<Integer> purpose_id, String name, String slug, String phone,
-			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") int status,
+			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") Integer status,
 			@Min(value = 0, message = "priceMin should not be less than 0") int priceMin,
 			@Min(value = 0, message = "priceMax should not be less than 0") int priceMax,
 			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") int outstanding,
 			List<MultipartFile> listMenuFile, List<MultipartFile> listImageFile, String coordinates, String description,
-			String location, String email, String facebook, String listScheduleDto) {
+			String location, String email, String facebook, String listScheduleDto, Integer userId) {
 		super();
 		this.id = id;
 		this.area_id = area_id;
@@ -96,12 +93,21 @@ public class ProductUpdateDTO {
 		this.email = email;
 		this.facebook = facebook;
 		this.listScheduleDto = listScheduleDto;
+		this.userId = userId;
 	}
 
 	public ProductUpdateDTO() {
 		// TODO Auto-generated constructor stub
 		this.status = 1;
 
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
 
 	public String getListScheduleDto() {
@@ -176,11 +182,11 @@ public class ProductUpdateDTO {
 		this.phone = phone;
 	}
 
-	public int getStatus() {
+	public Integer getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 

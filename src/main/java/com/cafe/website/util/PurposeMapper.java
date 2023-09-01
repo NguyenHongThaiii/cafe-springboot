@@ -6,14 +6,14 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
-import com.cafe.website.entity.ProductDiscount;
-import com.cafe.website.payload.ProductDiscountDTO;
+import com.cafe.website.entity.Purpose;
+import com.cafe.website.payload.PurposeDTO;
 
 @Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
-public interface ProductDiscountMapper {
+public interface PurposeMapper {
 	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-	void updateProductDiscountFromDto(ProductDiscountDTO productDiscountDto, @MappingTarget ProductDiscount productDiscount);
+	void updatePurposeFromDto(PurposeDTO purposeDto, @MappingTarget Purpose purpose);
 
 	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, ignoreByDefault = true)
-	void updateProductDiscountDTOFromProductDiscount(ProductDiscount productDiscount, @MappingTarget ProductDiscountDTO productDiscountDto);
+	void updatePurposeDTOFromArea(Purpose entity, @MappingTarget PurposeDTO purposeDto);
 }

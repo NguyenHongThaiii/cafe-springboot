@@ -52,5 +52,6 @@ public interface AuthService {
 
 	UserDTO getUserBySlug(String slug);
 
+	String setIsWaitingDeleteUser(Integer user);
 
 }

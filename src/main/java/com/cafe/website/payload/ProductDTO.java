@@ -23,18 +23,22 @@ public class ProductDTO extends BaseEntityDTO {
 	private int priceMin;
 	private int priceMax;
 	private int outstanding;
-	private String coordinates;
+	private String latitude;
+	private String longitude;
+
 	private String email;
 	private String facebook;
 	private String description;
 	private String location;
 	private List<ImageDTO> listImage = new ArrayList<>();
+	private UserDTO owner;
+	private Integer isWaitingDelete;
 
-	public ProductDTO(int id, int status, Long createdAt, Long updatedAt, List<Purpose> purposesDto,
+	public ProductDTO(int id, Integer status, Long createdAt, Long updatedAt, List<Purpose> purposesDto,
 			List<AreaDTO> areasDto, List<Kind> kindsDto, List<Convenience> conveniencesDto,
 			List<ProductScheduleDTO> schedules, String name, String slug, String phone, int status2, int priceMin,
-			int priceMax, int outstanding, String coordinates, String email, String facebook, String description,
-			String location, List<ImageDTO> listImage) {
+			int priceMax, int outstanding, String latitude, String longitude, String email, String facebook,
+			String description, String location, List<ImageDTO> listImage, UserDTO owner, Integer isWaitingDelete) {
 		super(id, status, createdAt, updatedAt);
 		this.purposesDto = purposesDto;
 		this.areasDto = areasDto;
@@ -48,16 +52,58 @@ public class ProductDTO extends BaseEntityDTO {
 		this.priceMin = priceMin;
 		this.priceMax = priceMax;
 		this.outstanding = outstanding;
-		this.coordinates = coordinates;
+		this.latitude = latitude;
+		this.longitude = longitude;
 		this.email = email;
 		this.facebook = facebook;
 		this.description = description;
 		this.location = location;
 		this.listImage = listImage;
+		this.owner = owner;
+		this.isWaitingDelete = isWaitingDelete;
 	}
 
 	public ProductDTO() {
 		// TODO Auto-generated constructor stub
+	}
+
+	public String getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+
+	public String getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
+	}
+
+	public Integer getIsWaitingDelete() {
+		return isWaitingDelete;
+	}
+
+	public void setIsWaitingDelete(Integer isWaitingDelete) {
+		if (isWaitingDelete != 0 && isWaitingDelete != 1) {
+			throw new IllegalArgumentException("Status can only be 1 or 0");
+		}
+		this.isWaitingDelete = isWaitingDelete;
+	}
+
+	public UserDTO getOwner() {
+		return owner;
+	}
+
+	public void setOwner(UserDTO owner) {
+		this.owner = owner;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
 	}
 
 	public List<Purpose> getPurposesDto() {
@@ -154,14 +200,6 @@ public class ProductDTO extends BaseEntityDTO {
 
 	public void setOutstanding(int outstanding) {
 		this.outstanding = outstanding;
-	}
-
-	public String getCoordinates() {
-		return coordinates;
-	}
-
-	public void setCoordinates(String coordinates) {
-		this.coordinates = coordinates;
 	}
 
 	public String getEmail() {

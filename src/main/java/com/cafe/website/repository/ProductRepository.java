@@ -29,7 +29,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 	Boolean existsByName(String name);
 
 	@Query
-	default List<Product> findWithFilters(String name, Pageable pageable, EntityManager entityManager) {
+	default List<Product> findWithFilters(String name, int status, Integer isWatingDelete, Pageable pageable,
+			EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Product> cq = cb.createQuery(Product.class);
@@ -40,6 +41,10 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 		if (name != null) {
 			predicates.add(cb.like(cb.lower(product.get("name")), "%" + name.toLowerCase() + "%"));
 		}
+		if (isWatingDelete != null) {
+			predicates.add(cb.equal(product.get("isWaitingDelete"), isWatingDelete));
+		}
+		predicates.add(cb.equal(product.get("status"), status));
 
 		cq.where(predicates.toArray(new Predicate[0]));
 

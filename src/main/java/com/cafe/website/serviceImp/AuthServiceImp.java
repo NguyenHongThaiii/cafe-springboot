@@ -4,15 +4,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -74,16 +78,19 @@ public class AuthServiceImp implements AuthService {
 	private OTPService otpService;
 	private UserMapper userMapper;
 	private CloudinaryService cloudinaryService;
+	private ScheduledExecutorService scheduler;
+
 	final String path_user = "cafe-springboot/Users/";
-
 	private Slugify slugify = Slugify.builder().build();
-
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
+	@Value("${app.timeout}")
+	private String timeout;
 
 	public AuthServiceImp(AuthenticationManager authenticationManager, UserRepository userRepository,
 			RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider,
 			TokenRepository tokenRepository, EmailService emailService, OTPService otpService, UserMapper userMapper,
-			CloudinaryService cloudinaryService, ImageRepository imageRepository, ProductRepository productRepository) {
+			CloudinaryService cloudinaryService, ImageRepository imageRepository, ProductRepository productRepository,
+			ScheduledExecutorService scheduler) {
 		this.authenticationManager = authenticationManager;
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
@@ -96,6 +103,7 @@ public class AuthServiceImp implements AuthService {
 		this.otpService = otpService;
 		this.cloudinaryService = cloudinaryService;
 		this.productRepository = productRepository;
+		this.scheduler = scheduler;
 	}
 
 	@Override
@@ -396,4 +404,26 @@ public class AuthServiceImp implements AuthService {
 		return listUserDto;
 	}
 
+	@Override
+	public String setIsWaitingDeleteUser(Integer userId) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
+		user.setIsWaitingDelete(1);
+		userRepository.save(user);
+		this.excuteDeleteUser(userId);
+
+		return "Your account will be deleted after 24 hours";
+
+	}
+
+	@Async
+	public void excuteDeleteUser(Integer userId) {
+		scheduler.schedule(() -> {
+			try {
+				this.deleteUserById(userId);
+			} catch (IOException e) {
+			}
+		}, Integer.parseInt(timeout), TimeUnit.SECONDS);
+	}
 }

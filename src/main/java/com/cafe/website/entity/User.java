@@ -3,6 +3,7 @@ package com.cafe.website.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cafe.website.constant.RoleType;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -42,20 +43,24 @@ public class User extends BaseEntity {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private List<Token> tokens = new ArrayList<>();
 
-	public User(int id, int status, Long createdAt, Long updatedAt, String name, String address, Image avartar,
-			String phone, String email, String password, List<Role> roles, List<Review> reviews, List<Token> tokens,
-			String slug) {
+	@Column(nullable = false, columnDefinition = "int default 0")
+	private int isWaitingDelete;
+
+	public User(int id, int status, Long createdAt, Long updatedAt, String email, String slug, String password,
+			String name, String address, String phone, Image avatar, List<Role> roles, List<Review> reviews,
+			List<Token> tokens, int isWaitingDelete) {
 		super(id, status, createdAt, updatedAt);
+		this.email = email;
+		this.slug = slug;
+		this.password = password;
 		this.name = name;
 		this.address = address;
-		this.avatar = avartar;
 		this.phone = phone;
-		this.email = email;
-		this.password = password;
+		this.avatar = avatar;
 		this.roles = roles;
 		this.reviews = reviews;
 		this.tokens = tokens;
-		this.slug = slug;
+		this.isWaitingDelete = isWaitingDelete;
 	}
 
 	public User(int id, int status, Long createdAt, Long updatedAt) {
@@ -64,6 +69,17 @@ public class User extends BaseEntity {
 
 	public User() {
 		// TODO Auto-generated constructor stub
+	}
+
+	public int getIsWaitingDelete() {
+		return isWaitingDelete;
+	}
+
+	public void setIsWaitingDelete(int isWaitingDelete) {
+		if (isWaitingDelete != 0 && isWaitingDelete != 1) {
+			throw new IllegalArgumentException("isWaitingDelete can only be 1 or 0");
+		}
+		this.isWaitingDelete = isWaitingDelete;
 	}
 
 	public String getSlug() {
@@ -146,4 +162,40 @@ public class User extends BaseEntity {
 		this.tokens = tokens;
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
+	public boolean isHasRoleAdmin(List<Role> roles) {
+		boolean isHasRoleAdmin = false;
+		for (Role role : roles) {
+			if (role.getName().equals(RoleType.ROLE_ADMIN.toString())) {
+				isHasRoleAdmin = true;
+				break;
+			}
+		}
+
+		return isHasRoleAdmin;
+	}
+
+	public boolean isHasRoleUser(List<Role> roles) {
+		boolean isHasRoleUser = false;
+		for (Role role : roles) {
+			if (role.getName().equals(RoleType.ROLE_USER.toString())) {
+				isHasRoleUser = true;
+				break;
+			}
+		}
+
+		return isHasRoleUser;
+	}
+
+	public boolean isHasRoleMod(List<Role> roles) {
+		boolean isHasRoleMod = false;
+		for (Role role : roles) {
+			if (role.getName().equals(RoleType.ROLE_MOD.toString())) {
+				isHasRoleMod = true;
+				break;
+			}
+		}
+
+		return isHasRoleMod;
+	}
 }

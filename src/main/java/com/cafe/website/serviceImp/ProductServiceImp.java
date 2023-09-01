@@ -4,47 +4,52 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.cafe.website.constant.SortField;
 import com.cafe.website.entity.Area;
-import com.cafe.website.entity.Convenience;
 import com.cafe.website.entity.Image;
-import com.cafe.website.entity.Kind;
 import com.cafe.website.entity.Menu;
 import com.cafe.website.entity.Product;
+import com.cafe.website.entity.ProductOwner;
 import com.cafe.website.entity.ProductSchedule;
-import com.cafe.website.entity.Purpose;
 import com.cafe.website.entity.Review;
+import com.cafe.website.entity.User;
 import com.cafe.website.exception.CafeAPIException;
 import com.cafe.website.exception.ResourceNotFoundException;
 import com.cafe.website.payload.AreaDTO;
-import com.cafe.website.payload.BaseImage;
 import com.cafe.website.payload.ImageDTO;
 import com.cafe.website.payload.ProductCreateDTO;
 import com.cafe.website.payload.ProductDTO;
+import com.cafe.website.payload.ProductDeleteDTO;
 import com.cafe.website.payload.ProductScheduleDTO;
 import com.cafe.website.payload.ProductUpdateDTO;
+import com.cafe.website.payload.UserDTO;
 import com.cafe.website.repository.AreaRepository;
 import com.cafe.website.repository.ConvenienceRepository;
 import com.cafe.website.repository.ImageRepository;
 import com.cafe.website.repository.KindRepository;
 import com.cafe.website.repository.MenuRepository;
+import com.cafe.website.repository.ProductOwnerRepository;
 import com.cafe.website.repository.ProductRepository;
 import com.cafe.website.repository.ProductScheduleRepository;
 import com.cafe.website.repository.PurposeRepository;
 import com.cafe.website.repository.ReviewRepository;
+import com.cafe.website.repository.UserRepository;
 import com.cafe.website.service.CloudinaryService;
 import com.cafe.website.service.ProductService;
 import com.cafe.website.util.AreaMapper;
@@ -71,18 +76,26 @@ public class ProductServiceImp implements ProductService {
 	private ImageRepository imageRepository;
 	private MenuRepository menuRepository;
 	private ProductScheduleRepository productScheduleRepository;
+	private UserRepository userRepository;
+	private ProductOwnerRepository productOwnerRepository;
 	private ProductMapper productMapper;
 	private CloudinaryService cloudinaryService;
 	private AreaMapper areaMapper;
+	private ScheduledExecutorService scheduledExecutorService;
+
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 	ObjectMapper objMapper = new ObjectMapper();
 	private Slugify slugify = Slugify.builder().build();
+	@Value("${app.timeout}")
+	private String timeout;
 
 	public ProductServiceImp(EntityManager entityManager, ProductRepository productRepository,
 			AreaRepository areaRepository, KindRepository kindRepository, PurposeRepository purposeRepository,
 			ConvenienceRepository conveRepository, ReviewRepository reviewRepository, ImageRepository imageRepository,
 			MenuRepository menuRepository, ProductScheduleRepository productScheduleRepository,
-			ProductMapper productMapper, CloudinaryService cloudinaryService, AreaMapper areaMapper) {
+			UserRepository userRepository, ProductOwnerRepository productOwnerRepository, ProductMapper productMapper,
+			CloudinaryService cloudinaryService, AreaMapper areaMapper,
+			ScheduledExecutorService scheduledExecutorService) {
 		super();
 		this.entityManager = entityManager;
 		this.productRepository = productRepository;
@@ -94,14 +107,18 @@ public class ProductServiceImp implements ProductService {
 		this.imageRepository = imageRepository;
 		this.menuRepository = menuRepository;
 		this.productScheduleRepository = productScheduleRepository;
+		this.userRepository = userRepository;
+		this.productOwnerRepository = productOwnerRepository;
 		this.productMapper = productMapper;
 		this.cloudinaryService = cloudinaryService;
 		this.areaMapper = areaMapper;
+		this.scheduledExecutorService = scheduledExecutorService;
 	}
 
 	@Override
-	public List<ProductDTO> getListProducts(int limit, int page, String name, String sortBy) {
-
+	public List<ProductDTO> getListProducts(int limit, int page, int status, Integer isWatingDelete, String name,
+			String sortBy) {
+		logger.info(isWatingDelete + "");
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.PRICEMIN,
 				SortField.PRICEMAX, SortField.UPDATEDAT, SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC,
 				SortField.PRICEMINDESC, SortField.PRICEMAXDESC, SortField.UPDATEDATDESC, SortField.CREATEDATDESC);
@@ -131,7 +148,7 @@ public class ProductServiceImp implements ProductService {
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
-		productList = productRepository.findWithFilters(name, pageable, entityManager);
+		productList = productRepository.findWithFilters(name, status, isWatingDelete, pageable, entityManager);
 		listProductDto = productList.stream().map(product -> {
 			ProductDTO pdto = MapperUtils.mapToDTO(product, ProductDTO.class);
 			List<Image> listEntityImages = imageRepository.findAllImageByProductId(product.getId());
@@ -146,6 +163,7 @@ public class ProductServiceImp implements ProductService {
 			pdto.setAreasDto(listArea);
 			pdto.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
 			pdto.setSchedules(listScheduleDto);
+			pdto.setOwner(MapperUtils.mapToDTO(product.getUser(), UserDTO.class));
 			return pdto;
 		}).collect(Collectors.toList());
 
@@ -154,6 +172,8 @@ public class ProductServiceImp implements ProductService {
 
 	@Override
 	public ProductDTO createProduct(ProductCreateDTO productCreateDto) throws IOException {
+		User user = userRepository.findById(productCreateDto.getUserId())
+				.orElseThrow(() -> new ResourceNotFoundException("User", "id", productCreateDto.getUserId()));
 
 		if (productRepository.existsBySlug(slugify.slugify(productCreateDto.getSlug())))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Slug is already exists!");
@@ -175,6 +195,7 @@ public class ProductServiceImp implements ProductService {
 		List<Area> listAreas = this.getListFromIds(productCreateDto.getArea_id(), areaRepository, "area",
 				AreaDTO.class);
 		List<AreaDTO> listAreaDto = MapperUtils.loppMapToDTO(listAreas, AreaDTO.class);
+		ProductOwner productOwner = new ProductOwner();
 
 //		List<Purpose> listPurposes = this.getListFromIds(productCreateDto.getPurpose_id(), purposeRepository,
 //				"purpose");
@@ -185,7 +206,8 @@ public class ProductServiceImp implements ProductService {
 		productMapper.updateProductFromDto(pdto, product);
 
 		product.setId(0);
-
+		product.setUser(user);
+		product.setStatus(0);
 //		move to their service
 		cloudinaryService.uploadImages(images, productCreateDto.getListImageFile(), "cafe-springboot/blogs", "image");
 		images.forEach(image -> {
@@ -212,6 +234,10 @@ public class ProductServiceImp implements ProductService {
 		menuRepository.saveAll(listMenus);
 		imageRepository.saveAll(listImages);
 
+		productOwner.setProduct(product);
+		productOwner.setUser(user);
+		productOwnerRepository.save(productOwner);
+
 		for (ProductScheduleDTO scheduleDto : listScheduleParse) {
 			ProductSchedule schedule = new ProductSchedule();
 			schedule.setDayOfWeek(scheduleDto.getDayOfWeek());
@@ -229,11 +255,20 @@ public class ProductServiceImp implements ProductService {
 		res.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
 		res.setAreasDto(listAreaDto);
 		res.setSchedules(listScheduleDto);
+		res.setOwner(MapperUtils.mapToDTO(user, UserDTO.class));
 		return res;
 	}
 
 	@Override
 	public ProductDTO updateProduct(int id, ProductUpdateDTO productUpdateDto) throws IOException {
+		User user = userRepository.findById(productUpdateDto.getUserId())
+				.orElseThrow(() -> new ResourceNotFoundException("User", "id", productUpdateDto.getUserId()));
+		logger.info(user.isHasRoleAdmin(user.getRoles()) + "");
+		if (!productOwnerRepository.existsByUserIdAndProductId(user.getId(), productUpdateDto.getId())
+				&& !user.isHasRoleAdmin(user.getRoles()) && !user.isHasRoleMod(user.getRoles()))
+
+			throw new CafeAPIException(HttpStatus.UNAUTHORIZED, "Access denied");
+
 		ProductDTO pdto = this.getProductById(id);
 		String path_menu = "cafe-springboot/menu/";
 		String path_blogs = "cafe-springboot/blogs/";
@@ -345,12 +380,15 @@ public class ProductServiceImp implements ProductService {
 	}
 
 	@Override
-	public void deleteProduct(int id) throws IOException {
-		ProductDTO productDto = this.getProductById(id);
+	public void deleteProduct(ProductDeleteDTO productDeleteDto) throws IOException {
+		ProductDTO productDto = this.getProductById(productDeleteDto.getProductId());
+		ProductOwner owner = productOwnerRepository
+				.findByProductIdAndUserId(productDeleteDto.getProductId(), productDeleteDto.getUserId())
+				.orElseThrow(() -> new ResourceNotFoundException("Onwer", "id", "something went wrong!"));
 		String path_menu = "cafe-springboot/menu/";
 		String path_blogs = "cafe-springboot/blogs/";
-		List<Menu> listEntityMenus = menuRepository.findAllMenuByProductId(id);
-		List<Image> listEntityImages = imageRepository.findAllImageByProductId(id);
+		List<Menu> listEntityMenus = menuRepository.findAllMenuByProductId(productDeleteDto.getProductId());
+		List<Image> listEntityImages = imageRepository.findAllImageByProductId(productDeleteDto.getProductId());
 
 		if (listEntityImages != null)
 			for (Image temp : listEntityImages)
@@ -359,9 +397,9 @@ public class ProductServiceImp implements ProductService {
 		if (listEntityMenus != null)
 			for (Menu menu : listEntityMenus)
 				cloudinaryService.removeImageFromCloudinary(menu.getImage(), path_menu);
-
-		productRepository.deleteById(id);
-
+		productOwnerRepository.deleteAllOwnerByProductIdAndUserId(productDeleteDto.getProductId(),
+				productDeleteDto.getUserId());
+		productRepository.deleteById(productDeleteDto.getProductId());
 	}
 
 	private <T, U> List<T> getListFromIds(List<Integer> ids, JpaRepository<T, Integer> repository, String entityName,
@@ -393,7 +431,6 @@ public class ProductServiceImp implements ProductService {
 	@Override
 	public Float getRateReviewByProduct(Integer productId) {
 		List<Review> listReviews = reviewRepository.findReviewByProductId(productId);
-		logger.info(listReviews.size() + "");
 
 		if (listReviews == null || listReviews.size() < 1)
 			return 0f;
@@ -404,5 +441,28 @@ public class ProductServiceImp implements ProductService {
 		}
 
 		return total / listReviews.size();
+	}
+
+	@Override
+	public String setIsWaitingDeleteProduct(ProductDeleteDTO productDeleteDto) throws IOException {
+		Product product = productRepository.findById(productDeleteDto.getProductId()).orElseThrow(
+				() -> new ResourceNotFoundException("Product", "id", productDeleteDto.getProductId() + ""));
+		ProductOwner owner = productOwnerRepository
+				.findByProductIdAndUserId(productDeleteDto.getProductId(), productDeleteDto.getUserId())
+				.orElseThrow(() -> new ResourceNotFoundException("Onwer", "id", "something went wrong!"));
+		product.setIsWaitingDelete(1);
+		productRepository.save(product);
+		executeDeleteProduct(productDeleteDto);
+		return "Your product will be deleted after 24 hours";
+	}
+
+	@Async
+	public void executeDeleteProduct(ProductDeleteDTO productDeleteDto) throws IOException {
+		scheduledExecutorService.schedule(() -> {
+			try {
+				this.deleteProduct(productDeleteDto);
+			} catch (IOException e) {
+			}
+		}, Integer.parseInt(timeout), TimeUnit.SECONDS);
 	}
 }

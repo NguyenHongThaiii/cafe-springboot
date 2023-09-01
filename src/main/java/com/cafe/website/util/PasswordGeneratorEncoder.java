@@ -1,8 +1,5 @@
 package com.cafe.website.util;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import com.github.slugify.Slugify;
 
 public class PasswordGeneratorEncoder {

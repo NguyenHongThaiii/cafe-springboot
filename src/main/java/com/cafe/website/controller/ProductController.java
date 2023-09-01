@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cafe.website.payload.ProductCreateDTO;
 import com.cafe.website.payload.ProductDTO;
+import com.cafe.website.payload.ProductDeleteDTO;
 import com.cafe.website.payload.ProductUpdateDTO;
 import com.cafe.website.service.ProductService;
 import com.cafe.website.serviceImp.ProductServiceImp;
@@ -39,9 +41,11 @@ public class ProductController {
 
 	@GetMapping("")
 	public ResponseEntity<List<ProductDTO>> getListProducts(@RequestParam(defaultValue = "5") int limit,
-			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false) String name,
+			@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "1") int status,
+			@RequestParam(required = false) Integer isWaitingDelete, @RequestParam(required = false) String name,
 			@RequestParam(required = false, defaultValue = "") String sortBy) {
-		List<ProductDTO> listproducts = productService.getListProducts(limit, page, name, sortBy);
+		List<ProductDTO> listproducts = productService.getListProducts(limit, page, status, isWaitingDelete, name,
+				sortBy);
 		return new ResponseEntity<>(listproducts, HttpStatus.OK);
 	}
 
@@ -69,7 +73,7 @@ public class ProductController {
 		return new ResponseEntity<ProductDTO>(product, HttpStatus.CREATED);
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
+	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@PatchMapping("/{id}")
 	public ResponseEntity<ProductDTO> updateProduct(@PathVariable(name = "id") int id,
 			@Valid @ModelAttribute ProductUpdateDTO productUpdateDto) throws IOException {
@@ -78,9 +82,10 @@ public class ProductController {
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
-	@DeleteMapping("/id/{id}")
-	public ResponseEntity<String> deleteProduct(@PathVariable(name = "id") int id) throws IOException {
-		productService.deleteProduct(id);
+	@DeleteMapping("")
+	public ResponseEntity<String> deleteProduct(@Valid @RequestBody ProductDeleteDTO productDeleteDto)
+			throws IOException {
+		productService.deleteProduct(productDeleteDto);
 		return new ResponseEntity<String>("Delete successfully", HttpStatus.OK);
 	}
 
@@ -88,6 +93,14 @@ public class ProductController {
 	public ResponseEntity<Float> getRatingByReviewId(@PathVariable(name = "id") int id) throws IOException {
 		Float number = productService.getRateReviewByProduct(id);
 		return new ResponseEntity<>(number, HttpStatus.OK);
+	}
+
+	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
+	@DeleteMapping("/setDelete")
+	public ResponseEntity<String> setIsWaitingDeleteProduct(@Valid @RequestBody ProductDeleteDTO productDeleteDto)
+			throws IOException {
+		String res = productService.setIsWaitingDeleteProduct(productDeleteDto);
+		return new ResponseEntity<String>(res, HttpStatus.OK);
 	}
 
 }

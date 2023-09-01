@@ -5,10 +5,12 @@ import java.util.List;
 
 import com.cafe.website.payload.ProductCreateDTO;
 import com.cafe.website.payload.ProductDTO;
+import com.cafe.website.payload.ProductDeleteDTO;
 import com.cafe.website.payload.ProductUpdateDTO;
 
 public interface ProductService {
-	List<ProductDTO> getListProducts(int limit, int page, String name, String sortBy);
+	List<ProductDTO> getListProducts(int limit, int page, int status, Integer isWatingDelete, String name,
+			String sortBy);
 
 	ProductDTO createProduct(ProductCreateDTO productCreateDto) throws IOException;
 
@@ -18,7 +20,9 @@ public interface ProductService {
 
 	ProductDTO getProductBySlug(String slug);
 
-	void deleteProduct(int id) throws IOException;
+	void deleteProduct(ProductDeleteDTO productDeleteDto) throws IOException;
+
+	String setIsWaitingDeleteProduct(ProductDeleteDTO productDeleteDto) throws IOException;
 
 	Float getRateReviewByProduct(Integer productId);
 }

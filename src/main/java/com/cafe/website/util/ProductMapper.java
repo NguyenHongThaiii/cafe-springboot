@@ -6,9 +6,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
-import com.cafe.website.entity.Area;
 import com.cafe.website.entity.Product;
-import com.cafe.website.payload.AreaDTO;
 import com.cafe.website.payload.ProductDTO;
 import com.cafe.website.payload.ProductUpdateDTO;
 

@@ -10,22 +10,24 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "products")
 public class Product extends BaseEntity {
-
 	@Column(unique = true, nullable = false)
 	private String name;
 	@Column(unique = true, nullable = false)
 	private String slug;
+
 	private String phone;
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "products_purposes", joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "purpose_id", referencedColumnName = "id"))
-	private List<Purpose> purposes  = new ArrayList<>();
+	private List<Purpose> purposes = new ArrayList<>();
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "products_areas", joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "area_id", referencedColumnName = "id"))
@@ -51,22 +53,28 @@ public class Product extends BaseEntity {
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Image> listImages = new ArrayList<>();
 
+	@ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.DETACH, CascadeType.REFRESH })
+	private User user;
+
 	private int priceMin;
 	private int priceMax;
 	private int outstanding;
 
-	private String coordinates;
 	private String email;
 	private String facebook;
-
+	private String latitude;
+	private String longitude;
 	private String description;
 	private String location;
 
+	@Column(nullable = false, columnDefinition = "int default 0")
+	private int isWaitingDelete;
+
 	public Product(int id, int status, Long createdAt, Long updatedAt, String name, String slug, String phone,
 			List<Purpose> purposes, List<Area> areas, List<Kind> kinds, List<Convenience> conveniences,
-			List<Review> reviews, List<ProductSchedule> schedules, int priceMin, int priceMax, int outstanding,
-			List<Menu> listMenus, List<Image> listImages, String coordinates, String email, String facebook,
-			String description, String location) {
+			List<Review> reviews, List<ProductSchedule> schedules, List<Menu> listMenus, List<Image> listImages,
+			User user, int priceMin, int priceMax, int outstanding, String email, String facebook, String latitude,
+			String longitude, String description, String location, int isWaitingDelete) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;
 		this.slug = slug;
@@ -77,20 +85,78 @@ public class Product extends BaseEntity {
 		this.conveniences = conveniences;
 		this.reviews = reviews;
 		this.schedules = schedules;
+		this.listMenus = listMenus;
+		this.listImages = listImages;
+		this.user = user;
 		this.priceMin = priceMin;
 		this.priceMax = priceMax;
 		this.outstanding = outstanding;
-		this.listMenus = listMenus;
-		this.listImages = listImages;
-		this.coordinates = coordinates;
 		this.email = email;
 		this.facebook = facebook;
+		this.latitude = latitude;
+		this.longitude = longitude;
 		this.description = description;
 		this.location = location;
+		this.isWaitingDelete = isWaitingDelete;
 	}
 
 	public Product() {
 		// TODO Auto-generated constructor stub
+	}
+
+	public String getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+
+	public String getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
+	}
+
+	public void setIsWaitingDelete(int isWaitingDelete) {
+		this.isWaitingDelete = isWaitingDelete;
+	}
+
+	public Integer getIsWaitingDelete() {
+		return isWaitingDelete;
+	}
+
+	public void setIsWaitingDelete(Integer isWaitingDelete) {
+		if (isWaitingDelete != 0 && isWaitingDelete != 1) {
+			throw new IllegalArgumentException("isWaitingDelete can only be 1 or 0");
+		}
+		this.isWaitingDelete = isWaitingDelete;
+	}
+
+	public List<Menu> getListMenus() {
+		return listMenus;
+	}
+
+	public void setListMenus(List<Menu> listMenus) {
+		this.listMenus = listMenus;
+	}
+
+	public List<Image> getListImages() {
+		return listImages;
+	}
+
+	public void setListImages(List<Image> listImages) {
+		this.listImages = listImages;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	public String getName() {
@@ -203,14 +269,6 @@ public class Product extends BaseEntity {
 
 	public void setlistImages(List<Image> listImages) {
 		this.listImages = listImages;
-	}
-
-	public String getCoordinates() {
-		return coordinates;
-	}
-
-	public void setCoordinates(String coordinates) {
-		this.coordinates = coordinates;
 	}
 
 	public String getEmail() {

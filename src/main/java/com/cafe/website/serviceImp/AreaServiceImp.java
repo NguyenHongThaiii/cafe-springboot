@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.cafe.website.constant.SortField;
 import com.cafe.website.entity.Area;
@@ -24,7 +23,6 @@ import com.cafe.website.payload.AreaCreateDTO;
 import com.cafe.website.payload.AreaDTO;
 import com.cafe.website.payload.AreaUpdateDTO;
 import com.cafe.website.payload.ImageDTO;
-import com.cafe.website.payload.ProductDTO;
 import com.cafe.website.repository.AreaRepository;
 import com.cafe.website.repository.ImageRepository;
 import com.cafe.website.service.AreaService;
@@ -45,8 +43,10 @@ public class AreaServiceImp implements AreaService {
 	CloudinaryService cloudinaryService;
 	private AreaRepository areaRepository;
 	private ImageRepository imageRepository;
+
 	private Slugify slugify = Slugify.builder().build();
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
+	String path_category = "cafe-springboot/categories/Area";
 
 	public AreaServiceImp(AreaRepository areaRepository, AreaMapper areaMapper, CloudinaryService cloudinaryService,
 			ImageRepository imageRepository) {
@@ -130,7 +130,7 @@ public class AreaServiceImp implements AreaService {
 
 		Area area = MapperUtils.mapToEntity(areaCreateDto, Area.class);
 		area.setSlug(slugify.slugify(areaCreateDto.getSlug()));
-		String url = cloudinaryService.uploadImage(areaCreateDto.getImageFile(), "cafe-springboot/categories", "image");
+		String url = cloudinaryService.uploadImage(areaCreateDto.getImageFile(), path_category, "image");
 
 		Image image = new Image();
 		image.setArea(area);
@@ -156,9 +156,7 @@ public class AreaServiceImp implements AreaService {
 		Area area = areaMapper.dtoToEntity(newdto);
 		AreaDTO areaDto = MapperUtils.mapToDTO(areaUpdateDto, AreaDTO.class);
 		if (areaUpdateDto.getImageFile() != null) {
-			logger.info("run");
-			String url = cloudinaryService.uploadImage(areaUpdateDto.getImageFile(), "cafe-springboot/categories",
-					"image");
+			String url = cloudinaryService.uploadImage(areaUpdateDto.getImageFile(), path_category, "image");
 			Image image = new Image();
 			image.setArea(area);
 			image.setImage(url);
@@ -178,8 +176,7 @@ public class AreaServiceImp implements AreaService {
 
 	@Override
 	public void deleteArea(int id) throws IOException {
-		AreaDTO areaDto = this.getAreaById(id);
-		String path_category = "cafe-springboot/categories/";
+		this.getAreaById(id);
 
 		Image image = imageRepository.findImageByAreaId(id).orElse(null);
 		this.cloudinaryService.removeImageFromCloudinary(image.getImage(), path_category);
