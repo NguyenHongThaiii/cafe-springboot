@@ -47,7 +47,7 @@ public class ReviewController {
 		return new ResponseEntity<>(listAreasDto, HttpStatus.OK);
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/id/{id}")
 	public ResponseEntity<ReviewDTO> getReviewById(@PathVariable(name = "id") int id) throws IOException {
 		ReviewDTO reviewDto = reviewService.getReviewById(id);
 		return new ResponseEntity<>(reviewDto, HttpStatus.OK);
@@ -61,7 +61,7 @@ public class ReviewController {
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
-	@PatchMapping("/{id}")
+	@PatchMapping("/id/{id}")
 	public ResponseEntity<ReviewDTO> updateReviewById(@PathVariable(name = "id") int id,
 			@Valid @ModelAttribute ReviewUpdateDTO review) throws IOException {
 		ReviewDTO reviewDto = reviewService.updateReview(id, review);
@@ -69,7 +69,7 @@ public class ReviewController {
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/id/{id}")
 	public ResponseEntity<String> delelteReviewById(@PathVariable(name = "id") int id) throws IOException {
 		reviewService.deleteReview(id);
 		return new ResponseEntity<>("Delete successfully", HttpStatus.OK);

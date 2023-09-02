@@ -10,7 +10,7 @@ import com.cafe.website.payload.ProductUpdateDTO;
 
 public interface ProductService {
 	List<ProductDTO> getListProducts(int limit, int page, int status, Integer isWatingDelete, String name,
-			String sortBy);
+			String slugArea, String slugConvenience, String slugKind, String slugPurpose, String sortBy);
 
 	ProductDTO createProduct(ProductCreateDTO productCreateDto) throws IOException;
 

@@ -7,7 +7,9 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
 import com.cafe.website.entity.Convenience;
+import com.cafe.website.entity.Kind;
 import com.cafe.website.payload.ConvenienceDTO;
+import com.cafe.website.payload.KindDTO;
 
 @Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface ConvenienceMapper {
@@ -16,4 +18,8 @@ public interface ConvenienceMapper {
 
 	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, ignoreByDefault = true)
 	void updateConvenienceDTOFromArea(Convenience entity, @MappingTarget ConvenienceDTO convenienceDto);
+
+	ConvenienceDTO entityToDto(Convenience convenience);
+
+	Convenience dtoToEntity(ConvenienceDTO convenienceDTO);
 }

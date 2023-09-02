@@ -47,8 +47,7 @@ public class ConvenienceDTO extends BaseEntity implements HasImageDTO {
 
 	@Override
 	public void setImage(ImageDTO imageDto) {
-		// TODO Auto-generated method stub
-
+		this.imageDto = imageDto;
 	}
 
 }

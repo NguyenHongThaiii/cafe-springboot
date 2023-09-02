@@ -11,15 +11,14 @@ import com.cafe.website.entity.ProductSchedule;
 import com.cafe.website.entity.Purpose;
 
 public class ProductDTO extends BaseEntityDTO {
-	private List<Purpose> purposesDto = new ArrayList<>();
+	private List<PurposeDTO> purposesDto = new ArrayList<>();
 	private List<AreaDTO> areasDto = new ArrayList<>();
-	private List<Kind> kindsDto = new ArrayList<>();
-	private List<Convenience> conveniencesDto = new ArrayList<>();
+	private List<KindDTO> kindsDto = new ArrayList<>();
+	private List<ConvenienceDTO> conveniencesDto = new ArrayList<>();
 	private List<ProductScheduleDTO> schedules = new ArrayList<>();
 	private String name;
 	private String slug;
 	private String phone;
-	private int status;
 	private int priceMin;
 	private int priceMax;
 	private int outstanding;
@@ -34,8 +33,8 @@ public class ProductDTO extends BaseEntityDTO {
 	private UserDTO owner;
 	private Integer isWaitingDelete;
 
-	public ProductDTO(int id, Integer status, Long createdAt, Long updatedAt, List<Purpose> purposesDto,
-			List<AreaDTO> areasDto, List<Kind> kindsDto, List<Convenience> conveniencesDto,
+	public ProductDTO(int id, Integer status, Long createdAt, Long updatedAt, List<PurposeDTO> purposesDto,
+			List<AreaDTO> areasDto, List<KindDTO> kindsDto, List<ConvenienceDTO> conveniencesDto,
 			List<ProductScheduleDTO> schedules, String name, String slug, String phone, int status2, int priceMin,
 			int priceMax, int outstanding, String latitude, String longitude, String email, String facebook,
 			String description, String location, List<ImageDTO> listImage, UserDTO owner, Integer isWaitingDelete) {
@@ -67,22 +66,6 @@ public class ProductDTO extends BaseEntityDTO {
 		// TODO Auto-generated constructor stub
 	}
 
-	public String getLatitude() {
-		return latitude;
-	}
-
-	public void setLatitude(String latitude) {
-		this.latitude = latitude;
-	}
-
-	public String getLongitude() {
-		return longitude;
-	}
-
-	public void setLongitude(String longitude) {
-		this.longitude = longitude;
-	}
-
 	public Integer getIsWaitingDelete() {
 		return isWaitingDelete;
 	}
@@ -94,23 +77,11 @@ public class ProductDTO extends BaseEntityDTO {
 		this.isWaitingDelete = isWaitingDelete;
 	}
 
-	public UserDTO getOwner() {
-		return owner;
-	}
-
-	public void setOwner(UserDTO owner) {
-		this.owner = owner;
-	}
-
-	public void setStatus(int status) {
-		this.status = status;
-	}
-
-	public List<Purpose> getPurposesDto() {
+	public List<PurposeDTO> getPurposesDto() {
 		return purposesDto;
 	}
 
-	public void setPurposesDto(List<Purpose> purposesDto) {
+	public void setPurposesDto(List<PurposeDTO> purposesDto) {
 		this.purposesDto = purposesDto;
 	}
 
@@ -122,19 +93,19 @@ public class ProductDTO extends BaseEntityDTO {
 		this.areasDto = areasDto;
 	}
 
-	public List<Kind> getKindsDto() {
+	public List<KindDTO> getKindsDto() {
 		return kindsDto;
 	}
 
-	public void setKindsDto(List<Kind> kindsDto) {
+	public void setKindsDto(List<KindDTO> kindsDto) {
 		this.kindsDto = kindsDto;
 	}
 
-	public List<Convenience> getConveniencesDto() {
+	public List<ConvenienceDTO> getConveniencesDto() {
 		return conveniencesDto;
 	}
 
-	public void setConveniencesDto(List<Convenience> conveniencesDto) {
+	public void setConveniencesDto(List<ConvenienceDTO> conveniencesDto) {
 		this.conveniencesDto = conveniencesDto;
 	}
 
@@ -170,14 +141,6 @@ public class ProductDTO extends BaseEntityDTO {
 		this.phone = phone;
 	}
 
-	public Integer getStatus() {
-		return status;
-	}
-
-	public void setStatus(Integer status) {
-		this.status = status;
-	}
-
 	public int getPriceMin() {
 		return priceMin;
 	}
@@ -200,6 +163,22 @@ public class ProductDTO extends BaseEntityDTO {
 
 	public void setOutstanding(int outstanding) {
 		this.outstanding = outstanding;
+	}
+
+	public String getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+
+	public String getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
 	}
 
 	public String getEmail() {
@@ -241,4 +220,13 @@ public class ProductDTO extends BaseEntityDTO {
 	public void setListImage(List<ImageDTO> listImage) {
 		this.listImage = listImage;
 	}
+
+	public UserDTO getOwner() {
+		return owner;
+	}
+
+	public void setOwner(UserDTO owner) {
+		this.owner = owner;
+	}
+
 }

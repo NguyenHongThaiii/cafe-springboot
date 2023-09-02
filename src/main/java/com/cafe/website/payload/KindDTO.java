@@ -1,8 +1,6 @@
 package com.cafe.website.payload;
 
-import com.cafe.website.entity.BaseEntity;
-
-public class KindDTO extends BaseEntity implements HasImageDTO {
+public class KindDTO extends BaseEntityDTO implements HasImageDTO {
 	private String name;
 
 	private String slug;
@@ -46,7 +44,7 @@ public class KindDTO extends BaseEntity implements HasImageDTO {
 
 	@Override
 	public void setImage(ImageDTO imageDto) {
-		// TODO Auto-generated method stub
+		this.imageDto = imageDto;
 
 	}
 

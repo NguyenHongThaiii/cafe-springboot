@@ -64,7 +64,7 @@ public class ProductDiscountController {
 		return new ResponseEntity<ProductDiscountDTO>(product, HttpStatus.OK);
 	}
 
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/id/{id}")
 	public ResponseEntity<String> deleteProductDiscountById(@PathVariable(name = "id") Integer id) {
 		productDiscountService.deleteProductDiscountById(id);
 

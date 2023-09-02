@@ -16,4 +16,8 @@ public interface PurposeMapper {
 
 	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, ignoreByDefault = true)
 	void updatePurposeDTOFromArea(Purpose entity, @MappingTarget PurposeDTO purposeDto);
+
+	PurposeDTO entityToDto(Purpose purpose);
+
+	Purpose dtoToEntity(PurposeDTO purposeDTO);
 }

@@ -7,8 +7,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
-public class AreaCreateDTO {
-
+public class PurposeCreateDTO {
 	@Min(value = 0, message = "Status should not be less than 0")
 	@Max(value = 1, message = "status should not be greater than 1")
 	private int status;
@@ -22,7 +21,11 @@ public class AreaCreateDTO {
 	@NotNull(message = "Image should not be null or empty")
 	private MultipartFile imageFile;
 
-	public AreaCreateDTO(int status, String name, String slug, MultipartFile imageFile) {
+	public PurposeCreateDTO(
+			@Min(value = 0, message = "Status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") int status,
+			@NotEmpty(message = "Name should not be null or empty") String name,
+			@NotNull(message = "Slug should not be null or empty") String slug,
+			@NotNull(message = "Image should not be null or empty") MultipartFile imageFile) {
 		super();
 		this.status = status;
 		this.name = name;
@@ -30,8 +33,8 @@ public class AreaCreateDTO {
 		this.imageFile = imageFile;
 	}
 
-	public AreaCreateDTO() {
-		super();
+	public PurposeCreateDTO() {
+		// TODO Auto-generated constructor stub
 	}
 
 	public int getStatus() {
@@ -65,5 +68,4 @@ public class AreaCreateDTO {
 	public void setImageFile(MultipartFile imageFile) {
 		this.imageFile = imageFile;
 	}
-
 }

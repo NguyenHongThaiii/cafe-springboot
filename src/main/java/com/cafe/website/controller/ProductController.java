@@ -43,9 +43,11 @@ public class ProductController {
 	public ResponseEntity<List<ProductDTO>> getListProducts(@RequestParam(defaultValue = "5") int limit,
 			@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "1") int status,
 			@RequestParam(required = false) Integer isWaitingDelete, @RequestParam(required = false) String name,
+			@RequestParam(required = false) String slugArea, @RequestParam(required = false) String slugKind,
+			@RequestParam(required = false) String slugConvenience, @RequestParam(required = false) String slugPurpose,
 			@RequestParam(required = false, defaultValue = "") String sortBy) {
 		List<ProductDTO> listproducts = productService.getListProducts(limit, page, status, isWaitingDelete, name,
-				sortBy);
+				slugArea, slugConvenience, slugKind, slugPurpose, sortBy);
 		return new ResponseEntity<>(listproducts, HttpStatus.OK);
 	}
 
@@ -74,7 +76,7 @@ public class ProductController {
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
-	@PatchMapping("/{id}")
+	@PatchMapping("/id/{id}")
 	public ResponseEntity<ProductDTO> updateProduct(@PathVariable(name = "id") int id,
 			@Valid @ModelAttribute ProductUpdateDTO productUpdateDto) throws IOException {
 		ProductDTO productDto = productService.updateProduct(id, productUpdateDto);

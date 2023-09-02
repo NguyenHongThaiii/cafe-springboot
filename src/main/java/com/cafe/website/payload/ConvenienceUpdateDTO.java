@@ -2,27 +2,17 @@ package com.cafe.website.payload;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+public class ConvenienceUpdateDTO {
 
-public class AreaCreateDTO {
-
-	@Min(value = 0, message = "Status should not be less than 0")
-	@Max(value = 1, message = "status should not be greater than 1")
 	private int status;
 
-	@NotEmpty(message = "Name should not be null or empty")
 	private String name;
 
-	@NotNull(message = "Slug should not be null or empty")
 	private String slug;
 
-	@NotNull(message = "Image should not be null or empty")
 	private MultipartFile imageFile;
 
-	public AreaCreateDTO(int status, String name, String slug, MultipartFile imageFile) {
+	public ConvenienceUpdateDTO(int status, String name, String slug, MultipartFile imageFile) {
 		super();
 		this.status = status;
 		this.name = name;
@@ -30,8 +20,10 @@ public class AreaCreateDTO {
 		this.imageFile = imageFile;
 	}
 
-	public AreaCreateDTO() {
+	public ConvenienceUpdateDTO() {
 		super();
+		this.status = 1;
+
 	}
 
 	public int getStatus() {
@@ -65,5 +57,4 @@ public class AreaCreateDTO {
 	public void setImageFile(MultipartFile imageFile) {
 		this.imageFile = imageFile;
 	}
-
 }

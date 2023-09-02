@@ -32,4 +32,9 @@ public class BaseCategory extends BaseEntity {
 		this.slug = slug;
 	}
 
+	@Override
+	public String toString() {
+		return "BaseCategory [name=" + name + ", slug=" + slug + "]";
+	}
+
 }

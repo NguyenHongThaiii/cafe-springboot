@@ -40,7 +40,7 @@ public class KindServiceImp implements KindService {
 	@PersistenceContext
 	private EntityManager entityManager;
 	private KindMapper kindMapper;
-	CloudinaryService cloudinaryService;
+	private CloudinaryService cloudinaryService;
 	private KindRepository kindRepository;
 	private ImageRepository imageRepository;
 
@@ -48,8 +48,18 @@ public class KindServiceImp implements KindService {
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 	String path_category = "cafe-springboot/categories/Kind";
 
+	public KindServiceImp(EntityManager entityManager, KindMapper kindMapper, CloudinaryService cloudinaryService,
+			KindRepository kindRepository, ImageRepository imageRepository) {
+		super();
+		this.entityManager = entityManager;
+		this.kindMapper = kindMapper;
+		this.cloudinaryService = cloudinaryService;
+		this.kindRepository = kindRepository;
+		this.imageRepository = imageRepository;
+	}
+
 	@Override
-	public List<KindDTO> getListKinds(int limit, int page, String name, String sortBy) {
+	public List<KindDTO> getListKinds(int limit, int page, String name, String slug, String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
 				SortField.CREATEDATDESC);
@@ -58,7 +68,6 @@ public class KindServiceImp implements KindService {
 		List<KindDTO> listKindDto;
 		List<Kind> listKind;
 		List<Sort.Order> sortOrders = new ArrayList<>();
-
 		if (!StringUtils.isEmpty(sortBy))
 			sortByList = Arrays.asList(sortBy.split(","));
 
@@ -79,12 +88,11 @@ public class KindServiceImp implements KindService {
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
-		listKind = kindRepository.findWithFilters(name, pageable, entityManager);
+		listKind = kindRepository.findWithFilters(name, slug, pageable, entityManager);
 
 		listKindDto = listKind.stream().map(kind -> {
 			KindDTO kindDto = MapperUtils.mapToDTO(kind, KindDTO.class);
 			Image image = imageRepository.findImageByKindId(kind.getId()).orElse(null);
-
 			kindDto.setImage(ImageDTO.generateImageDTO(image));
 			return kindDto;
 		}).collect(Collectors.toList());
@@ -144,7 +152,7 @@ public class KindServiceImp implements KindService {
 		if (kindRepository.existsByNameAndIdNot(kindUpdateDto.getName(), newDto.getId()))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
 
-		Kind kind = MapperUtils.mapToEntity(newDto, Kind.class);
+		Kind kind = kindMapper.dtoToEntity(newDto);
 		KindDTO kindDto = MapperUtils.mapToDTO(kindUpdateDto, KindDTO.class);
 		if (kindUpdateDto.getImageFile() != null) {
 			String url = cloudinaryService.uploadImage(kindUpdateDto.getImageFile(), path_category, "image");
@@ -154,7 +162,8 @@ public class KindServiceImp implements KindService {
 			kind.setImage(image);
 		}
 		kindDto.setId(id);
-		kindDto.setSlug(slugify.slugify(kindUpdateDto.getSlug()));
+		if (kindUpdateDto.getSlug() != null)
+			kindDto.setSlug(slugify.slugify(kindUpdateDto.getSlug()));
 
 		kindMapper.updateKindFromDto(kindDto, kind);
 		kindRepository.save(kind);
@@ -167,10 +176,10 @@ public class KindServiceImp implements KindService {
 
 	@Override
 	public void deleteKind(int id) throws IOException {
-		this.getKindById(id);
-
-		Image image = imageRepository.findImageByAreaId(id).orElse(null);
-		this.cloudinaryService.removeImageFromCloudinary(image.getImage(), path_category);
+		kindRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("kind", "id", id + ""));
+		Image image = imageRepository.findImageByKindId(id).orElse(null);
+		if (image != null)
+			this.cloudinaryService.removeImageFromCloudinary(image.getImage(), path_category);
 
 		kindRepository.deleteById(id);
 	}

@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -16,6 +17,7 @@ import com.cafe.website.entity.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
@@ -35,6 +37,15 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 		if (email != null) {
 			predicates.add(cb.like(cb.lower(user.get("email")), "%" + email.toLowerCase() + "%"));
+		}
+		
+		if (pageable.getSort() != null) {
+			List<Order> orders = new ArrayList<>();
+			for (Sort.Order order : pageable.getSort()) {
+				orders.add(order.isAscending() ? cb.asc(user.get(order.getProperty()))
+						: cb.desc(user.get(order.getProperty())));
+			}
+			cq.orderBy(orders);
 		}
 		cq.where(predicates.toArray(new Predicate[0]));
 

@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -15,6 +16,7 @@ import com.cafe.website.entity.Review;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
@@ -44,7 +46,14 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 		if (ratingId != null) {
 			predicates.add(cb.equal(review.get("rating").get("id"), ratingId));
 		}
-
+		if (pageable.getSort() != null) {
+			List<Order> orders = new ArrayList<>();
+			for (Sort.Order order : pageable.getSort()) {
+				orders.add(order.isAscending() ? cb.asc(review.get(order.getProperty()))
+						: cb.desc(review.get(order.getProperty())));
+			}
+			cq.orderBy(orders);
+		}
 		cq.where(predicates.toArray(new Predicate[0]));
 
 		return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())

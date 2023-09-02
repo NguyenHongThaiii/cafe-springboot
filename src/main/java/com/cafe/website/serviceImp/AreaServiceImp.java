@@ -40,12 +40,12 @@ public class AreaServiceImp implements AreaService {
 	@PersistenceContext
 	private EntityManager entityManager;
 	private AreaMapper areaMapper;
-	CloudinaryService cloudinaryService;
+	private CloudinaryService cloudinaryService;
 	private AreaRepository areaRepository;
 	private ImageRepository imageRepository;
 
 	private Slugify slugify = Slugify.builder().build();
-	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
+	private static final Logger logger = LoggerFactory.getLogger(AreaServiceImp.class);
 	String path_category = "cafe-springboot/categories/Area";
 
 	public AreaServiceImp(AreaRepository areaRepository, AreaMapper areaMapper, CloudinaryService cloudinaryService,
@@ -57,7 +57,7 @@ public class AreaServiceImp implements AreaService {
 	}
 
 	@Override
-	public List<AreaDTO> getListAreas(int limit, int page, String name, String sortBy) {
+	public List<AreaDTO> getListAreas(int limit, int page, String name, String slug, String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
 				SortField.CREATEDATDESC);
@@ -87,7 +87,7 @@ public class AreaServiceImp implements AreaService {
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
-		listArea = areaRepository.findWithFilters(name, pageable, entityManager);
+		listArea = areaRepository.findWithFilters(name, slug, pageable, entityManager);
 
 		listAreaDto = listArea.stream().map(area -> {
 			AreaDTO areaDto = MapperUtils.mapToDTO(area, AreaDTO.class);
@@ -163,7 +163,8 @@ public class AreaServiceImp implements AreaService {
 			area.setImage(image);
 		}
 		areaDto.setId(id);
-		areaDto.setSlug(slugify.slugify(areaUpdateDto.getSlug()));
+		if (areaUpdateDto.getSlug() != null)
+			areaDto.setSlug(slugify.slugify(areaUpdateDto.getSlug()));
 
 		areaMapper.updateAreaFromDto(areaDto, area);
 		areaRepository.save(area);
@@ -176,10 +177,11 @@ public class AreaServiceImp implements AreaService {
 
 	@Override
 	public void deleteArea(int id) throws IOException {
-		this.getAreaById(id);
+		areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area", "id", id + ""));
 
 		Image image = imageRepository.findImageByAreaId(id).orElse(null);
-		this.cloudinaryService.removeImageFromCloudinary(image.getImage(), path_category);
+		if (image != null)
+			this.cloudinaryService.removeImageFromCloudinary(image.getImage(), path_category);
 
 		areaRepository.deleteById(id);
 	}

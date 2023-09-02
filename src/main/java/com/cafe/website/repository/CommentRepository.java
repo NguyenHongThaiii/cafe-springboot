@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -14,6 +15,7 @@ import com.cafe.website.entity.Review;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
@@ -38,7 +40,14 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
 		if (userId != null) {
 			predicates.add(cb.equal(comment.get("user").get("id"), userId));
 		}
-
+		if (pageable.getSort() != null) {
+			List<Order> orders = new ArrayList<>();
+			for (Sort.Order order : pageable.getSort()) {
+				orders.add(order.isAscending() ? cb.asc(comment.get(order.getProperty()))
+						: cb.desc(comment.get(order.getProperty())));
+			}
+			cq.orderBy(orders);
+		}
 		cq.where(predicates.toArray(new Predicate[0]));
 
 		return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())

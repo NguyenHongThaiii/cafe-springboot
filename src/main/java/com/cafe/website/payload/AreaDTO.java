@@ -2,7 +2,7 @@ package com.cafe.website.payload;
 
 import com.cafe.website.entity.BaseEntity;
 
-public class AreaDTO extends BaseEntity implements HasImageDTO {
+public class AreaDTO extends BaseEntityDTO implements HasImageDTO {
 
 	private String name;
 
@@ -37,11 +37,16 @@ public class AreaDTO extends BaseEntity implements HasImageDTO {
 		this.slug = slug;
 	}
 
-	public ImageDTO getImage() {
+	@Override
+	public void setImage(ImageDTO imageDto) {
+		this.imageDto = imageDto;
+	}
+
+	public ImageDTO getImageDto() {
 		return imageDto;
 	}
 
-	public void setImage(ImageDTO imageDto) {
+	public void setImageDto(ImageDTO imageDto) {
 		this.imageDto = imageDto;
 	}
 

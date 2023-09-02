@@ -1,5 +1,7 @@
 package com.cafe.website.entity;
 
+import com.cafe.website.payload.HasImage;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToOne;
@@ -7,7 +9,7 @@ import jakarta.persistence.Table;
 
 @Table(name = "conveniences")
 @Entity
-public class Convenience extends BaseCategory {
+public class Convenience extends BaseCategory implements HasImage {
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "convenience")
 	private Image image;
 
@@ -20,6 +22,7 @@ public class Convenience extends BaseCategory {
 		this.image = image;
 	}
 
+	@Override
 	public Image getImage() {
 		return image;
 	}

@@ -8,7 +8,6 @@ import com.cafe.website.payload.KindDTO;
 import com.cafe.website.payload.KindUpdateDTO;
 
 public interface KindService {
-	List<KindDTO> getListKinds(int limit, int page, String name, String sortBy);
 
 	KindDTO getKindById(int id);
 
@@ -19,4 +18,6 @@ public interface KindService {
 	KindDTO updateKind(int id, KindUpdateDTO kindUpdateDto) throws IOException;
 
 	void deleteKind(int id) throws IOException;
+
+	List<KindDTO> getListKinds(int limit, int page, String name, String slug, String sortBy);
 }

@@ -39,7 +39,7 @@ public class CommentController {
 		return ResponseEntity.ok(list);
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/id/{id}")
 	public ResponseEntity<CommentDTO> getCommentById(@PathVariable(name = "id") Integer id) {
 		CommentDTO comment = commentService.getCommentById(id);
 		return new ResponseEntity<CommentDTO>(comment, HttpStatus.OK);
@@ -51,14 +51,14 @@ public class CommentController {
 		return new ResponseEntity<CommentDTO>(comment, HttpStatus.CREATED);
 	}
 
-	@PatchMapping("/{id}")
+	@PatchMapping("/id/{id}")
 	public ResponseEntity<CommentDTO> updateComment(@PathVariable(name = "id") Integer id,
 			@Valid @RequestBody CommentUpdateDTO CommentUpdateDTO) {
 		CommentDTO comment = commentService.updateComment(id, CommentUpdateDTO);
 		return new ResponseEntity<CommentDTO>(comment, HttpStatus.OK);
 	}
 
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/id/{id}")
 	public ResponseEntity<String> delteCommentById(@PathVariable(name = "id") Integer id) {
 		commentService.deleteComment(id);
 		return new ResponseEntity<String>("Delete successfuly", HttpStatus.OK);

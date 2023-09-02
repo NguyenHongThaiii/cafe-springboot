@@ -35,8 +35,9 @@ public class AreaController {
 	@GetMapping("")
 	public ResponseEntity<List<AreaDTO>> getListAreas(@RequestParam(defaultValue = "5") int limit,
 			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false) String name,
+			@RequestParam(required = false) String slug,
 			@RequestParam(required = false, defaultValue = "") String sortBy) {
-		List<AreaDTO> listAreasDto = areaService.getListAreas(limit, page, name, sortBy);
+		List<AreaDTO> listAreasDto = areaService.getListAreas(limit, page, name, slug, sortBy);
 		return new ResponseEntity<>(listAreasDto, HttpStatus.OK);
 	}
 
@@ -61,7 +62,7 @@ public class AreaController {
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
-	@PatchMapping("/{id}")
+	@PatchMapping("/id/{id}")
 	public ResponseEntity<AreaDTO> updateArea(@Valid @ModelAttribute AreaUpdateDTO areaDto,
 			@PathVariable(name = "id") int id) throws IOException {
 		AreaDTO newAreaDto = areaService.updateArea(id, areaDto);
@@ -69,7 +70,7 @@ public class AreaController {
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/id/{id}")
 	public ResponseEntity<String> deleteArea(@PathVariable(name = "id") int id) throws IOException {
 		areaService.deleteArea(id);
 		return new ResponseEntity<>("Delete successfully", HttpStatus.OK);

@@ -36,14 +36,6 @@ public class ReviewDTO extends BaseEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	public List<ImageDTO> getListImages() {
-		return listImages;
-	}
-
-	public void setListImages(List<ImageDTO> listImages) {
-		this.listImages = listImages;
-	}
-
 	public Rating getRating() {
 		return rating;
 	}
@@ -58,6 +50,14 @@ public class ReviewDTO extends BaseEntity {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public List<ImageDTO> getListImages() {
+		return listImages;
+	}
+
+	public void setListImages(List<ImageDTO> listImages) {
+		this.listImages = listImages;
 	}
 
 }

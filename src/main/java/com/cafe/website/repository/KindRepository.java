@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -15,6 +16,7 @@ import com.cafe.website.entity.Kind;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
@@ -33,7 +35,7 @@ public interface KindRepository extends JpaRepository<Kind, Integer> {
 	Optional<Kind> findBySlug(String slug);
 
 	@Query
-	default List<Kind> findWithFilters(String name, Pageable pageable, EntityManager entityManager) {
+	default List<Kind> findWithFilters(String name, String slug, Pageable pageable, EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Kind> cq = cb.createQuery(Kind.class);
@@ -44,7 +46,17 @@ public interface KindRepository extends JpaRepository<Kind, Integer> {
 		if (name != null) {
 			predicates.add(cb.like(cb.lower(kind.get("name")), "%" + name.toLowerCase() + "%"));
 		}
-
+		if (slug != null) {
+			predicates.add(cb.equal(kind.get("slug"), slug));
+		}
+		if (pageable.getSort() != null) {
+			List<Order> orders = new ArrayList<>();
+			for (Sort.Order order : pageable.getSort()) {
+				orders.add(order.isAscending() ? cb.asc(kind.get(order.getProperty()))
+						: cb.desc(kind.get(order.getProperty())));
+			}
+			cq.orderBy(orders);
+		}
 		cq.where(predicates.toArray(new Predicate[0]));
 
 		return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())

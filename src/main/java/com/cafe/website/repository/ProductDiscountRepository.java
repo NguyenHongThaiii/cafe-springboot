@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -15,6 +16,7 @@ import com.cafe.website.entity.ProductDiscount;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
@@ -45,7 +47,14 @@ public interface ProductDiscountRepository extends JpaRepository<ProductDiscount
 		if (isExpired != null && isExpired == true) {
 			predicates.add(cb.lessThan(productDiscount.get("expiryDate"), new Date().getTime()));
 		}
-
+		if (pageable.getSort() != null) {
+			List<Order> orders = new ArrayList<>();
+			for (Sort.Order order : pageable.getSort()) {
+				orders.add(order.isAscending() ? cb.asc(productDiscount.get(order.getProperty()))
+						: cb.desc(productDiscount.get(order.getProperty())));
+			}
+			cq.orderBy(orders);
+		}
 		cq.where(predicates.toArray(new Predicate[0]));
 
 		return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
