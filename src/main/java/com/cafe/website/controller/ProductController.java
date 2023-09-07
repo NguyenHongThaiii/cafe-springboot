@@ -42,12 +42,14 @@ public class ProductController {
 	@GetMapping("")
 	public ResponseEntity<List<ProductDTO>> getListProducts(@RequestParam(defaultValue = "5") int limit,
 			@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "1") int status,
-			@RequestParam(required = false) Integer isWaitingDelete, @RequestParam(required = false) String name,
-			@RequestParam(required = false) String slugArea, @RequestParam(required = false) String slugKind,
-			@RequestParam(required = false) String slugConvenience, @RequestParam(required = false) String slugPurpose,
+			@RequestParam(required = false) String rating, @RequestParam(required = false) Integer isWaitingDelete,
+			@RequestParam(required = false) Double latitude, @RequestParam(required = false) Double longitude,
+			@RequestParam(required = false) String name, @RequestParam(required = false) String slugArea,
+			@RequestParam(required = false) String slugKind, @RequestParam(required = false) String slugConvenience,
+			@RequestParam(required = false) String slugPurpose,
 			@RequestParam(required = false, defaultValue = "") String sortBy) {
-		List<ProductDTO> listproducts = productService.getListProducts(limit, page, status, isWaitingDelete, name,
-				slugArea, slugConvenience, slugKind, slugPurpose, sortBy);
+		List<ProductDTO> listproducts = productService.getListProducts(limit, page, status, rating, isWaitingDelete,
+				name, slugArea, slugConvenience, slugKind, slugPurpose, latitude, longitude, sortBy);
 		return new ResponseEntity<>(listproducts, HttpStatus.OK);
 	}
 

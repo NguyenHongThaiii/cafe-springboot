@@ -22,9 +22,8 @@ public class ProductDTO extends BaseEntityDTO {
 	private int priceMin;
 	private int priceMax;
 	private int outstanding;
-	private String latitude;
-	private String longitude;
-
+	private Integer latitude;
+	private Integer longitude;
 	private String email;
 	private String facebook;
 	private String description;
@@ -32,12 +31,13 @@ public class ProductDTO extends BaseEntityDTO {
 	private List<ImageDTO> listImage = new ArrayList<>();
 	private UserDTO owner;
 	private Integer isWaitingDelete;
+	private double avgRating;
 
 	public ProductDTO(int id, Integer status, Long createdAt, Long updatedAt, List<PurposeDTO> purposesDto,
 			List<AreaDTO> areasDto, List<KindDTO> kindsDto, List<ConvenienceDTO> conveniencesDto,
-			List<ProductScheduleDTO> schedules, String name, String slug, String phone, int status2, int priceMin,
-			int priceMax, int outstanding, String latitude, String longitude, String email, String facebook,
-			String description, String location, List<ImageDTO> listImage, UserDTO owner, Integer isWaitingDelete) {
+			List<ProductScheduleDTO> schedules, String name, String slug, String phone, int priceMin, int priceMax,
+			int outstanding, Integer latitude, Integer longitude, String email, String facebook, String description,
+			String location, List<ImageDTO> listImage, UserDTO owner, Integer isWaitingDelete, double avgRating) {
 		super(id, status, createdAt, updatedAt);
 		this.purposesDto = purposesDto;
 		this.areasDto = areasDto;
@@ -47,7 +47,6 @@ public class ProductDTO extends BaseEntityDTO {
 		this.name = name;
 		this.slug = slug;
 		this.phone = phone;
-		status = status2;
 		this.priceMin = priceMin;
 		this.priceMax = priceMax;
 		this.outstanding = outstanding;
@@ -60,10 +59,19 @@ public class ProductDTO extends BaseEntityDTO {
 		this.listImage = listImage;
 		this.owner = owner;
 		this.isWaitingDelete = isWaitingDelete;
+		this.avgRating = avgRating;
 	}
 
 	public ProductDTO() {
 		// TODO Auto-generated constructor stub
+	}
+
+	public double getAvgRating() {
+		return avgRating;
+	}
+
+	public void setAvgRating(double avgRating) {
+		this.avgRating = avgRating;
 	}
 
 	public Integer getIsWaitingDelete() {
@@ -165,19 +173,19 @@ public class ProductDTO extends BaseEntityDTO {
 		this.outstanding = outstanding;
 	}
 
-	public String getLatitude() {
+	public Integer getLatitude() {
 		return latitude;
 	}
 
-	public void setLatitude(String latitude) {
+	public void setLatitude(Integer latitude) {
 		this.latitude = latitude;
 	}
 
-	public String getLongitude() {
+	public Integer getLongitude() {
 		return longitude;
 	}
 
-	public void setLongitude(String longitude) {
+	public void setLongitude(Integer longitude) {
 		this.longitude = longitude;
 	}
 

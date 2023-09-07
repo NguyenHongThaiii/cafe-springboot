@@ -62,8 +62,8 @@ public class Product extends BaseEntity {
 
 	private String email;
 	private String facebook;
-	private String latitude;
-	private String longitude;
+	private Integer latitude;
+	private Integer longitude;
 	private String description;
 	private String location;
 
@@ -73,8 +73,8 @@ public class Product extends BaseEntity {
 	public Product(int id, int status, Long createdAt, Long updatedAt, String name, String slug, String phone,
 			List<Purpose> purposes, List<Area> areas, List<Kind> kinds, List<Convenience> conveniences,
 			List<Review> reviews, List<ProductSchedule> schedules, List<Menu> listMenus, List<Image> listImages,
-			User user, int priceMin, int priceMax, int outstanding, String email, String facebook, String latitude,
-			String longitude, String description, String location, int isWaitingDelete) {
+			User user, int priceMin, int priceMax, int outstanding, String email, String facebook, Integer latitude,
+			Integer longitude, String description, String location, int isWaitingDelete) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;
 		this.slug = slug;
@@ -104,19 +104,19 @@ public class Product extends BaseEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	public String getLatitude() {
+	public Integer getLatitude() {
 		return latitude;
 	}
 
-	public void setLatitude(String latitude) {
+	public void setLatitude(Integer latitude) {
 		this.latitude = latitude;
 	}
 
-	public String getLongitude() {
+	public Integer getLongitude() {
 		return longitude;
 	}
 
-	public void setLongitude(String longitude) {
+	public void setLongitude(Integer longitude) {
 		this.longitude = longitude;
 	}
 

@@ -81,8 +81,11 @@ public class CommentServiceImp implements CommentService {
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 		listComment = commentRepository.findWithFilters(name, reviewId, userId, pageable, entityManager);
 
-		listCommentDto = listComment.stream().map(comment -> MapperUtils.mapToDTO(comment, CommentDTO.class))
-				.collect(Collectors.toList());
+		listCommentDto = listComment.stream().map(comment -> {
+			CommentDTO commentDto = MapperUtils.mapToDTO(comment, CommentDTO.class);
+			commentDto.setReivewId(comment.getReview().getId());
+			return commentDto;
+		}).collect(Collectors.toList());
 
 		return listCommentDto;
 	}
@@ -107,7 +110,9 @@ public class CommentServiceImp implements CommentService {
 		comment.setUser(user);
 		comment.setName(commentCreateDto.getName());
 		commentRepository.save(comment);
-		return MapperUtils.mapToDTO(comment, CommentDTO.class);
+		CommentDTO commentDto = MapperUtils.mapToDTO(comment, CommentDTO.class);
+		commentDto.setReivewId(comment.getReview().getId());
+		return commentDto;
 	}
 
 	@Override
@@ -118,12 +123,16 @@ public class CommentServiceImp implements CommentService {
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", commentUpdateDto.getUserId()));
 		Comment comment = commentRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Comment", "id", id));
+
 		if (commentUpdateDto.getStatus() != null)
 			comment.setStatus(commentUpdateDto.getStatus());
+
 		comment.setName(commentUpdateDto.getName());
 		commentRepository.save(comment);
 
-		return MapperUtils.mapToDTO(comment, CommentDTO.class);
+		CommentDTO commentDto = MapperUtils.mapToDTO(comment, CommentDTO.class);
+		commentDto.setReivewId(comment.getReview().getId());
+		return commentDto;
 	}
 
 	@Override

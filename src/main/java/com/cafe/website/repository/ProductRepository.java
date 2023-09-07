@@ -14,9 +14,11 @@ import com.cafe.website.entity.Product;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import jakarta.transaction.Transactional;
 
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
@@ -30,16 +32,17 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
 	Boolean existsByName(String name);
 
+	@Transactional
 	@Query
 	default List<Product> findWithFilters(String name, int status, String slugArea, String slugConvenience,
-			String slugKind, String slugPurpose, Integer isWatingDelete, Pageable pageable,
-			EntityManager entityManager) {
+			String slugKind, String slugPurpose, Integer isWatingDelete, Double latitude, Double longitude,
+			Pageable pageable, EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Product> cq = cb.createQuery(Product.class);
-
 		Root<Product> product = cq.from(Product.class);
 		List<Predicate> predicates = new ArrayList<>();
+		List<Order> orders = new ArrayList<>();
 
 		if (name != null) {
 			predicates.add(cb.like(cb.lower(product.get("name")), "%" + name.toLowerCase() + "%"));
@@ -59,11 +62,18 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 		if (slugPurpose != null) {
 			predicates.add(cb.equal(product.get("purposes").get("slug"), slugArea));
 		}
+		if (latitude != null && longitude != null && latitude instanceof Double && longitude instanceof Double) {
+			Expression<Double> distanceSort = cb.sqrt(cb.sum(
+					cb.prod(cb.diff(product.get("latitude"), latitude), cb.diff(product.get("latitude"), latitude)),
+					cb.prod(cb.diff(product.get("longitude"), longitude),
+							cb.diff(product.get("longitude"), longitude))));
+			orders.add(cb.desc(distanceSort));
+		}
 		predicates.add(cb.equal(product.get("status"), status));
 
 		if (pageable.getSort() != null) {
-			List<Order> orders = new ArrayList<>();
 			for (Sort.Order order : pageable.getSort()) {
+
 				orders.add(order.isAscending() ? cb.asc(product.get(order.getProperty()))
 						: cb.desc(product.get(order.getProperty())));
 			}

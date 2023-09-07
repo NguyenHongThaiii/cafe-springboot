@@ -111,7 +111,7 @@ public class ReviewSerivceImp implements ReviewService {
 			List<Image> listEntityImages = imageRepository.findAllImageByReviewId(review.getId());
 
 			reviewDto.setListImages(ImageDTO.generateListImageDTO(listEntityImages));
-
+			reviewDto.setProductId(review.getProduct().getId());
 			return reviewDto;
 		}).collect(Collectors.toList());
 
@@ -126,6 +126,7 @@ public class ReviewSerivceImp implements ReviewService {
 		List<Image> listEntityImages = imageRepository.findAllImageByReviewId(review.getId());
 
 		reviewDto.setListImages(ImageDTO.generateListImageDTO(listEntityImages));
+		reviewDto.setProductId(review.getProduct().getId());
 
 		return reviewDto;
 	}
@@ -169,6 +170,7 @@ public class ReviewSerivceImp implements ReviewService {
 		List<Image> listEntityImages = imageRepository.findAllImageByReviewId(review.getId());
 
 		reviewDto.setListImages(ImageDTO.generateListImageDTO(listEntityImages));
+		reviewDto.setProductId(review.getProduct().getId());
 
 		return reviewDto;
 	}
@@ -205,6 +207,7 @@ public class ReviewSerivceImp implements ReviewService {
 
 		List<Image> listEntityImages = imageRepository.findAllImageByReviewId(review.getId());
 		reviewDto.setListImages(ImageDTO.generateListImageDTO(listEntityImages));
+		reviewDto.setProductId(review.getProduct().getId());
 
 		return reviewDto;
 	}
@@ -233,8 +236,8 @@ public class ReviewSerivceImp implements ReviewService {
 			total += (review.getRating().getFood() + review.getRating().getLocation() + review.getRating().getPrice()
 					+ review.getRating().getSpace() + review.getRating().getService()) / 5;
 		}
-		return null;
-//		return total / listReviews.size();
+//		return null;
+		return total / listReviews.size();
 	}
 
 	@Override

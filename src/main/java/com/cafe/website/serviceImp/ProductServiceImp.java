@@ -3,6 +3,7 @@ package com.cafe.website.serviceImp;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -57,6 +58,7 @@ import com.cafe.website.repository.ReviewRepository;
 import com.cafe.website.repository.UserRepository;
 import com.cafe.website.service.CloudinaryService;
 import com.cafe.website.service.ProductService;
+import com.cafe.website.service.ReviewService;
 import com.cafe.website.util.AreaMapper;
 import com.cafe.website.util.MapperUtils;
 import com.cafe.website.util.ProductMapper;
@@ -67,6 +69,7 @@ import com.github.slugify.Slugify;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
 
 @Service
 public class ProductServiceImp implements ProductService {
@@ -87,6 +90,7 @@ public class ProductServiceImp implements ProductService {
 	private CloudinaryService cloudinaryService;
 	private AreaMapper areaMapper;
 	private ScheduledExecutorService scheduledExecutorService;
+	private ReviewService reviewService;
 
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 	ObjectMapper objMapper = new ObjectMapper();
@@ -100,7 +104,7 @@ public class ProductServiceImp implements ProductService {
 			MenuRepository menuRepository, ProductScheduleRepository productScheduleRepository,
 			UserRepository userRepository, ProductOwnerRepository productOwnerRepository, ProductMapper productMapper,
 			CloudinaryService cloudinaryService, AreaMapper areaMapper,
-			ScheduledExecutorService scheduledExecutorService) {
+			ScheduledExecutorService scheduledExecutorService, ReviewService reviewService) {
 		super();
 		this.entityManager = entityManager;
 		this.productRepository = productRepository;
@@ -118,14 +122,18 @@ public class ProductServiceImp implements ProductService {
 		this.cloudinaryService = cloudinaryService;
 		this.areaMapper = areaMapper;
 		this.scheduledExecutorService = scheduledExecutorService;
+		this.reviewService = reviewService;
 	}
 
 	@Override
-	public List<ProductDTO> getListProducts(int limit, int page, int status, Integer isWatingDelete, String name,
-			String slugArea, String slugConvenience, String slugKind, String slugPurpose, String sortBy) {
+	public List<ProductDTO> getListProducts(int limit, int page, int status, String rating, Integer isWatingDelete,
+			String name, String slugArea, String slugConvenience, String slugKind, String slugPurpose, Double latitude,
+			Double longitude, String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.PRICEMIN,
 				SortField.PRICEMAX, SortField.UPDATEDAT, SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC,
 				SortField.PRICEMINDESC, SortField.PRICEMAXDESC, SortField.UPDATEDATDESC, SortField.CREATEDATDESC);
+		logger.info(latitude + "");
+		logger.info(longitude + "");
 		Pageable pageable = PageRequest.of(page - 1, limit);
 		List<String> sortByList = new ArrayList<String>();
 		List<Product> productList = null;
@@ -153,7 +161,7 @@ public class ProductServiceImp implements ProductService {
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
 		productList = productRepository.findWithFilters(name, status, slugArea, slugConvenience, slugKind, slugPurpose,
-				isWatingDelete, pageable, entityManager);
+				isWatingDelete, latitude, longitude, pageable, entityManager);
 		listProductDto = productList.stream().map(product -> {
 			ProductDTO pdto = MapperUtils.mapToDTO(product, ProductDTO.class);
 			List<Image> listEntityImages = imageRepository.findAllImageByProductId(product.getId());
@@ -161,14 +169,13 @@ public class ProductServiceImp implements ProductService {
 			List<KindDTO> listKind = MapperUtils.loppMapToDTO(product.getKinds(), KindDTO.class);
 			List<ConvenienceDTO> listCon = MapperUtils.loppMapToDTO(product.getConveniences(), ConvenienceDTO.class);
 			List<PurposeDTO> listPurpose = MapperUtils.loppMapToDTO(product.getPurposes(), PurposeDTO.class);
-
 			List<ProductScheduleDTO> listScheduleDto = new ArrayList<>();
 
 			for (ProductSchedule schedule : product.getSchedules()) {
 				ProductScheduleDTO scheduleDto = MapperUtils.mapToDTO(schedule, ProductScheduleDTO.class);
 				listScheduleDto.add(scheduleDto);
 			}
-			// more
+
 			pdto.setAreasDto(listArea);
 			pdto.setPurposesDto(listPurpose);
 			pdto.setKindsDto(listKind);
@@ -176,8 +183,14 @@ public class ProductServiceImp implements ProductService {
 			pdto.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
 			pdto.setSchedules(listScheduleDto);
 			pdto.setOwner(MapperUtils.mapToDTO(product.getUser(), UserDTO.class));
+			pdto.setAvgRating(reviewService.getRatingByReviewId(product.getId()));
 			return pdto;
 		}).collect(Collectors.toList());
+
+		if (rating != null && rating.equalsIgnoreCase("asc"))
+			Collections.sort(listProductDto, (o1, o2) -> Double.compare(o1.getAvgRating(), o2.getAvgRating()));
+		if (rating != null && rating.equalsIgnoreCase("desc"))
+			Collections.sort(listProductDto, (o1, o2) -> Double.compare(o2.getAvgRating(), o1.getAvgRating()));
 		return listProductDto;
 	}
 

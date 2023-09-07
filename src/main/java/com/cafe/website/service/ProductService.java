@@ -9,8 +9,6 @@ import com.cafe.website.payload.ProductDeleteDTO;
 import com.cafe.website.payload.ProductUpdateDTO;
 
 public interface ProductService {
-	List<ProductDTO> getListProducts(int limit, int page, int status, Integer isWatingDelete, String name,
-			String slugArea, String slugConvenience, String slugKind, String slugPurpose, String sortBy);
 
 	ProductDTO createProduct(ProductCreateDTO productCreateDto) throws IOException;
 
@@ -25,4 +23,8 @@ public interface ProductService {
 	String setIsWaitingDeleteProduct(ProductDeleteDTO productDeleteDto) throws IOException;
 
 	Float getRateReviewByProduct(Integer productId);
+
+	List<ProductDTO> getListProducts(int limit, int page, int status, String rating, Integer isWatingDelete,
+			String name, String slugArea, String slugConvenience, String slugKind, String slugPurpose, Double latitude,
+			Double longitude, String sortBy);
 }
