@@ -11,7 +11,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public class ProductCreateDTO {
-	private int id;
 
 	@NotNull
 	private List<Integer> area_id = new ArrayList<>();
@@ -75,7 +74,7 @@ public class ProductCreateDTO {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ProductCreateDTO(int id, @NotNull List<Integer> area_id, List<Integer> kind_id, List<Integer> convenience_id,
+	public ProductCreateDTO(@NotNull List<Integer> area_id, List<Integer> kind_id, List<Integer> convenience_id,
 			List<Integer> purpose_id, @NotNull String name, @NotNull String slug, @NotNull String phone,
 			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") int status,
 			@Min(value = 0, message = "priceMin should not be less than 0") int priceMin,
@@ -85,7 +84,6 @@ public class ProductCreateDTO {
 			String facebook, List<MultipartFile> listImageFile, @NotNull String listScheduleDto,
 			@NotNull Integer userId) {
 		super();
-		this.id = id;
 		this.area_id = area_id;
 		this.kind_id = kind_id;
 		this.convenience_id = convenience_id;
@@ -122,14 +120,6 @@ public class ProductCreateDTO {
 
 	public void setListScheduleDto(String listScheduleDto) {
 		this.listScheduleDto = listScheduleDto;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public List<Integer> getArea_id() {

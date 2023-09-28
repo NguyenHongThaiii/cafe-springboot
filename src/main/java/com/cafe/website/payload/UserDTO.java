@@ -17,10 +17,10 @@ public class UserDTO {
 	private String slug;
 	private List<Role> roles = new ArrayList<>();
 	private ImageDTO imageDto;
-	private int isWaitingDelete;
+	private Boolean isWaitingDelete;
 
 	public UserDTO(int id, int status, String email, String name, String address, String phone, String slug,
-			List<Role> roles, ImageDTO imageDto, int isWaitingDelete) {
+			List<Role> roles, ImageDTO imageDto, Boolean isWaitingDelete) {
 		super();
 		this.id = id;
 		this.status = status;
@@ -38,14 +38,11 @@ public class UserDTO {
 		// TODO Auto-generated constructor stub
 	}
 
-	public int getIsWaitingDelete() {
+	public Boolean getIsWaitingDelete() {
 		return isWaitingDelete;
 	}
 
-	public void setIsWaitingDelete(int isWaitingDelete) {
-		if (isWaitingDelete != 0 && isWaitingDelete != 1) {
-			throw new IllegalArgumentException("isWaitingDelete can only be 1 or 0");
-		}
+	public void setIsWaitingDelete(Boolean isWaitingDelete) {
 		this.isWaitingDelete = isWaitingDelete;
 	}
 

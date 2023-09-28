@@ -126,14 +126,12 @@ public class ProductServiceImp implements ProductService {
 	}
 
 	@Override
-	public List<ProductDTO> getListProducts(int limit, int page, int status, String rating, Integer isWatingDelete,
+	public List<ProductDTO> getListProducts(int limit, int page, int status, String rating, Boolean isWatingDelete,
 			String name, String slugArea, String slugConvenience, String slugKind, String slugPurpose, Double latitude,
 			Double longitude, String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.PRICEMIN,
 				SortField.PRICEMAX, SortField.UPDATEDAT, SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC,
 				SortField.PRICEMINDESC, SortField.PRICEMAXDESC, SortField.UPDATEDATDESC, SortField.CREATEDATDESC);
-		logger.info(latitude + "");
-		logger.info(longitude + "");
 		Pageable pageable = PageRequest.of(page - 1, limit);
 		List<String> sortByList = new ArrayList<String>();
 		List<Product> productList = null;
@@ -165,6 +163,7 @@ public class ProductServiceImp implements ProductService {
 		listProductDto = productList.stream().map(product -> {
 			ProductDTO pdto = MapperUtils.mapToDTO(product, ProductDTO.class);
 			List<Image> listEntityImages = imageRepository.findAllImageByProductId(product.getId());
+//			List<Image> listEntityImages = product.getlistImages();
 			List<AreaDTO> listArea = MapperUtils.loppMapToDTO(product.getAreas(), AreaDTO.class);
 			List<KindDTO> listKind = MapperUtils.loppMapToDTO(product.getKinds(), KindDTO.class);
 			List<ConvenienceDTO> listCon = MapperUtils.loppMapToDTO(product.getConveniences(), ConvenienceDTO.class);
@@ -236,9 +235,14 @@ public class ProductServiceImp implements ProductService {
 		pdto.setSlug(slugify.slugify(productCreateDto.getSlug()));
 		productMapper.updateProductFromDto(pdto, product);
 
-		product.setId(0);
 		product.setUser(user);
 		product.setStatus(0);
+		product.setIsWaitingDelete(false);
+		product.setAreas(listAreas);
+		product.setConveniences(listCon);
+		product.setKinds(listKinds);
+		product.setPurposes(listPurposes);
+		productRepository.save(product);
 //		move to their service
 		cloudinaryService.uploadImages(images, productCreateDto.getListImageFile(), "cafe-springboot/blogs", "image");
 		images.forEach(image -> {
@@ -256,12 +260,6 @@ public class ProductServiceImp implements ProductService {
 			listMenus.add(menuItem);
 		});
 
-		product.setAreas(listAreas);
-		product.setConveniences(listCon);
-		product.setKinds(listKinds);
-		product.setPurposes(listPurposes);
-
-		productRepository.save(product);
 		menuRepository.saveAll(listMenus);
 		imageRepository.saveAll(listImages);
 
@@ -417,7 +415,8 @@ public class ProductServiceImp implements ProductService {
 		Product product = productRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Product", "id", id + ""));
 		ProductDTO productDto = MapperUtils.mapToDTO(product, ProductDTO.class);
-		List<Image> listEntityImages = imageRepository.findAllImageByProductId(id);
+//		List<Image> listEntityImages = imageRepository.findAllImageByProductId(id);
+		List<Image> listEntityImages = product.getlistImages();
 		List<AreaDTO> listArea = MapperUtils.loppMapToDTO(product.getAreas(), AreaDTO.class);
 		// more
 		productDto.setAreasDto(listArea);
@@ -495,7 +494,7 @@ public class ProductServiceImp implements ProductService {
 				() -> new ResourceNotFoundException("Product", "id", productDeleteDto.getProductId() + ""));
 		productOwnerRepository.findByProductIdAndUserId(productDeleteDto.getProductId(), productDeleteDto.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("Onwer", "id", "something went wrong!"));
-		product.setIsWaitingDelete(1);
+		product.setIsWaitingDelete(true);
 		productRepository.save(product);
 		executeDeleteProduct(productDeleteDto);
 		return "Your product will be deleted after 24 hours";

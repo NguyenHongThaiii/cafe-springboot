@@ -44,11 +44,11 @@ public class User extends BaseEntity {
 	private List<Token> tokens = new ArrayList<>();
 
 	@Column(nullable = false, columnDefinition = "int default 0")
-	private int isWaitingDelete;
+	private Boolean isWaitingDelete;
 
 	public User(int id, int status, Long createdAt, Long updatedAt, String email, String slug, String password,
 			String name, String address, String phone, Image avatar, List<Role> roles, List<Review> reviews,
-			List<Token> tokens, int isWaitingDelete) {
+			List<Token> tokens, Boolean isWaitingDelete) {
 		super(id, status, createdAt, updatedAt);
 		this.email = email;
 		this.slug = slug;
@@ -71,14 +71,12 @@ public class User extends BaseEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	public int getIsWaitingDelete() {
+	public Boolean getIsWaitingDelete() {
 		return isWaitingDelete;
 	}
 
-	public void setIsWaitingDelete(int isWaitingDelete) {
-		if (isWaitingDelete != 0 && isWaitingDelete != 1) {
-			throw new IllegalArgumentException("isWaitingDelete can only be 1 or 0");
-		}
+	public void setIsWaitingDelete(Boolean isWaitingDelete) {
+
 		this.isWaitingDelete = isWaitingDelete;
 	}
 

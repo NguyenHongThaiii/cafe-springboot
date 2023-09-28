@@ -155,7 +155,7 @@ public class AuthServiceImp implements AuthService {
 	@Override
 	public Boolean validateOtp(String otp, String otpCache) {
 
-		if (otpCache != null && !otpCache.equals(otp))
+		if (otpCache == null || !otpCache.equals(otp))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Otp is not correct!");
 
 		return true;
@@ -260,6 +260,9 @@ public class AuthServiceImp implements AuthService {
 				.orElseThrow(() -> new ResourceNotFoundException("User", "email", reset.getEmail()));
 		if (!reset.getPassword().equals(reset.getRetypePassword()))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "retype password is not match");
+		String otpEmail = otpService.getOtpBySession(user.getEmail());
+		if (otpEmail == null)
+			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Time is expired");
 
 		otpService.clearCache("session", reset.getEmail());
 		String passwordEncryt = passwordEncoder.encode(reset.getPassword());
@@ -320,7 +323,6 @@ public class AuthServiceImp implements AuthService {
 	public UserDTO getUserById(int id) {
 		User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
 		UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
-
 		Image image = imageRepository.findImageByUserId(userDto.getId()).orElse(null);
 		userDto.setImageDto(ImageDTO.generateImageDTO(image));
 
@@ -332,7 +334,6 @@ public class AuthServiceImp implements AuthService {
 		User user = userRepository.findBySlug(slug)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "slug", slug));
 		UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
-
 		Image image = imageRepository.findImageByUserId(userDto.getId()).orElse(null);
 		userDto.setImageDto(ImageDTO.generateImageDTO(image));
 		return userDto;
@@ -409,7 +410,7 @@ public class AuthServiceImp implements AuthService {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
-		user.setIsWaitingDelete(1);
+		user.setIsWaitingDelete(true);
 		userRepository.save(user);
 		this.excuteDeleteUser(userId);
 

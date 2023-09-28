@@ -68,13 +68,13 @@ public class Product extends BaseEntity {
 	private String location;
 
 	@Column(nullable = false, columnDefinition = "int default 0")
-	private int isWaitingDelete;
+	private Boolean isWaitingDelete;
 
 	public Product(int id, int status, Long createdAt, Long updatedAt, String name, String slug, String phone,
 			List<Purpose> purposes, List<Area> areas, List<Kind> kinds, List<Convenience> conveniences,
 			List<Review> reviews, List<ProductSchedule> schedules, List<Menu> listMenus, List<Image> listImages,
 			User user, int priceMin, int priceMax, int outstanding, String email, String facebook, Integer latitude,
-			Integer longitude, String description, String location, int isWaitingDelete) {
+			Integer longitude, String description, String location, Boolean isWaitingDelete) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;
 		this.slug = slug;
@@ -120,19 +120,12 @@ public class Product extends BaseEntity {
 		this.longitude = longitude;
 	}
 
-	public void setIsWaitingDelete(int isWaitingDelete) {
+	public void setIsWaitingDelete(Boolean isWaitingDelete) {
 		this.isWaitingDelete = isWaitingDelete;
 	}
 
-	public Integer getIsWaitingDelete() {
+	public Boolean getIsWaitingDelete() {
 		return isWaitingDelete;
-	}
-
-	public void setIsWaitingDelete(Integer isWaitingDelete) {
-		if (isWaitingDelete != 0 && isWaitingDelete != 1) {
-			throw new IllegalArgumentException("isWaitingDelete can only be 1 or 0");
-		}
-		this.isWaitingDelete = isWaitingDelete;
 	}
 
 	public List<Menu> getListMenus() {

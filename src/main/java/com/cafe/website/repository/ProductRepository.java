@@ -35,7 +35,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 	@Transactional
 	@Query
 	default List<Product> findWithFilters(String name, int status, String slugArea, String slugConvenience,
-			String slugKind, String slugPurpose, Integer isWatingDelete, Double latitude, Double longitude,
+			String slugKind, String slugPurpose, Boolean isWatingDelete, Double latitude, Double longitude,
 			Pageable pageable, EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();

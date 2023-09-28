@@ -28,10 +28,10 @@ public class CustomUserDetailService implements UserDetailsService {
 		User user;
 		if (email.contains("@")) { // Nếu truyền vào là email
 			user = userRepository.findByEmail(email)
-					.orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + email));
+					.orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 		} else { // Nếu truyền vào là email
 
-			throw new UsernameNotFoundException("User not found with username: " + email);
+			throw new UsernameNotFoundException("User not found with email: " + email);
 		}
 
 		Set<GrantedAuthority> authorities = user.getRoles().stream()

@@ -42,7 +42,7 @@ public class ProductController {
 	@GetMapping("")
 	public ResponseEntity<List<ProductDTO>> getListProducts(@RequestParam(defaultValue = "5") int limit,
 			@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "1") int status,
-			@RequestParam(required = false) String rating, @RequestParam(required = false) Integer isWaitingDelete,
+			@RequestParam(required = false) String rating, @RequestParam(required = false) Boolean isWaitingDelete,
 			@RequestParam(required = false) Double latitude, @RequestParam(required = false) Double longitude,
 			@RequestParam(required = false) String name, @RequestParam(required = false) String slugArea,
 			@RequestParam(required = false) String slugKind, @RequestParam(required = false) String slugConvenience,

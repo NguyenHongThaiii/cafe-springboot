@@ -19,14 +19,14 @@ public class OTPSerivceImp implements OTPService {
 	@Cacheable(value = "otpCache", key = "#email")
 	@Override
 	public String generateAndStoreOtp(String email) {
-		String otp = generateUniqueOtp(email, "otpCache");
+		String otp = generateUniqueOtp(email.toLowerCase(), "otpCache");
 		return otp;
 	}
 
 	@Cacheable(value = "session", key = "#otp")
 	@Override
 	public String generateAndStoreAnotherData(String email) {
-		String data = generateUniqueOtp(email, "session");
+		String data = generateUniqueOtp(email.toLowerCase(), "session");
 		return data;
 	}
 
@@ -36,7 +36,7 @@ public class OTPSerivceImp implements OTPService {
 		Cache otpCache = cacheManager.getCache("otpCache");
 
 		if (otpCache != null) {
-			Cache.ValueWrapper valueWrapper = otpCache.get(email);
+			Cache.ValueWrapper valueWrapper = otpCache.get(email.toLowerCase());
 			if (valueWrapper != null) {
 				return (String) valueWrapper.get();
 			}
@@ -49,7 +49,7 @@ public class OTPSerivceImp implements OTPService {
 	public String getOtpBySession(String email) {
 		Cache otpCache = cacheManager.getCache("session");
 		if (otpCache != null) {
-			Cache.ValueWrapper valueWrapper = otpCache.get(email);
+			Cache.ValueWrapper valueWrapper = otpCache.get(email.toLowerCase());
 			if (valueWrapper != null) {
 				return (String) valueWrapper.get();
 			}
@@ -58,7 +58,7 @@ public class OTPSerivceImp implements OTPService {
 	}
 
 	private String generateUniqueOtp(String email, String nameCache) {
-		Cache otpCache = cacheManager.getCache(nameCache);
+		Cache otpCache = cacheManager.getCache(nameCache.toLowerCase());
 		String otp;
 		do {
 			otp = RandomStringUtils.randomAlphanumeric(6);
@@ -73,9 +73,10 @@ public class OTPSerivceImp implements OTPService {
 	}
 
 	@Override
-	public void clearCache(String name,String key) {
-		 Cache cache = cacheManager.getCache(name);
-		    if (cache != null) {
-		        cache.evict(key);
-		    }	}
+	public void clearCache(String name, String key) {
+		Cache cache = cacheManager.getCache(name);
+		if (cache != null) {
+			cache.evict(key);
+		}
+	}
 }

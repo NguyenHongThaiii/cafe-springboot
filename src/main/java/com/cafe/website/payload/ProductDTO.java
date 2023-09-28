@@ -30,14 +30,14 @@ public class ProductDTO extends BaseEntityDTO {
 	private String location;
 	private List<ImageDTO> listImage = new ArrayList<>();
 	private UserDTO owner;
-	private Integer isWaitingDelete;
+	private Boolean isWaitingDelete;
 	private double avgRating;
 
 	public ProductDTO(int id, Integer status, Long createdAt, Long updatedAt, List<PurposeDTO> purposesDto,
 			List<AreaDTO> areasDto, List<KindDTO> kindsDto, List<ConvenienceDTO> conveniencesDto,
 			List<ProductScheduleDTO> schedules, String name, String slug, String phone, int priceMin, int priceMax,
 			int outstanding, Integer latitude, Integer longitude, String email, String facebook, String description,
-			String location, List<ImageDTO> listImage, UserDTO owner, Integer isWaitingDelete, double avgRating) {
+			String location, List<ImageDTO> listImage, UserDTO owner, Boolean isWaitingDelete, double avgRating) {
 		super(id, status, createdAt, updatedAt);
 		this.purposesDto = purposesDto;
 		this.areasDto = areasDto;
@@ -74,14 +74,12 @@ public class ProductDTO extends BaseEntityDTO {
 		this.avgRating = avgRating;
 	}
 
-	public Integer getIsWaitingDelete() {
+	public Boolean getIsWaitingDelete() {
 		return isWaitingDelete;
 	}
 
-	public void setIsWaitingDelete(Integer isWaitingDelete) {
-		if (isWaitingDelete != 0 && isWaitingDelete != 1) {
-			throw new IllegalArgumentException("Status can only be 1 or 0");
-		}
+	public void setIsWaitingDelete(Boolean isWaitingDelete) {
+
 		this.isWaitingDelete = isWaitingDelete;
 	}
 
