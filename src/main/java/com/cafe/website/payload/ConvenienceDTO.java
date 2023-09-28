@@ -1,8 +1,6 @@
 package com.cafe.website.payload;
 
-import com.cafe.website.entity.BaseEntity;
-
-public class ConvenienceDTO extends BaseEntity implements HasImageDTO {
+public class ConvenienceDTO extends BaseEntityDTO implements HasImageDTO {
 	private String name;
 
 	private String slug;

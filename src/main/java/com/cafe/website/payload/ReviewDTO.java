@@ -6,7 +6,7 @@ import java.util.List;
 import com.cafe.website.entity.BaseEntity;
 import com.cafe.website.entity.Rating;
 
-public class ReviewDTO extends BaseEntity {
+public class ReviewDTO extends BaseEntityDTO {
 
 	private Rating rating;
 

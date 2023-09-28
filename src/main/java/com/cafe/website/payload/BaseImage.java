@@ -1,10 +1,10 @@
 package com.cafe.website.payload;
 
-public class BaseImage {
+public class BaseImage extends BaseEntityDTO {
 	private String url;
 
-	public BaseImage(String url) {
-		super();
+	public BaseImage(int id, Integer status, Long createdAt, Long updatedAt, String url) {
+		super(id, status, createdAt, updatedAt);
 		this.url = url;
 	}
 

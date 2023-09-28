@@ -1,7 +1,5 @@
 package com.cafe.website.payload;
 
-import com.cafe.website.entity.BaseEntity;
-
 public class AreaDTO extends BaseEntityDTO implements HasImageDTO {
 
 	private String name;

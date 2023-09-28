@@ -1,6 +1,10 @@
 # todolist
 - print structure database to db.diagram (doing)
 - fix image all service
+- fix menu product
+- fix created - updated null when created
+- fix created - updated null image menu
+
 - fix payload entity
 - add find product by user id
 - add find product by rating review

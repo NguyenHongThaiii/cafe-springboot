@@ -29,15 +29,21 @@ public class ProductDTO extends BaseEntityDTO {
 	private String description;
 	private String location;
 	private List<ImageDTO> listImage = new ArrayList<>();
+	private List<MenuDTO> listMenu = new ArrayList<>();
 	private UserDTO owner;
 	private Boolean isWaitingDelete;
 	private double avgRating;
+
+	public ProductDTO() {
+		// TODO Auto-generated constructor stub
+	}
 
 	public ProductDTO(int id, Integer status, Long createdAt, Long updatedAt, List<PurposeDTO> purposesDto,
 			List<AreaDTO> areasDto, List<KindDTO> kindsDto, List<ConvenienceDTO> conveniencesDto,
 			List<ProductScheduleDTO> schedules, String name, String slug, String phone, int priceMin, int priceMax,
 			int outstanding, Integer latitude, Integer longitude, String email, String facebook, String description,
-			String location, List<ImageDTO> listImage, UserDTO owner, Boolean isWaitingDelete, double avgRating) {
+			String location, List<ImageDTO> listImage, List<MenuDTO> listMenu, UserDTO owner, Boolean isWaitingDelete,
+			double avgRating) {
 		super(id, status, createdAt, updatedAt);
 		this.purposesDto = purposesDto;
 		this.areasDto = areasDto;
@@ -57,30 +63,10 @@ public class ProductDTO extends BaseEntityDTO {
 		this.description = description;
 		this.location = location;
 		this.listImage = listImage;
+		this.listMenu = listMenu;
 		this.owner = owner;
 		this.isWaitingDelete = isWaitingDelete;
 		this.avgRating = avgRating;
-	}
-
-	public ProductDTO() {
-		// TODO Auto-generated constructor stub
-	}
-
-	public double getAvgRating() {
-		return avgRating;
-	}
-
-	public void setAvgRating(double avgRating) {
-		this.avgRating = avgRating;
-	}
-
-	public Boolean getIsWaitingDelete() {
-		return isWaitingDelete;
-	}
-
-	public void setIsWaitingDelete(Boolean isWaitingDelete) {
-
-		this.isWaitingDelete = isWaitingDelete;
 	}
 
 	public List<PurposeDTO> getPurposesDto() {
@@ -227,12 +213,36 @@ public class ProductDTO extends BaseEntityDTO {
 		this.listImage = listImage;
 	}
 
+	public List<MenuDTO> getListMenu() {
+		return listMenu;
+	}
+
+	public void setListMenu(List<MenuDTO> listMenu) {
+		this.listMenu = listMenu;
+	}
+
 	public UserDTO getOwner() {
 		return owner;
 	}
 
 	public void setOwner(UserDTO owner) {
 		this.owner = owner;
+	}
+
+	public Boolean getIsWaitingDelete() {
+		return isWaitingDelete;
+	}
+
+	public void setIsWaitingDelete(Boolean isWaitingDelete) {
+		this.isWaitingDelete = isWaitingDelete;
+	}
+
+	public double getAvgRating() {
+		return avgRating;
+	}
+
+	public void setAvgRating(double avgRating) {
+		this.avgRating = avgRating;
 	}
 
 }

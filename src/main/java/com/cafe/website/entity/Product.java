@@ -104,54 +104,6 @@ public class Product extends BaseEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Integer getLatitude() {
-		return latitude;
-	}
-
-	public void setLatitude(Integer latitude) {
-		this.latitude = latitude;
-	}
-
-	public Integer getLongitude() {
-		return longitude;
-	}
-
-	public void setLongitude(Integer longitude) {
-		this.longitude = longitude;
-	}
-
-	public void setIsWaitingDelete(Boolean isWaitingDelete) {
-		this.isWaitingDelete = isWaitingDelete;
-	}
-
-	public Boolean getIsWaitingDelete() {
-		return isWaitingDelete;
-	}
-
-	public List<Menu> getListMenus() {
-		return listMenus;
-	}
-
-	public void setListMenus(List<Menu> listMenus) {
-		this.listMenus = listMenus;
-	}
-
-	public List<Image> getListImages() {
-		return listImages;
-	}
-
-	public void setListImages(List<Image> listImages) {
-		this.listImages = listImages;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -224,6 +176,30 @@ public class Product extends BaseEntity {
 		this.schedules = schedules;
 	}
 
+	public List<Menu> getListMenus() {
+		return listMenus;
+	}
+
+	public void setListMenus(List<Menu> listMenus) {
+		this.listMenus = listMenus;
+	}
+
+	public List<Image> getListImages() {
+		return listImages;
+	}
+
+	public void setListImages(List<Image> listImages) {
+		this.listImages = listImages;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
 	public int getPriceMin() {
 		return priceMin;
 	}
@@ -248,22 +224,6 @@ public class Product extends BaseEntity {
 		this.outstanding = outstanding;
 	}
 
-	public List<Menu> getlistMenus() {
-		return listMenus;
-	}
-
-	public void setlistMenus(List<Menu> listMenus) {
-		this.listMenus = listMenus;
-	}
-
-	public List<Image> getlistImages() {
-		return listImages;
-	}
-
-	public void setlistImages(List<Image> listImages) {
-		this.listImages = listImages;
-	}
-
 	public String getEmail() {
 		return email;
 	}
@@ -280,6 +240,22 @@ public class Product extends BaseEntity {
 		this.facebook = facebook;
 	}
 
+	public Integer getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(Integer latitude) {
+		this.latitude = latitude;
+	}
+
+	public Integer getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(Integer longitude) {
+		this.longitude = longitude;
+	}
+
 	public String getDescription() {
 		return description;
 	}
@@ -294,6 +270,14 @@ public class Product extends BaseEntity {
 
 	public void setLocation(String location) {
 		this.location = location;
+	}
+
+	public Boolean getIsWaitingDelete() {
+		return isWaitingDelete;
+	}
+
+	public void setIsWaitingDelete(Boolean isWaitingDelete) {
+		this.isWaitingDelete = isWaitingDelete;
 	}
 
 }

@@ -24,9 +24,13 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
 	Optional<Product> findBySlugOrName(String slug, String name);
 
+	Optional<Product> findByIdAndUserId(Integer productId, Integer userId);
+
 	Boolean existsBySlugAndIdNot(String slug, Integer id);
 
 	Boolean existsByNameAndIdNot(String name, Integer id);
+
+	Boolean existsByIdAndUserId(Integer productId, Integer userId);
 
 	Boolean existsBySlug(String slug);
 

@@ -11,7 +11,8 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "menus")
 public class Menu extends BaseEntity {
-	private String image;
+	@OneToOne(mappedBy = "menu", cascade = CascadeType.ALL)
+	private Image image;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "product_id", nullable = false)
@@ -21,17 +22,17 @@ public class Menu extends BaseEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Menu(int id, int status, Long createdAt, Long updatedAt, String image, Product product) {
+	public Menu(int id, int status, Long createdAt, Long updatedAt, Image image, Product product) {
 		super(id, status, createdAt, updatedAt);
 		this.image = image;
 		this.product = product;
 	}
 
-	public String getImage() {
+	public Image getImage() {
 		return image;
 	}
 
-	public void setImage(String image) {
+	public void setImage(Image image) {
 		this.image = image;
 	}
 

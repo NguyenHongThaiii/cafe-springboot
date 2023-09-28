@@ -8,29 +8,13 @@ import org.slf4j.LoggerFactory;
 
 import com.cafe.website.entity.Image;
 import com.cafe.website.serviceImp.ProductServiceImp;
+import com.cafe.website.util.MapperUtils;
 
 public class ImageDTO extends BaseImage {
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 
-	private ImageDTO(String url) {
-		super(url);
-	}
-
 	public ImageDTO() {
 		// TODO Auto-generated constructor stub
-	}
-
-	public static class Builder {
-		private String url;
-
-		public Builder setUrl(String url) {
-			this.url = url;
-			return this;
-		}
-
-		public ImageDTO build() {
-			return new ImageDTO(url);
-		}
 	}
 
 	public static List<ImageDTO> generateListImageDTO(List<Image> listEntityImages) {
@@ -39,7 +23,9 @@ public class ImageDTO extends BaseImage {
 
 		List<ImageDTO> imageString = new ArrayList<>();
 		for (Image image : listEntityImages) {
-			imageString.add(new ImageDTO.Builder().setUrl(image.getImage()).build());
+			ImageDTO i = MapperUtils.mapToDTO(image, ImageDTO.class);
+			i.setUrl(image.getImage());
+			imageString.add(i);
 		}
 		return imageString;
 	}
@@ -47,8 +33,9 @@ public class ImageDTO extends BaseImage {
 	public static ImageDTO generateImageDTO(Image image) {
 		if (image == null)
 			return null;
-
-		return new ImageDTO.Builder().setUrl(image.getImage()).build();
+		ImageDTO i = MapperUtils.mapToDTO(image, ImageDTO.class);
+		i.setUrl(image.getImage());
+		return i;
 	}
 
 }

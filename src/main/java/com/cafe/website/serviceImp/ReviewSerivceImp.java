@@ -230,7 +230,7 @@ public class ReviewSerivceImp implements ReviewService {
 	public Float getRatingByReviewId(int productId) {
 		List<Review> listReviews = reviewRepository.findReviewByProductId(productId);
 		if (listReviews == null)
-			return null;
+			return 0f;
 		float total = 0;
 		for (Review review : listReviews) {
 			total += (review.getRating().getFood() + review.getRating().getLocation() + review.getRating().getPrice()

@@ -27,7 +27,6 @@ import com.cafe.website.entity.Image;
 import com.cafe.website.entity.Kind;
 import com.cafe.website.entity.Menu;
 import com.cafe.website.entity.Product;
-import com.cafe.website.entity.ProductOwner;
 import com.cafe.website.entity.ProductSchedule;
 import com.cafe.website.entity.Purpose;
 import com.cafe.website.entity.Review;
@@ -38,6 +37,7 @@ import com.cafe.website.payload.AreaDTO;
 import com.cafe.website.payload.ConvenienceDTO;
 import com.cafe.website.payload.ImageDTO;
 import com.cafe.website.payload.KindDTO;
+import com.cafe.website.payload.MenuDTO;
 import com.cafe.website.payload.ProductCreateDTO;
 import com.cafe.website.payload.ProductDTO;
 import com.cafe.website.payload.ProductDeleteDTO;
@@ -50,7 +50,6 @@ import com.cafe.website.repository.ConvenienceRepository;
 import com.cafe.website.repository.ImageRepository;
 import com.cafe.website.repository.KindRepository;
 import com.cafe.website.repository.MenuRepository;
-import com.cafe.website.repository.ProductOwnerRepository;
 import com.cafe.website.repository.ProductRepository;
 import com.cafe.website.repository.ProductScheduleRepository;
 import com.cafe.website.repository.PurposeRepository;
@@ -69,7 +68,6 @@ import com.github.slugify.Slugify;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Tuple;
 
 @Service
 public class ProductServiceImp implements ProductService {
@@ -85,7 +83,6 @@ public class ProductServiceImp implements ProductService {
 	private MenuRepository menuRepository;
 	private ProductScheduleRepository productScheduleRepository;
 	private UserRepository userRepository;
-	private ProductOwnerRepository productOwnerRepository;
 	private ProductMapper productMapper;
 	private CloudinaryService cloudinaryService;
 	private AreaMapper areaMapper;
@@ -102,9 +99,8 @@ public class ProductServiceImp implements ProductService {
 			AreaRepository areaRepository, KindRepository kindRepository, PurposeRepository purposeRepository,
 			ConvenienceRepository conveRepository, ReviewRepository reviewRepository, ImageRepository imageRepository,
 			MenuRepository menuRepository, ProductScheduleRepository productScheduleRepository,
-			UserRepository userRepository, ProductOwnerRepository productOwnerRepository, ProductMapper productMapper,
-			CloudinaryService cloudinaryService, AreaMapper areaMapper,
-			ScheduledExecutorService scheduledExecutorService, ReviewService reviewService) {
+			UserRepository userRepository, ProductMapper productMapper, CloudinaryService cloudinaryService,
+			AreaMapper areaMapper, ScheduledExecutorService scheduledExecutorService, ReviewService reviewService) {
 		super();
 		this.entityManager = entityManager;
 		this.productRepository = productRepository;
@@ -117,7 +113,6 @@ public class ProductServiceImp implements ProductService {
 		this.menuRepository = menuRepository;
 		this.productScheduleRepository = productScheduleRepository;
 		this.userRepository = userRepository;
-		this.productOwnerRepository = productOwnerRepository;
 		this.productMapper = productMapper;
 		this.cloudinaryService = cloudinaryService;
 		this.areaMapper = areaMapper;
@@ -162,9 +157,12 @@ public class ProductServiceImp implements ProductService {
 				isWatingDelete, latitude, longitude, pageable, entityManager);
 		listProductDto = productList.stream().map(product -> {
 			ProductDTO pdto = MapperUtils.mapToDTO(product, ProductDTO.class);
-			List<Image> listEntityImages = imageRepository.findAllImageByProductId(product.getId());
-//			List<Image> listEntityImages = product.getlistImages();
+//			List<Image> listEntityImages = imageRepository.findAllImageByProductId(product.getId());
+//			List<Image> listEntityImages = product.getListImages();
 			List<AreaDTO> listArea = MapperUtils.loppMapToDTO(product.getAreas(), AreaDTO.class);
+			listArea.forEach(area -> {
+//				area.setImage(ImageDTO.generateImageDTO(area.getImageDto()));
+			});
 			List<KindDTO> listKind = MapperUtils.loppMapToDTO(product.getKinds(), KindDTO.class);
 			List<ConvenienceDTO> listCon = MapperUtils.loppMapToDTO(product.getConveniences(), ConvenienceDTO.class);
 			List<PurposeDTO> listPurpose = MapperUtils.loppMapToDTO(product.getPurposes(), PurposeDTO.class);
@@ -179,7 +177,8 @@ public class ProductServiceImp implements ProductService {
 			pdto.setPurposesDto(listPurpose);
 			pdto.setKindsDto(listKind);
 			pdto.setConveniencesDto(listCon);
-			pdto.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
+			pdto.setListImage(ImageDTO.generateListImageDTO(product.getListImages()));
+			pdto.setListMenu(MenuDTO.generateListMenuDTO(product.getListMenus()));
 			pdto.setSchedules(listScheduleDto);
 			pdto.setOwner(MapperUtils.mapToDTO(product.getUser(), UserDTO.class));
 			pdto.setAvgRating(reviewService.getRatingByReviewId(product.getId()));
@@ -223,14 +222,12 @@ public class ProductServiceImp implements ProductService {
 				Purpose.class);
 		List<PurposeDTO> listPurposeDto = MapperUtils.loppMapToDTO(listPurposes, PurposeDTO.class);
 
-		List<Kind> listKinds = this.getListFromIds(productCreateDto.getArea_id(), kindRepository, "kind", Kind.class);
+		List<Kind> listKinds = this.getListFromIds(productCreateDto.getKind_id(), kindRepository, "kind", Kind.class);
 		List<KindDTO> listKindDto = MapperUtils.loppMapToDTO(listKinds, KindDTO.class);
 
-		List<Convenience> listCon = this.getListFromIds(productCreateDto.getArea_id(), conveRepository, "convenience",
-				Convenience.class);
-		List<ConvenienceDTO> listConDto = MapperUtils.loppMapToDTO(listKinds, ConvenienceDTO.class);
-
-		ProductOwner productOwner = new ProductOwner();
+		List<Convenience> listCon = this.getListFromIds(productCreateDto.getConvenience_id(), conveRepository,
+				"convenience", Convenience.class);
+		List<ConvenienceDTO> listConDto = MapperUtils.loppMapToDTO(listCon, ConvenienceDTO.class);
 
 		pdto.setSlug(slugify.slugify(productCreateDto.getSlug()));
 		productMapper.updateProductFromDto(pdto, product);
@@ -242,6 +239,8 @@ public class ProductServiceImp implements ProductService {
 		product.setConveniences(listCon);
 		product.setKinds(listKinds);
 		product.setPurposes(listPurposes);
+		product.setId(0);
+
 		productRepository.save(product);
 //		move to their service
 		cloudinaryService.uploadImages(images, productCreateDto.getListImageFile(), "cafe-springboot/blogs", "image");
@@ -255,17 +254,16 @@ public class ProductServiceImp implements ProductService {
 		cloudinaryService.uploadImages(menus, productCreateDto.getListImageFile(), "cafe-springboot/blogs", "image");
 		menus.forEach(menu -> {
 			Menu menuItem = new Menu();
-			menuItem.setImage(menu);
+			Image image = new Image();
+			image.setImage(menu);
+			image.setMenu(menuItem);
+			menuItem.setImage(image);
 			menuItem.setProduct(product);
 			listMenus.add(menuItem);
 		});
 
 		menuRepository.saveAll(listMenus);
 		imageRepository.saveAll(listImages);
-
-		productOwner.setProduct(product);
-		productOwner.setUser(user);
-		productOwnerRepository.save(productOwner);
 
 		for (ProductScheduleDTO scheduleDto : listScheduleParse) {
 			ProductSchedule schedule = new ProductSchedule();
@@ -278,17 +276,18 @@ public class ProductServiceImp implements ProductService {
 		}
 		productScheduleRepository.saveAll(listSchedule);
 		ProductDTO res = MapperUtils.mapToDTO(product, ProductDTO.class);
+		logger.info(product.getCreatedAt() + "CreatedAt");
 
-		List<Image> listEntityImages = imageRepository.findAllImageByProductId(res.getId());
-
-		res.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
+		res.setListImage(ImageDTO.generateListImageDTO(listImages));
+		res.setListMenu(MenuDTO.generateListMenuDTO(listMenus));
 		res.setAreasDto(listAreaDto);
 		res.setKindsDto(listKindDto);
 		res.setConveniencesDto(listConDto);
 		res.setPurposesDto(listPurposeDto);
-
 		res.setSchedules(listScheduleDto);
 		res.setOwner(MapperUtils.mapToDTO(user, UserDTO.class));
+		pdto.setAvgRating(reviewService.getRatingByReviewId(product.getId()));
+
 		return res;
 	}
 
@@ -296,7 +295,7 @@ public class ProductServiceImp implements ProductService {
 	public ProductDTO updateProduct(int id, ProductUpdateDTO productUpdateDto) throws IOException {
 		User user = userRepository.findById(productUpdateDto.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", productUpdateDto.getUserId()));
-		if (!productOwnerRepository.existsByUserIdAndProductId(user.getId(), productUpdateDto.getId())
+		if (!productRepository.existsByIdAndUserId(user.getId(), productUpdateDto.getId())
 				&& !user.isHasRoleAdmin(user.getRoles()) && !user.isHasRoleMod(user.getRoles()))
 
 			throw new CafeAPIException(HttpStatus.UNAUTHORIZED, "Access denied");
@@ -312,9 +311,7 @@ public class ProductServiceImp implements ProductService {
 
 		List<ProductSchedule> listSchedule = new ArrayList<>();
 		List<ProductScheduleDTO> listScheduleDto = new ArrayList<>();
-		List<ProductScheduleDTO> listScheduleParse = new ObjectMapper().readValue(productUpdateDto.getListScheduleDto(),
-				new TypeReference<List<ProductScheduleDTO>>() {
-				});
+
 		Product product = MapperUtils.mapToEntity(pdto, Product.class);
 		productUpdateDto.setId(id);
 		productMapper.updateProductDtoFromProductUpdateDto(pdto, productUpdateDto);
@@ -333,30 +330,30 @@ public class ProductServiceImp implements ProductService {
 		List<Convenience> listCon = this.getListFromIds(productUpdateDto.getArea_id(), conveRepository, "convenience",
 				Convenience.class);
 		List<ConvenienceDTO> listConDto = MapperUtils.loppMapToDTO(listKinds, ConvenienceDTO.class);
+		if (productUpdateDto.getSlug() != null && !productUpdateDto.getSlug().isEmpty())
+			pdto.setSlug(slugify.slugify(productUpdateDto.getSlug()));
 
-		pdto.setSlug(slugify.slugify(productUpdateDto.getSlug()));
-
-		if (productUpdateDto.getListMenuFile() != null) {
+		if (productUpdateDto.getListMenuFile().size() > 0) {
 			List<String> menus = new ArrayList<>();
 			List<Menu> listMenus = new ArrayList<>();
 			List<Menu> listEntityMenus = menuRepository.findAllMenuByProductId(id);
 
 			if (listEntityMenus != null)
 				for (Menu menu : listEntityMenus)
-					cloudinaryService.removeImageFromCloudinary(menu.getImage(), path_menu);
+					cloudinaryService.removeImageFromCloudinary(menu.getImage().getImage(), path_menu);
 
 			cloudinaryService.uploadImages(menus, productUpdateDto.getListMenuFile(), path_menu, "image");
 			menus.forEach(menuTemp -> {
 				Menu menuItem = new Menu();
-				menuItem.setImage(menuTemp);
+//				menuItem.setImage(menuTemp);
 				menuItem.setProduct(product);
 				listMenus.add(menuItem);
 			});
 			menuRepository.deleteAllMenuByProductId(id);
-			product.setlistMenus(listMenus);
+			product.setListMenus(listMenus);
 		}
 
-		if (productUpdateDto.getListImageFile() != null) {
+		if (productUpdateDto.getListImageFile().size() > 0) {
 			List<String> images = new ArrayList<>();
 			List<Image> listImages = new ArrayList<>();
 			List<Image> listEntityImages = imageRepository.findAllImageByProductId(id);
@@ -373,21 +370,33 @@ public class ProductServiceImp implements ProductService {
 				listImages.add(imageItem);
 			});
 			imageRepository.deleteAllImageByProductId(id);
-			product.setlistImages(listImages);
+			product.setListImages(listImages);
 		}
-		for (ProductScheduleDTO scheduleDto : listScheduleParse) {
-			ProductSchedule schedule = new ProductSchedule();
-			schedule.setDayOfWeek(scheduleDto.getDayOfWeek());
-			schedule.setEndTime(scheduleDto.getEndTime());
-			schedule.setStartTime(scheduleDto.getStartTime());
-			schedule.setProduct(product);
-			listSchedule.add(schedule);
-			listScheduleDto.add(MapperUtils.mapToDTO(schedule, ProductScheduleDTO.class));
+//		need fix
+		if (productUpdateDto.getListScheduleDto() != null) {
+			List<ProductScheduleDTO> listScheduleParse = new ObjectMapper()
+					.readValue(productUpdateDto.getListScheduleDto(), new TypeReference<List<ProductScheduleDTO>>() {
+					});
+			for (ProductScheduleDTO scheduleDto : listScheduleParse) {
+				ProductSchedule schedule = new ProductSchedule();
+				schedule.setDayOfWeek(scheduleDto.getDayOfWeek());
+				schedule.setEndTime(scheduleDto.getEndTime());
+				schedule.setStartTime(scheduleDto.getStartTime());
+				schedule.setProduct(product);
+				listSchedule.add(schedule);
+				listScheduleDto.add(MapperUtils.mapToDTO(schedule, ProductScheduleDTO.class));
+			}
+		}
+		product.setUser(user);
+		if (listSchedule.size() > 0) {
+			productScheduleRepository.deleteAllScheduleByProductId(product.getId());
+			productScheduleRepository.saveAll(listSchedule);
 		}
 
-		product.setUser(user);
-		productScheduleRepository.deleteAllScheduleByProductId(product.getId());
 		productMapper.updateProductFromDto(pdto, product);
+		product.getSchedules().forEach(sc -> {
+			sc.setProduct(product);
+		});
 		if (listAreas.size() > 0)
 			product.setAreas(listAreas);
 		if (listCon.size() > 0)
@@ -396,17 +405,28 @@ public class ProductServiceImp implements ProductService {
 			product.setKinds(listKinds);
 		if (listPurposes.size() > 0)
 			product.setPurposes(listPurposes);
+		if (listSchedule.size() > 0)
+			product.setSchedules(listSchedule);
 
-		product.setSchedules(listSchedule);
 		productRepository.save(product);
 
-		List<Image> listEntityImages = imageRepository.findAllImageByProductId(id);
-		pdto.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
+		List<ProductScheduleDTO> listSchedulesDto = new ArrayList<>();
+
+		for (ProductSchedule schedule : product.getSchedules()) {
+			logger.info(schedule.getCreatedAt() + "");
+			ProductScheduleDTO scheduleDto = MapperUtils.mapToDTO(schedule, ProductScheduleDTO.class);
+			listSchedulesDto.add(scheduleDto);
+		}
+
+		pdto.setListImage(ImageDTO.generateListImageDTO(product.getListImages()));
+		pdto.setListMenu(MenuDTO.generateListMenuDTO(product.getListMenus()));
 		pdto.setAreasDto(listAreaDto);
 		pdto.setKindsDto(listKindDto);
 		pdto.setConveniencesDto(listConDto);
 		pdto.setPurposesDto(listPurposeDto);
-		pdto.setSchedules(listScheduleDto);
+		pdto.setSchedules(listSchedulesDto);
+		pdto.setOwner(MapperUtils.mapToDTO(product.getUser(), UserDTO.class));
+		pdto.setAvgRating(reviewService.getRatingByReviewId(product.getId()));
 		return pdto;
 	}
 
@@ -415,20 +435,34 @@ public class ProductServiceImp implements ProductService {
 		Product product = productRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Product", "id", id + ""));
 		ProductDTO productDto = MapperUtils.mapToDTO(product, ProductDTO.class);
-//		List<Image> listEntityImages = imageRepository.findAllImageByProductId(id);
-		List<Image> listEntityImages = product.getlistImages();
 		List<AreaDTO> listArea = MapperUtils.loppMapToDTO(product.getAreas(), AreaDTO.class);
+		List<PurposeDTO> listPurpose = MapperUtils.loppMapToDTO(product.getPurposes(), PurposeDTO.class);
+		List<KindDTO> listKind = MapperUtils.loppMapToDTO(product.getKinds(), KindDTO.class);
+		List<ConvenienceDTO> listCon = MapperUtils.loppMapToDTO(product.getConveniences(), ConvenienceDTO.class);
+		List<ProductScheduleDTO> listScheduleDto = new ArrayList<>();
+
+		for (ProductSchedule schedule : product.getSchedules()) {
+			ProductScheduleDTO scheduleDto = MapperUtils.mapToDTO(schedule, ProductScheduleDTO.class);
+			listScheduleDto.add(scheduleDto);
+		}
 		// more
 		productDto.setAreasDto(listArea);
-		productDto.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
-
+		productDto.setConveniencesDto(listCon);
+		productDto.setKindsDto(listKind);
+		productDto.setPurposesDto(listPurpose);
+		productDto.setSchedules(listScheduleDto);
+		productDto.setOwner(MapperUtils.mapToDTO(product.getUser(), UserDTO.class));
+		productDto.setAvgRating(reviewService.getRatingByReviewId(product.getId()));
+		productDto.setListImage(ImageDTO.generateListImageDTO(product.getListImages()));
+		productDto.setListMenu(MenuDTO.generateListMenuDTO(product.getListMenus()));
 		return productDto;
 	}
 
 	@Override
 	public void deleteProduct(ProductDeleteDTO productDeleteDto) throws IOException {
-		this.getProductById(productDeleteDto.getProductId());
-		productOwnerRepository.findByProductIdAndUserId(productDeleteDto.getProductId(), productDeleteDto.getUserId())
+		productRepository.findById(productDeleteDto.getProductId())
+				.orElseThrow(() -> new ResourceNotFoundException("Product", "id", productDeleteDto.getProductId()));
+		productRepository.findByIdAndUserId(productDeleteDto.getProductId(), productDeleteDto.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("Onwer", "id", "something went wrong!"));
 		String path_menu = "cafe-springboot/menu/";
 		String path_blogs = "cafe-springboot/blogs/";
@@ -441,9 +475,8 @@ public class ProductServiceImp implements ProductService {
 
 		if (listEntityMenus != null)
 			for (Menu menu : listEntityMenus)
-				cloudinaryService.removeImageFromCloudinary(menu.getImage(), path_menu);
-		productOwnerRepository.deleteAllOwnerByProductIdAndUserId(productDeleteDto.getProductId(),
-				productDeleteDto.getUserId());
+				cloudinaryService.removeImageFromCloudinary(menu.getImage().getImage(), path_menu);
+
 		productRepository.deleteById(productDeleteDto.getProductId());
 	}
 
@@ -475,6 +508,8 @@ public class ProductServiceImp implements ProductService {
 
 	@Override
 	public Float getRateReviewByProduct(Integer productId) {
+		productRepository.findById(productId)
+				.orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
 		List<Review> listReviews = reviewRepository.findReviewByProductId(productId);
 
 		if (listReviews == null || listReviews.size() < 1)
@@ -492,7 +527,7 @@ public class ProductServiceImp implements ProductService {
 	public String setIsWaitingDeleteProduct(ProductDeleteDTO productDeleteDto) throws IOException {
 		Product product = productRepository.findById(productDeleteDto.getProductId()).orElseThrow(
 				() -> new ResourceNotFoundException("Product", "id", productDeleteDto.getProductId() + ""));
-		productOwnerRepository.findByProductIdAndUserId(productDeleteDto.getProductId(), productDeleteDto.getUserId())
+		productRepository.findByIdAndUserId(productDeleteDto.getProductId(), productDeleteDto.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("Onwer", "id", "something went wrong!"));
 		product.setIsWaitingDelete(true);
 		productRepository.save(product);

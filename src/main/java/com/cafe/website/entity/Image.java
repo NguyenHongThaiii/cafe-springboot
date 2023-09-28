@@ -17,6 +17,10 @@ public class Image extends BaseEntity {
 	@JoinColumn(name = "user_id")
 	private User user;
 
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "menu_id")
+	private Menu menu;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "product_id")
 	private Product product;
@@ -41,21 +45,22 @@ public class Image extends BaseEntity {
 	@JoinColumn(name = "purpose_id")
 	private Purpose purpose;
 
-	public Image(int id, int status, Long createdAt, Long updatedAt, String image, User user, Product product,
-			Review review, Area area, Kind kind, Convenience convenience, Purpose purpose) {
+	public Image() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public Image(int id, int status, Long createdAt, Long updatedAt, String image, User user, Menu menu,
+			Product product, Review review, Area area, Kind kind, Convenience convenience, Purpose purpose) {
 		super(id, status, createdAt, updatedAt);
 		this.image = image;
 		this.user = user;
+		this.menu = menu;
 		this.product = product;
 		this.review = review;
 		this.area = area;
 		this.kind = kind;
 		this.convenience = convenience;
 		this.purpose = purpose;
-	}
-
-	public Image() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getImage() {
@@ -72,6 +77,14 @@ public class Image extends BaseEntity {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public Menu getMenu() {
+		return menu;
+	}
+
+	public void setMenu(Menu menu) {
+		this.menu = menu;
 	}
 
 	public Product getProduct() {

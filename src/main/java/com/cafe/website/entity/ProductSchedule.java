@@ -63,4 +63,10 @@ public class ProductSchedule extends BaseEntity {
 		this.endTime = endTime;
 	}
 
+	@Override
+	public String toString() {
+		return "ProductSchedule [product=" + product + ", dayOfWeek=" + dayOfWeek + ", startTime=" + startTime
+				+ ", endTime=" + endTime + "]";
+	}
+
 }

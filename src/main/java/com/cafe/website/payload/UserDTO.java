@@ -7,9 +7,8 @@ import com.cafe.website.entity.Product;
 import com.cafe.website.entity.Review;
 import com.cafe.website.entity.Role;
 
-public class UserDTO {
+public class UserDTO extends BaseEntityDTO {
 	private int id;
-	private int status;
 	private String email;
 	private String name;
 	private String address;
@@ -19,11 +18,10 @@ public class UserDTO {
 	private ImageDTO imageDto;
 	private Boolean isWaitingDelete;
 
-	public UserDTO(int id, int status, String email, String name, String address, String phone, String slug,
-			List<Role> roles, ImageDTO imageDto, Boolean isWaitingDelete) {
-		super();
-		this.id = id;
-		this.status = status;
+	public UserDTO(int id, Integer status, Long createdAt, Long updatedAt, int id2, String email, String name,
+			String address, String phone, String slug, List<Role> roles, ImageDTO imageDto, Boolean isWaitingDelete) {
+		super(id, status, createdAt, updatedAt);
+		id = id2;
 		this.email = email;
 		this.name = name;
 		this.address = address;
@@ -60,14 +58,6 @@ public class UserDTO {
 
 	public void setId(int id) {
 		this.id = id;
-	}
-
-	public int getStatus() {
-		return status;
-	}
-
-	public void setStatus(int status) {
-		this.status = status;
 	}
 
 	public String getEmail() {
