@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -50,7 +51,8 @@ public class PurposeServiceImp implements PurposeService {
 
 	private Slugify slugify = Slugify.builder().build();
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
-	String path_category = "cafe-springboot/categories/Purpose";
+	@Value("${app.path-category-purpose}")
+	String path_category;
 
 	public PurposeServiceImp(EntityManager entityManager, PurposeMapper purposeMapper,
 			CloudinaryService cloudinaryService, PurposeRepository purposeRepository, ImageRepository imageRepository) {
@@ -82,7 +84,7 @@ public class PurposeServiceImp implements PurposeService {
 				sb = sb.substring(0, sb.length() - 4).trim();
 
 			for (SortField sortField : validSortFields) {
-				if (sortField.toString().equals(sb)) {
+				if (sortField.toString().equals(sb.trim())) {
 					sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
 					break;
 				}

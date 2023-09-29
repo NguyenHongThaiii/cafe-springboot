@@ -120,7 +120,7 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 				sb = sb.substring(0, sb.length() - 4).trim();
 
 			for (SortField sortField : validSortFields) {
-				if (sortField.toString().equals(sb)) {
+				if (sortField.toString().equals(sb.trim())) {
 					sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
 					break;
 				}

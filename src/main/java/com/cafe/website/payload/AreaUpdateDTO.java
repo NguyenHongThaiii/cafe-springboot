@@ -2,14 +2,21 @@ package com.cafe.website.payload;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.cafe.website.annotation.FileSize;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
+
 public class AreaUpdateDTO {
-
+	@Min(value = 0, message = "Status should not be less than 0")
+	@Max(value = 1, message = "status should not be greater than 1")
 	private int status;
-
+	@Size(min = 5, max = 50)
 	private String name;
-
+	@Size(min = 5, max = 50)
 	private String slug;
-
+	@FileSize(max = 1048576 * 5)
 	private MultipartFile imageFile;
 
 	public AreaUpdateDTO(int status, String name, String slug, MultipartFile imageFile) {

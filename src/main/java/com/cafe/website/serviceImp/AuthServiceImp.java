@@ -79,8 +79,8 @@ public class AuthServiceImp implements AuthService {
 	private UserMapper userMapper;
 	private CloudinaryService cloudinaryService;
 	private ScheduledExecutorService scheduler;
-
-	final String path_user = "cafe-springboot/Users/";
+	@Value("${app.path-user}")
+	private String path_user;
 	private Slugify slugify = Slugify.builder().build();
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 	@Value("${app.timeout}")
@@ -108,15 +108,14 @@ public class AuthServiceImp implements AuthService {
 
 	@Override
 	public String login(LoginDTO loginDto) {
-
+		User user = userRepository.findByEmail(loginDto.getEmail())
+				.orElseThrow(() -> new ResourceNotFoundException("User", "email", loginDto.getEmail()));
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String token = jwtTokenProvider.generateToken(authentication);
 
-		User user = userRepository.findByEmail(loginDto.getEmail())
-				.orElseThrow(() -> new ResourceNotFoundException("User", "email", loginDto.getEmail()));
 		revokeAllUserTokens(user);
 		saveUserToken(user, token);
 
@@ -125,13 +124,13 @@ public class AuthServiceImp implements AuthService {
 
 	@Override
 	public RegisterResponse createUser(RegisterDTO registerDto) {
-		String passwordEncode = passwordEncoder.encode(registerDto.getPassword());
 
 		if (userRepository.existsByEmail(registerDto.getEmail()))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Email is already exists!.");
 		if (userRepository.existsByName(registerDto.getName()))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!.");
 
+		String passwordEncode = passwordEncoder.encode(registerDto.getPassword());
 		User user = MapperUtils.mapToEntity(registerDto, User.class);
 		user.setPassword(passwordEncode);
 		user.setSlug(slugify.slugify(user.getName()));
@@ -165,17 +164,16 @@ public class AuthServiceImp implements AuthService {
 	public RegisterResponse validateRegister(ValidateOtpDTO validateDto) {
 		String otpCache = otpService.getOtpByEmail(validateDto.getEmail());
 		this.validateOtp(validateDto.getOtp(), otpCache);
-		// update token
+
 		User user = userRepository.findByEmail(validateDto.getEmail())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "email", validateDto.getEmail()));
 		String token = jwtTokenProvider.generateToken(user.getName());
 
 		revokeAllUserTokens(user);
 		saveUserToken(user, token);
-
-		// update status user
 		user.setStatus(1);
 		userRepository.save(user);
+
 		RegisterResponse reg = MapperUtils.mapToDTO(user, RegisterResponse.class);
 		reg.setToken(token);
 		otpService.clearCache("otpCache", validateDto.getEmail());
@@ -199,7 +197,7 @@ public class AuthServiceImp implements AuthService {
 	}
 
 	private void revokeAllUserTokens(User user) {
-		var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
+		List<Token> validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
 		if (validUserTokens.isEmpty())
 			return;
 		validUserTokens.forEach(token -> {
@@ -233,8 +231,8 @@ public class AuthServiceImp implements AuthService {
 
 		userCurrent.setPassword(null);
 		UserDTO res = MapperUtils.mapToDTO(userCurrent, UserDTO.class);
-		Image image = imageRepository.findImageByUserId(res.getId()).orElse(null);
-		res.setImageDto(ImageDTO.generateImageDTO(image));
+		if (userCurrent.getAvatar() != null)
+			res.setImage(ImageDTO.generateImageDTO(userCurrent.getAvatar()));
 		return res;
 	}
 
@@ -281,9 +279,8 @@ public class AuthServiceImp implements AuthService {
 
 		UserDTO res = MapperUtils.mapToDTO(user, UserDTO.class);
 
-		Image image = imageRepository.findImageByUserId(res.getId()).orElse(null);
-		res.setImageDto(ImageDTO.generateImageDTO(image));
-
+		if (user.getAvatar() != null)
+			res.setImage(ImageDTO.generateImageDTO(user.getAvatar()));
 		return res;
 	}
 
@@ -323,8 +320,8 @@ public class AuthServiceImp implements AuthService {
 	public UserDTO getUserById(int id) {
 		User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
 		UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
-		Image image = imageRepository.findImageByUserId(userDto.getId()).orElse(null);
-		userDto.setImageDto(ImageDTO.generateImageDTO(image));
+		if (user.getAvatar() != null)
+			userDto.setImage(ImageDTO.generateImageDTO(user.getAvatar()));
 
 		return userDto;
 	}
@@ -334,8 +331,8 @@ public class AuthServiceImp implements AuthService {
 		User user = userRepository.findBySlug(slug)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "slug", slug));
 		UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
-		Image image = imageRepository.findImageByUserId(userDto.getId()).orElse(null);
-		userDto.setImageDto(ImageDTO.generateImageDTO(image));
+		if (user.getAvatar() != null)
+			userDto.setImage(ImageDTO.generateImageDTO(user.getAvatar()));
 		return userDto;
 	}
 
@@ -382,7 +379,7 @@ public class AuthServiceImp implements AuthService {
 				sb = sb.substring(0, sb.length() - 4).trim();
 
 			for (SortField sortField : validSortFields) {
-				if (sortField.toString().equals(sb)) {
+				if (sortField.toString().equals(sb.trim())) {
 					sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
 					break;
 				}
@@ -396,9 +393,8 @@ public class AuthServiceImp implements AuthService {
 
 		listUserDto = listUser.stream().map(user -> {
 			UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
-			Image image = imageRepository.findImageByUserId(user.getId()).orElse(null);
-
-			userDto.setImageDto(ImageDTO.generateImageDTO(image));
+			if (user.getAvatar() != null)
+				userDto.setImage(ImageDTO.generateImageDTO(user.getAvatar()));
 			return userDto;
 		}).collect(Collectors.toList());
 

@@ -15,11 +15,11 @@ public class UserDTO extends BaseEntityDTO {
 	private String phone;
 	private String slug;
 	private List<Role> roles = new ArrayList<>();
-	private ImageDTO imageDto;
+	private ImageDTO image;
 	private Boolean isWaitingDelete;
 
 	public UserDTO(int id, Integer status, Long createdAt, Long updatedAt, int id2, String email, String name,
-			String address, String phone, String slug, List<Role> roles, ImageDTO imageDto, Boolean isWaitingDelete) {
+			String address, String phone, String slug, List<Role> roles, ImageDTO image, Boolean isWaitingDelete) {
 		super(id, status, createdAt, updatedAt);
 		id = id2;
 		this.email = email;
@@ -28,7 +28,7 @@ public class UserDTO extends BaseEntityDTO {
 		this.phone = phone;
 		this.slug = slug;
 		this.roles = roles;
-		this.imageDto = imageDto;
+		this.image = image;
 		this.isWaitingDelete = isWaitingDelete;
 	}
 
@@ -44,12 +44,12 @@ public class UserDTO extends BaseEntityDTO {
 		this.isWaitingDelete = isWaitingDelete;
 	}
 
-	public ImageDTO getImageDto() {
-		return imageDto;
+	public ImageDTO getImage() {
+		return image;
 	}
 
-	public void setImageDto(ImageDTO imageDto) {
-		this.imageDto = imageDto;
+	public void setImage(ImageDTO image) {
+		this.image = image;
 	}
 
 	public int getId() {

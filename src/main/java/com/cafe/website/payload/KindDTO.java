@@ -5,13 +5,13 @@ public class KindDTO extends BaseEntityDTO implements HasImageDTO {
 
 	private String slug;
 
-	private ImageDTO imageDto;
+	private ImageDTO image;
 
-	public KindDTO(int id, int status, Long createdAt, Long updatedAt, String name, String slug, ImageDTO imageDto) {
+	public KindDTO(int id, int status, Long createdAt, Long updatedAt, String name, String slug, ImageDTO image) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;
 		this.slug = slug;
-		this.imageDto = imageDto;
+		this.image = image;
 	}
 
 	public KindDTO() {
@@ -34,17 +34,13 @@ public class KindDTO extends BaseEntityDTO implements HasImageDTO {
 		this.slug = slug;
 	}
 
-	public ImageDTO getImageDto() {
-		return imageDto;
-	}
-
-	public void setImageDto(ImageDTO imageDto) {
-		this.imageDto = imageDto;
+	public ImageDTO getImage() {
+		return image;
 	}
 
 	@Override
-	public void setImage(ImageDTO imageDto) {
-		this.imageDto = imageDto;
+	public void setImage(ImageDTO image) {
+		this.image = image;
 
 	}
 

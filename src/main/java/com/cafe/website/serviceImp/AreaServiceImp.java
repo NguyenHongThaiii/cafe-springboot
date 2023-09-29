@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -46,7 +47,8 @@ public class AreaServiceImp implements AreaService {
 
 	private Slugify slugify = Slugify.builder().build();
 	private static final Logger logger = LoggerFactory.getLogger(AreaServiceImp.class);
-	String path_category = "cafe-springboot/categories/Area";
+	@Value("${app.path-category-area}")
+	private String path_category;
 
 	public AreaServiceImp(AreaRepository areaRepository, AreaMapper areaMapper, CloudinaryService cloudinaryService,
 			ImageRepository imageRepository) {
@@ -77,7 +79,7 @@ public class AreaServiceImp implements AreaService {
 				sb = sb.substring(0, sb.length() - 4).trim();
 
 			for (SortField sortField : validSortFields) {
-				if (sortField.toString().equals(sb)) {
+				if (sortField.toString().equals(sb.trim())) {
 					sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
 					break;
 				}
@@ -91,9 +93,7 @@ public class AreaServiceImp implements AreaService {
 
 		listAreaDto = listArea.stream().map(area -> {
 			AreaDTO areaDto = MapperUtils.mapToDTO(area, AreaDTO.class);
-			Image image = imageRepository.findImageByAreaId(area.getId()).orElse(null);
-
-			areaDto.setImage(ImageDTO.generateImageDTO(image));
+			areaDto.setImage(ImageDTO.generateImageDTO(area.getImage()));
 			return areaDto;
 		}).collect(Collectors.toList());
 
@@ -104,8 +104,7 @@ public class AreaServiceImp implements AreaService {
 	public AreaDTO getAreaById(int id) {
 		Area area = areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area", "id", id + ""));
 		AreaDTO areaDto = MapperUtils.mapToDTO(area, AreaDTO.class);
-		Image image = imageRepository.findImageByAreaId(area.getId()).orElse(null);
-		areaDto.setImage(ImageDTO.generateImageDTO(image));
+		areaDto.setImage(ImageDTO.generateImageDTO(area.getImage()));
 		return areaDto;
 	}
 
@@ -114,9 +113,7 @@ public class AreaServiceImp implements AreaService {
 		Area area = areaRepository.findBySlug(slug)
 				.orElseThrow(() -> new ResourceNotFoundException("Area", "slug", slug));
 		AreaDTO areaDto = MapperUtils.mapToDTO(area, AreaDTO.class);
-		Image image = imageRepository.findImageByAreaId(area.getId()).orElse(null);
-
-		areaDto.setImage(ImageDTO.generateImageDTO(image));
+		areaDto.setImage(ImageDTO.generateImageDTO(area.getImage()));
 		return areaDto;
 	}
 
@@ -140,7 +137,7 @@ public class AreaServiceImp implements AreaService {
 		Area newArea = areaRepository.save(area);
 
 		AreaDTO newAreaDto = MapperUtils.mapToDTO(newArea, AreaDTO.class);
-		newAreaDto.setImage(ImageDTO.generateImageDTO(image));
+		newAreaDto.setImage(ImageDTO.generateImageDTO(newArea.getImage()));
 		return newAreaDto;
 	}
 

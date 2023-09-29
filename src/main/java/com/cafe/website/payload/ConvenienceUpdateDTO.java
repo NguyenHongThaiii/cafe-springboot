@@ -2,8 +2,12 @@ package com.cafe.website.payload;
 
 import org.springframework.web.multipart.MultipartFile;
 
-public class ConvenienceUpdateDTO {
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
+public class ConvenienceUpdateDTO {
+	@Min(value = 0, message = "Status should not be less than 0")
+	@Max(value = 1, message = "status should not be greater than 1")
 	private int status;
 
 	private String name;

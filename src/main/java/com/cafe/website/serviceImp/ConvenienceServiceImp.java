@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -46,7 +47,8 @@ public class ConvenienceServiceImp implements ConvenienceService {
 
 	private Slugify slugify = Slugify.builder().build();
 	private static final Logger logger = LoggerFactory.getLogger(ConvenienceServiceImp.class);
-	String path_category = "cafe-springboot/categories/Convenience";
+	@Value("${app.path-category-convenience}")
+	private String path_category;
 
 	public ConvenienceServiceImp(EntityManager entityManager, ConvenienceMapper convenienceMapper,
 			CloudinaryService cloudinaryService, ConvenienceRepository convenienceRepository,
@@ -79,7 +81,7 @@ public class ConvenienceServiceImp implements ConvenienceService {
 				sb = sb.substring(0, sb.length() - 4).trim();
 
 			for (SortField sortField : validSortFields) {
-				if (sortField.toString().equals(sb)) {
+				if (sortField.toString().equals(sb.trim())) {
 					sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
 					break;
 				}
@@ -93,8 +95,7 @@ public class ConvenienceServiceImp implements ConvenienceService {
 
 		listConvenienceDto = listConvenience.stream().map(convenience -> {
 			ConvenienceDTO convenienceDto = MapperUtils.mapToDTO(convenience, ConvenienceDTO.class);
-			Image image = imageRepository.findImageByConvenienceId(convenienceDto.getId()).orElse(null);
-			convenienceDto.setImage(ImageDTO.generateImageDTO(image));
+			convenienceDto.setImage(ImageDTO.generateImageDTO(convenience.getImage()));
 			return convenienceDto;
 		}).collect(Collectors.toList());
 
@@ -103,21 +104,19 @@ public class ConvenienceServiceImp implements ConvenienceService {
 
 	@Override
 	public ConvenienceDTO getConvenienceById(int id) {
-		Convenience Convenience = convenienceRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Convenience", "id", id + ""));
-		ConvenienceDTO ConvenienceDto = MapperUtils.mapToDTO(Convenience, ConvenienceDTO.class);
-		Image image = imageRepository.findImageByConvenienceId(Convenience.getId()).orElse(null);
-		ConvenienceDto.setImage(ImageDTO.generateImageDTO(image));
+		Convenience convenience = convenienceRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Convenience", "id", id));
+		ConvenienceDTO ConvenienceDto = MapperUtils.mapToDTO(convenience, ConvenienceDTO.class);
+		ConvenienceDto.setImage(ImageDTO.generateImageDTO(convenience.getImage()));
 		return ConvenienceDto;
 	}
 
 	@Override
 	public ConvenienceDTO getConvenienceBySlug(String slug) {
-		Convenience Convenience = convenienceRepository.findBySlug(slug)
-				.orElseThrow(() -> new ResourceNotFoundException("Convenience", "slug", slug + ""));
-		ConvenienceDTO ConvenienceDto = MapperUtils.mapToDTO(Convenience, ConvenienceDTO.class);
-		Image image = imageRepository.findImageByConvenienceId(Convenience.getId()).orElse(null);
-		ConvenienceDto.setImage(ImageDTO.generateImageDTO(image));
+		Convenience convenience = convenienceRepository.findBySlug(slug)
+				.orElseThrow(() -> new ResourceNotFoundException("Convenience", "slug", slug));
+		ConvenienceDTO ConvenienceDto = MapperUtils.mapToDTO(convenience, ConvenienceDTO.class);
+		ConvenienceDto.setImage(ImageDTO.generateImageDTO(convenience.getImage()));
 		return ConvenienceDto;
 	}
 
@@ -139,7 +138,7 @@ public class ConvenienceServiceImp implements ConvenienceService {
 
 		Convenience newConvenience = convenienceRepository.save(convenience);
 		ConvenienceDTO newConvenienceDto = MapperUtils.mapToDTO(newConvenience, ConvenienceDTO.class);
-		newConvenienceDto.setImage(ImageDTO.generateImageDTO(image));
+		newConvenienceDto.setImage(ImageDTO.generateImageDTO(newConvenience.getImage()));
 		return newConvenienceDto;
 	}
 
@@ -172,8 +171,8 @@ public class ConvenienceServiceImp implements ConvenienceService {
 		if (convenience.getImage() != null)
 			newConvenienceDTO.setImage(ImageDTO.generateImageDTO(convenience.getImage()));
 		else
-			newConvenienceDTO.setImage(newDto.getImageDto());
-		
+			newConvenienceDTO.setImage(newDto.getImage());
+
 		return newConvenienceDTO;
 	}
 

@@ -4,6 +4,7 @@ import com.cafe.website.payload.HasImage;
 import com.cafe.website.payload.ImageDTO;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToOne;

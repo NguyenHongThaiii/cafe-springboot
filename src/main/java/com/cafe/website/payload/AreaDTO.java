@@ -6,17 +6,17 @@ public class AreaDTO extends BaseEntityDTO implements HasImageDTO {
 
 	private String slug;
 
-	private ImageDTO imageDto;
-
-	public AreaDTO(int id, int status, Long createdAt, Long updatedAt, String name, String slug, ImageDTO imageDto) {
-		super(id, status, createdAt, updatedAt);
-		this.name = name;
-		this.slug = slug;
-		this.imageDto = imageDto;
-	}
+	private ImageDTO image;
 
 	public AreaDTO() {
 		super();
+	}
+
+	public AreaDTO(int id, int status, Long createdAt, Long updatedAt, String name, String slug, ImageDTO image) {
+		super(id, status, createdAt, updatedAt);
+		this.name = name;
+		this.slug = slug;
+		this.image = image;
 	}
 
 	public String getName() {
@@ -36,16 +36,12 @@ public class AreaDTO extends BaseEntityDTO implements HasImageDTO {
 	}
 
 	@Override
-	public void setImage(ImageDTO imageDto) {
-		this.imageDto = imageDto;
+	public void setImage(ImageDTO image) {
+		this.image = image;
 	}
 
-	public ImageDTO getImageDto() {
-		return imageDto;
-	}
-
-	public void setImageDto(ImageDTO imageDto) {
-		this.imageDto = imageDto;
+	public ImageDTO getImage() {
+		return image;
 	}
 
 }

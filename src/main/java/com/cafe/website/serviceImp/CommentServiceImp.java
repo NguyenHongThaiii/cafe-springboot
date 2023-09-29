@@ -1,6 +1,5 @@
 package com.cafe.website.serviceImp;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,15 +12,12 @@ import org.springframework.stereotype.Service;
 
 import com.cafe.website.constant.SortField;
 import com.cafe.website.entity.Comment;
-import com.cafe.website.entity.Image;
 import com.cafe.website.entity.Review;
 import com.cafe.website.entity.User;
 import com.cafe.website.exception.ResourceNotFoundException;
 import com.cafe.website.payload.CommentCreateDTO;
 import com.cafe.website.payload.CommentDTO;
 import com.cafe.website.payload.CommentUpdateDTO;
-import com.cafe.website.payload.ImageDTO;
-import com.cafe.website.payload.ReviewDTO;
 import com.cafe.website.repository.CommentRepository;
 import com.cafe.website.repository.ReviewRepository;
 import com.cafe.website.repository.UserRepository;
@@ -59,7 +55,6 @@ public class CommentServiceImp implements CommentService {
 		List<Comment> listComment;
 		List<Sort.Order> sortOrders = new ArrayList<>();
 
-		// sort
 		if (!StringUtils.isEmpty(sortBy))
 			sortByList = Arrays.asList(sortBy.split(","));
 
@@ -70,7 +65,7 @@ public class CommentServiceImp implements CommentService {
 				sb = sb.substring(0, sb.length() - 4).trim();
 
 			for (SortField sortField : validSortFields) {
-				if (sortField.toString().equals(sb)) {
+				if (sortField.toString().equals(sb.trim())) {
 					sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
 					break;
 				}
@@ -117,9 +112,9 @@ public class CommentServiceImp implements CommentService {
 
 	@Override
 	public CommentDTO updateComment(int id, CommentUpdateDTO commentUpdateDto) {
-		Review review = reviewRepository.findById(commentUpdateDto.getReviewId())
+		reviewRepository.findById(commentUpdateDto.getReviewId())
 				.orElseThrow(() -> new ResourceNotFoundException("Review", "id", commentUpdateDto.getReviewId()));
-		User user = userRepository.findById(commentUpdateDto.getUserId())
+		userRepository.findById(commentUpdateDto.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", commentUpdateDto.getUserId()));
 		Comment comment = commentRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Comment", "id", id));

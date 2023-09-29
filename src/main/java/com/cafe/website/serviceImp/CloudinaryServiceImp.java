@@ -32,7 +32,6 @@ public class CloudinaryServiceImp implements CloudinaryService {
 	}
 
 	@SuppressWarnings("unchecked")
-//	@Override
 	public String uploadFile(MultipartFile file, String folerName, String type) throws IOException {
 		Map<String, Object> params = ObjectUtils.asMap("folder", folerName, "resource_type", type);
 

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -55,7 +56,8 @@ public class ReviewSerivceImp implements ReviewService {
 
 	private ReviewMapper reviewMapper;
 	ObjectMapper objMapper = new ObjectMapper();
-	String path_reviews = "cafe-springboot/reviews/";
+	@Value("${app.path-review}")
+	String path_reviews;
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 
 	public ReviewSerivceImp(ReviewRepository reviewRepository, CloudinaryService cloudinaryService,
@@ -95,7 +97,7 @@ public class ReviewSerivceImp implements ReviewService {
 				sb = sb.substring(0, sb.length() - 4).trim();
 
 			for (SortField sortField : validSortFields) {
-				if (sortField.toString().equals(sb)) {
+				if (sortField.toString().equals(sb.trim())) {
 					sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
 					break;
 				}
@@ -108,9 +110,7 @@ public class ReviewSerivceImp implements ReviewService {
 		listReview = reviewRepository.findWithFilters(name, productId, userId, ratingId, pageable, entityManager);
 		listReviewDto = listReview.stream().map(review -> {
 			ReviewDTO reviewDto = MapperUtils.mapToDTO(review, ReviewDTO.class);
-			List<Image> listEntityImages = imageRepository.findAllImageByReviewId(review.getId());
-
-			reviewDto.setListImages(ImageDTO.generateListImageDTO(listEntityImages));
+			reviewDto.setListImages(ImageDTO.generateListImageDTO(review.getListImages()));
 			reviewDto.setProductId(review.getProduct().getId());
 			return reviewDto;
 		}).collect(Collectors.toList());
@@ -123,9 +123,8 @@ public class ReviewSerivceImp implements ReviewService {
 		Review review = reviewRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Review", "id", id));
 		ReviewDTO reviewDto = MapperUtils.mapToDTO(review, ReviewDTO.class);
-		List<Image> listEntityImages = imageRepository.findAllImageByReviewId(review.getId());
 
-		reviewDto.setListImages(ImageDTO.generateListImageDTO(listEntityImages));
+		reviewDto.setListImages(ImageDTO.generateListImageDTO(review.getListImages()));
 		reviewDto.setProductId(review.getProduct().getId());
 
 		return reviewDto;
@@ -150,7 +149,7 @@ public class ReviewSerivceImp implements ReviewService {
 		User user = userRepository.findById(reviewCreateDto.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", reviewCreateDto.getUserId()));
 
-		cloudinaryService.uploadImages(images, reviewCreateDto.getlistImageFiles(), "cafe-springboot/blogs", "image");
+		cloudinaryService.uploadImages(images, reviewCreateDto.getlistImageFiles(), path_reviews, "image");
 		images.forEach(image -> {
 			Image imageItem = new Image();
 			imageItem.setImage(image);
@@ -167,9 +166,8 @@ public class ReviewSerivceImp implements ReviewService {
 		imageRepository.saveAll(listImages);
 
 		ReviewDTO reviewDto = MapperUtils.mapToDTO(review, ReviewDTO.class);
-		List<Image> listEntityImages = imageRepository.findAllImageByReviewId(review.getId());
-
-		reviewDto.setListImages(ImageDTO.generateListImageDTO(listEntityImages));
+		if (review.getListImages().size() > 0)
+			reviewDto.setListImages(ImageDTO.generateListImageDTO(review.getListImages()));
 		reviewDto.setProductId(review.getProduct().getId());
 
 		return reviewDto;
@@ -205,8 +203,7 @@ public class ReviewSerivceImp implements ReviewService {
 		reviewMapper.updateReviewFromDto(reviewDto, review);
 		reviewRepository.save(review);
 
-		List<Image> listEntityImages = imageRepository.findAllImageByReviewId(review.getId());
-		reviewDto.setListImages(ImageDTO.generateListImageDTO(listEntityImages));
+		reviewDto.setListImages(ImageDTO.generateListImageDTO(review.getListImages()));
 		reviewDto.setProductId(review.getProduct().getId());
 
 		return reviewDto;
@@ -214,7 +211,7 @@ public class ReviewSerivceImp implements ReviewService {
 
 	@Override
 	public void deleteReview(int id) throws IOException {
-		ReviewDTO reviewDto = this.getReviewById(id);
+		this.getReviewById(id);
 		String path_reviews = "cafe-springboot/reviews";
 		List<Image> listEntityImages = imageRepository.findAllImageByReviewId(id);
 
@@ -228,16 +225,23 @@ public class ReviewSerivceImp implements ReviewService {
 
 	@Override
 	public Float getRatingByReviewId(int productId) {
+		Product product = productRepository.findById(productId).orElse(null);
 		List<Review> listReviews = reviewRepository.findReviewByProductId(productId);
-		if (listReviews == null)
+		if (listReviews == null || product == null || listReviews.size() == 0)
 			return 0f;
-		float total = 0;
+		float total = 0f;
 		for (Review review : listReviews) {
-			total += (review.getRating().getFood() + review.getRating().getLocation() + review.getRating().getPrice()
-					+ review.getRating().getSpace() + review.getRating().getService()) / 5;
+			logger.info(review.getRating().getFood() + " getFood");
+			logger.info(review.getRating().getLocation() + " getLocation");
+			logger.info(review.getRating().getPrice() + " getPrice");
+			logger.info(review.getRating().getSpace() + " getSpace");
+			logger.info(review.getRating().getService() + " getService");
+			total += (float) (review.getRating().getFood() + review.getRating().getLocation()
+					+ review.getRating().getPrice() + review.getRating().getSpace() + review.getRating().getService())
+					/ 5;
+			logger.info(total + " total");
 		}
-//		return null;
-		return total / listReviews.size();
+		return (total / listReviews.size());
 	}
 
 	@Override

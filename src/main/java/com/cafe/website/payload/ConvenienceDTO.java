@@ -5,14 +5,14 @@ public class ConvenienceDTO extends BaseEntityDTO implements HasImageDTO {
 
 	private String slug;
 
-	private ImageDTO imageDto;
+	private ImageDTO image;
 
 	public ConvenienceDTO(int id, int status, Long createdAt, Long updatedAt, String name, String slug,
-			ImageDTO imageDto) {
+			ImageDTO image) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;
 		this.slug = slug;
-		this.imageDto = imageDto;
+		this.image = image;
 	}
 
 	public ConvenienceDTO() {
@@ -35,17 +35,13 @@ public class ConvenienceDTO extends BaseEntityDTO implements HasImageDTO {
 		this.slug = slug;
 	}
 
-	public ImageDTO getImageDto() {
-		return imageDto;
-	}
-
-	public void setImageDto(ImageDTO imageDto) {
-		this.imageDto = imageDto;
-	}
-
 	@Override
-	public void setImage(ImageDTO imageDto) {
-		this.imageDto = imageDto;
+	public void setImage(ImageDTO image) {
+		this.image = image;
+	}
+
+	public ImageDTO getImage() {
+		return image;
 	}
 
 }

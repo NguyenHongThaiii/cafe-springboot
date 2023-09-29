@@ -5,12 +5,11 @@ import java.util.UUID;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.github.slugify.Slugify;
-
 public class PasswordGeneratorEncoder {
 	public static void main(String[] args) {
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        System.out.println(passwordEncoder.matches("123123", "$2a$10$eFClZhQxVCG8LiEIgxrvwO.0o25hZcxteOv7ClxUG0mDVBZARgNiS"));
+		PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		System.out.println(
+				passwordEncoder.matches("123123", "$2a$10$eFClZhQxVCG8LiEIgxrvwO.0o25hZcxteOv7ClxUG0mDVBZARgNiS"));
 //        				final Slugify slg = Slugify.builder().build();
 //		final String result = slg.slugify("nguyen-hong-thai23123213");
 //		System.out.print(result);
@@ -21,6 +20,8 @@ public class PasswordGeneratorEncoder {
 //		System.out.print(idPart);
 		String uniqueKey = UUID.randomUUID().toString();
 		System.out.println(uniqueKey);
+		Float a = 10f;
+		System.out.println(a / 3);
 	}
 
 }

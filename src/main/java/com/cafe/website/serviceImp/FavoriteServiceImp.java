@@ -27,29 +27,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class FavoriteServiceImp implements FavoriteService {
 	private ReviewRepository reviewRepository;
-	private CloudinaryService cloudinaryService;
-	private RatingRepository ratingRepository;
-	private ProductRepository productRepository;
 	private UserRepository userRepository;
-	private ImageRepository imageRepository;
 	private FavoriterRepository favoriteRepository;
 
-	private ReviewMapper reviewMapper;
-	ObjectMapper objMapper = new ObjectMapper();
-	String path_reviews = "cafe-springboot/reviews/";
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 
-	public FavoriteServiceImp(ReviewRepository reviewRepository, CloudinaryService cloudinaryService,
-			RatingRepository ratingRepository, ProductRepository productRepository, UserRepository userRepository,
-			ReviewMapper reviewMapper, ImageRepository imageRepository, FavoriterRepository favoriteRepository) {
+	public FavoriteServiceImp(ReviewRepository reviewRepository, UserRepository userRepository,
+			FavoriterRepository favoriteRepository) {
 		super();
 		this.reviewRepository = reviewRepository;
-		this.cloudinaryService = cloudinaryService;
-		this.ratingRepository = ratingRepository;
-		this.productRepository = productRepository;
 		this.userRepository = userRepository;
-		this.reviewMapper = reviewMapper;
-		this.imageRepository = imageRepository;
 		this.favoriteRepository = favoriteRepository;
 	}
 
@@ -58,7 +45,7 @@ public class FavoriteServiceImp implements FavoriteService {
 		Favorite favor = null;
 		User user;
 		Review review;
-		logger.info(favoriteCreate.getUserId()+"");
+		logger.info(favoriteCreate.getUserId() + "");
 		if (!favoriteRepository.existsByReviewIdAndUserId(favoriteCreate.getReviewId(), favoriteCreate.getUserId())) {
 			user = userRepository.findById(favoriteCreate.getUserId())
 					.orElseThrow(() -> new ResourceNotFoundException("User", "id", favoriteCreate.getUserId()));

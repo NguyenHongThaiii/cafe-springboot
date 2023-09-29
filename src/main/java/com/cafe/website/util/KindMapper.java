@@ -6,9 +6,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
-import com.cafe.website.entity.Area;
 import com.cafe.website.entity.Kind;
-import com.cafe.website.payload.AreaDTO;
 import com.cafe.website.payload.KindDTO;
 
 @Mapper(componentModel = "spring", unmappedSourcePolicy = ReportingPolicy.IGNORE)
