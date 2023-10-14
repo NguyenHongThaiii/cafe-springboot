@@ -33,8 +33,8 @@ public class Comment extends BaseEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Comment(int id, int status, Long createdAt, Long updatedAt, String name, List<Favorite> favorites, User user,
-			Review review) {
+	public Comment(int id, int status, String createdAt, String updatedAt, String name, List<Favorite> favorites,
+			User user, Review review) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;
 		this.favorites = favorites;

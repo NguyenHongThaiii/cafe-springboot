@@ -10,11 +10,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.cafe.website.entity.Product;
+import com.cafe.website.entity.Rating;
+import com.cafe.website.entity.Review;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -38,9 +41,10 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
 	@Transactional
 	@Query
-	default List<Product> findWithFilters(String name, int status, String slugArea, String slugConvenience,
+	default List<Product> findWithFilters(String name, Integer status, String slugArea, String slugConvenience,
 			String slugKind, String slugPurpose, Boolean isWatingDelete, Double latitude, Double longitude,
-			Pageable pageable, EntityManager entityManager) {
+			Integer userId, Float ratingsAverage, String createdAt, String updatedAt, Pageable pageable,
+			EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Product> cq = cb.createQuery(Product.class);
@@ -50,6 +54,12 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
 		if (name != null) {
 			predicates.add(cb.like(cb.lower(product.get("name")), "%" + name.toLowerCase() + "%"));
+		}
+		if (createdAt != null) {
+			predicates.add(cb.like(cb.lower(product.get("createdAt")), "%" + createdAt.toLowerCase() + "%"));
+		}
+		if (updatedAt != null) {
+			predicates.add(cb.like(cb.lower(product.get("updatedAt")), "%" + updatedAt.toLowerCase() + "%"));
 		}
 		if (isWatingDelete != null) {
 			predicates.add(cb.equal(product.get("isWaitingDelete"), isWatingDelete));
@@ -63,6 +73,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 		if (slugKind != null) {
 			predicates.add(cb.equal(product.get("kinds").get("slug"), slugArea));
 		}
+		if (userId != null) {
+			predicates.add(cb.equal(product.get("user").get("id"), userId));
+		}
 		if (slugPurpose != null) {
 			predicates.add(cb.equal(product.get("purposes").get("slug"), slugArea));
 		}
@@ -73,8 +86,19 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 							cb.diff(product.get("longitude"), longitude))));
 			orders.add(cb.desc(distanceSort));
 		}
-		predicates.add(cb.equal(product.get("status"), status));
+		if (status != null) {
+			predicates.add(cb.equal(product.get("status"), status));
 
+		}
+		if (ratingsAverage != null) {
+			Join<Product, Review> review = product.join("reviews");
+			Join<Review, Rating> rating = review.join("rating");
+			Expression<Float> sumOfRatings = cb
+					.sum(cb.sum(cb.sum(cb.sum(rating.get("location"), rating.get("space")), rating.get("food")),
+							rating.get("service")), rating.get("price"));
+			Expression<Number> calculatedAverage = cb.quot(sumOfRatings, 5.0f);
+			predicates.add(cb.equal(calculatedAverage, ratingsAverage));
+		}
 		if (pageable.getSort() != null) {
 			for (Sort.Order order : pageable.getSort()) {
 

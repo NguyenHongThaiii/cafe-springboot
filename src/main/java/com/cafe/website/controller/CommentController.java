@@ -31,11 +31,14 @@ public class CommentController {
 	}
 
 	@GetMapping("")
-	public ResponseEntity<List<CommentDTO>> getListComment(@RequestParam(defaultValue = "5") int limit,
-			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false) String name,
+	public ResponseEntity<List<CommentDTO>> getListComment(@RequestParam(defaultValue = "5") Integer limit,
+			@RequestParam(defaultValue = "1") Integer page, @RequestParam(required = false) String name,
 			@RequestParam(required = false) Integer reviewId, @RequestParam(required = false) Integer userId,
+			@RequestParam(required = false) String createdAt, @RequestParam(required = false) String updatedAt,
+
 			@RequestParam(required = false, defaultValue = "null") String sortBy) {
-		List<CommentDTO> list = commentService.getListComments(limit, page, name, userId, reviewId, sortBy);
+		List<CommentDTO> list = commentService.getListComments(limit, page, name, userId, reviewId, createdAt,
+				updatedAt, sortBy);
 		return ResponseEntity.ok(list);
 	}
 

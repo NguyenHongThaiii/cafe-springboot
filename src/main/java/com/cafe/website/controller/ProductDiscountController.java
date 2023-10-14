@@ -32,12 +32,14 @@ public class ProductDiscountController {
 	}
 
 	@GetMapping("")
-	public ResponseEntity<List<ProductDiscountDTO>> getListProductDiscount(@RequestParam(defaultValue = "5") int limit,
-			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false) Integer percent,
-			@RequestParam(required = false) String name, @RequestParam(required = false) Boolean expireDays,
+	public ResponseEntity<List<ProductDiscountDTO>> getListProductDiscount(
+			@RequestParam(defaultValue = "5") Integer limit, @RequestParam(defaultValue = "1") Integer page,
+			@RequestParam(required = false) Integer percent, @RequestParam(required = false) String name,
+			@RequestParam(required = false) String createdAt, @RequestParam(required = false) String updatedAt,
+			@RequestParam(required = false) Boolean expireDays,
 			@RequestParam(required = false, defaultValue = "") String sortBy) {
 		List<ProductDiscountDTO> listProduct = productDiscountService.getListProductDiscount(limit, page, name,
-				expireDays, percent, sortBy);
+				expireDays, percent, createdAt, updatedAt, sortBy);
 		return ResponseEntity.ok(listProduct);
 	}
 

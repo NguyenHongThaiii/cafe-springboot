@@ -18,5 +18,6 @@ public interface PurposeService {
 
 	void deletePurpose(int id) throws IOException;
 
-	List<PurposeDTO> getListPurposes(int limit, int page, String name, String slug, String sortBy);
+	List<PurposeDTO> getListPurposes(int limit, int page, String name, String slug, String createdAt, String updatedAt,
+			String sortBy);
 }

@@ -59,7 +59,8 @@ public class AreaServiceImp implements AreaService {
 	}
 
 	@Override
-	public List<AreaDTO> getListAreas(int limit, int page, String name, String slug, String sortBy) {
+	public List<AreaDTO> getListAreas(int limit, int page, Integer status, String name, String slug, String createdAt,
+			String updatedAt, String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
 				SortField.CREATEDATDESC);
@@ -89,7 +90,7 @@ public class AreaServiceImp implements AreaService {
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
-		listArea = areaRepository.findWithFilters(name, slug, pageable, entityManager);
+		listArea = areaRepository.findWithFilters(status, name, slug, createdAt, updatedAt, pageable, entityManager);
 
 		listAreaDto = listArea.stream().map(area -> {
 			AreaDTO areaDto = MapperUtils.mapToDTO(area, AreaDTO.class);

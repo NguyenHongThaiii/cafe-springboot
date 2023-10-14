@@ -22,7 +22,7 @@ public class Menu extends BaseEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Menu(int id, int status, Long createdAt, Long updatedAt, Image image, Product product) {
+	public Menu(int id, int status, String createdAt, String updatedAt, Image image, Product product) {
 		super(id, status, createdAt, updatedAt);
 		this.image = image;
 		this.product = product;

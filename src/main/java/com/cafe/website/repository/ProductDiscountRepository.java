@@ -26,8 +26,8 @@ public interface ProductDiscountRepository extends JpaRepository<ProductDiscount
 	Optional<ProductDiscount> findByProductId(Integer productId);
 
 	@Query
-	default List<ProductDiscount> findWithFilters(String name, Boolean isExpired, Integer percent, Pageable pageable,
-			EntityManager entityManager) {
+	default List<ProductDiscount> findWithFilters(String name, Boolean isExpired, Integer percent, String createdAt,
+			String updatedAt, Pageable pageable, EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<ProductDiscount> cq = cb.createQuery(ProductDiscount.class);
@@ -37,6 +37,12 @@ public interface ProductDiscountRepository extends JpaRepository<ProductDiscount
 
 		if (name != null) {
 			predicates.add(cb.like(cb.lower(productDiscount.get("name")), "%" + name.toLowerCase() + "%"));
+		}
+		if (createdAt != null) {
+			predicates.add(cb.like(cb.lower(productDiscount.get("createdAt")), "%" + createdAt.toLowerCase() + "%"));
+		}
+		if (updatedAt != null) {
+			predicates.add(cb.like(cb.lower(productDiscount.get("updatedAt")), "%" + updatedAt.toLowerCase() + "%"));
 		}
 		if (percent != null) {
 			predicates.add(cb.equal(productDiscount.get("percent"), percent));

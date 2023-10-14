@@ -5,21 +5,21 @@ public class BaseEntityDTO {
 
 	private Integer status;
 
-	private Long createdAt;
+	private String createdAt;
 
-	private Long updatedAt;
+	private String updatedAt;
 
-	public BaseEntityDTO(int id, Integer status, Long createdAt, Long updatedAt) {
+	public BaseEntityDTO() {
+		super();
+		this.setStatus(1);
+	}
+
+	public BaseEntityDTO(int id, Integer status, String createdAt, String updatedAt) {
 		super();
 		this.id = id;
 		this.status = status;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
-	}
-
-	public BaseEntityDTO() {
-		super();
-		this.setStatus(1);
 	}
 
 	public int getId() {
@@ -38,19 +38,19 @@ public class BaseEntityDTO {
 		this.status = status;
 	}
 
-	public Long getCreatedAt() {
+	public String getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(Long createdAt) {
+	public void setCreatedAt(String createdAt) {
 		this.createdAt = createdAt;
 	}
 
-	public Long getUpdatedAt() {
+	public String getUpdatedAt() {
 		return updatedAt;
 	}
 
-	public void setUpdatedAt(Long updatedAt) {
+	public void setUpdatedAt(String updatedAt) {
 		this.updatedAt = updatedAt;
 	}
 

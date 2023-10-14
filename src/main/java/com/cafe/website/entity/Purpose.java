@@ -17,8 +17,8 @@ public class Purpose extends BaseCategory implements HasImage {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Purpose(int id, int status, Long createdAt, Long updatedAt, String slug, Image image) {
-		super(id, status, createdAt, updatedAt, slug);
+	public Purpose(int id, int status, String createdAt, String updatedAt, String name, String slug, Image image) {
+		super(id, status, createdAt, updatedAt, name, slug);
 		this.image = image;
 	}
 

@@ -5,8 +5,8 @@ public class ProductScheduleDTO extends BaseEntityDTO {
 	private Long startTime;
 	private Long endTime;
 
-	public ProductScheduleDTO(int id, Integer status, Long createdAt, Long updatedAt, Long dayOfWeek, Long startTime,
-			Long endTime) {
+	public ProductScheduleDTO(int id, Integer status, String createdAt, String updatedAt, Long dayOfWeek,
+			Long startTime, Long endTime) {
 		super(id, status, createdAt, updatedAt);
 		this.dayOfWeek = dayOfWeek;
 		this.startTime = startTime;

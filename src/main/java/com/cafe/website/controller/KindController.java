@@ -33,11 +33,12 @@ public class KindController {
 	}
 
 	@GetMapping("")
-	public ResponseEntity<List<KindDTO>> getListKinds(@RequestParam(defaultValue = "5") int limit,
-			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false) String name,
-			@RequestParam(required = false) String slug,
+	public ResponseEntity<List<KindDTO>> getListKinds(@RequestParam(defaultValue = "5") Integer limit,
+			@RequestParam(defaultValue = "1") Integer page, @RequestParam(required = false) String name,
+			@RequestParam(required = false) String slug, @RequestParam(required = false) String createdAt,
+			@RequestParam(required = false) String updatedAt,
 			@RequestParam(required = false, defaultValue = "") String sortBy) {
-		List<KindDTO> listKindsDto = kindService.getListKinds(limit, page, name, slug, sortBy);
+		List<KindDTO> listKindsDto = kindService.getListKinds(limit, page, name, slug, createdAt, updatedAt, sortBy);
 		return new ResponseEntity<>(listKindsDto, HttpStatus.OK);
 	}
 

@@ -16,7 +16,7 @@ public class ReviewDTO extends BaseEntityDTO {
 	private int favorite;
 	private Integer productId;
 
-	public ReviewDTO(int id, int status, Long createdAt, Long updatedAt, Rating rating, String name,
+	public ReviewDTO(int id, Integer status, String createdAt, String updatedAt, Rating rating, String name,
 			List<ImageDTO> listImages, int favorite, Integer productId) {
 		super(id, status, createdAt, updatedAt);
 		this.rating = rating;

@@ -358,7 +358,8 @@ public class AuthServiceImp implements AuthService {
 	}
 
 	@Override
-	public List<UserDTO> getListUser(int limit, int page, String name, String email, String sortBy) {
+	public List<UserDTO> getListUser(Integer status, int limit, int page, String name, String email, String createdAt,
+			String updatedAt, String sortBy) {
 
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
@@ -389,7 +390,7 @@ public class AuthServiceImp implements AuthService {
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
-		listUser = userRepository.findWithFilters(name, email, pageable, entityManager);
+		listUser = userRepository.findWithFilters(status, name, email, createdAt, updatedAt, pageable, entityManager);
 
 		listUserDto = listUser.stream().map(user -> {
 			UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);

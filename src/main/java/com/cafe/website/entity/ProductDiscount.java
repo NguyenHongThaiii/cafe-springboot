@@ -17,8 +17,8 @@ public class ProductDiscount extends BaseEntity {
 	private Integer percent;
 	private String name;
 
-	public ProductDiscount(int id, int status, Long createdAt, Long updatedAt, Product product,
-			Long expiryDate, Integer percent, String name) {
+	public ProductDiscount(int id, int status, String createdAt, String updatedAt, Product product, Long expiryDate,
+			Integer percent, String name) {
 		super(id, status, createdAt, updatedAt);
 		this.product = product;
 		this.expiryDate = expiryDate;

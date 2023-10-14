@@ -12,7 +12,8 @@ public class AreaDTO extends BaseEntityDTO implements HasImageDTO {
 		super();
 	}
 
-	public AreaDTO(int id, int status, Long createdAt, Long updatedAt, String name, String slug, ImageDTO image) {
+	public AreaDTO(int id, Integer status, String createdAt, String updatedAt, String name, String slug,
+			ImageDTO image) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;
 		this.slug = slug;

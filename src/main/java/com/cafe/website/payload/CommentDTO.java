@@ -4,7 +4,7 @@ public class CommentDTO extends BaseEntityDTO {
 	private String name;
 	private Integer reivewId;
 
-	public CommentDTO(int id, Integer status, Long createdAt, Long updatedAt, String name, Integer reivewId) {
+	public CommentDTO(int id, Integer status, String createdAt, String updatedAt, String name, Integer reivewId) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;
 		this.reivewId = reivewId;

@@ -65,7 +65,8 @@ public class PurposeServiceImp implements PurposeService {
 	}
 
 	@Override
-	public List<PurposeDTO> getListPurposes(int limit, int page, String name, String slug, String sortBy) {
+	public List<PurposeDTO> getListPurposes(int limit, int page, String name, String slug, String createdAt,
+			String updatedAt, String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
 				SortField.CREATEDATDESC);
@@ -94,7 +95,7 @@ public class PurposeServiceImp implements PurposeService {
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
-		listPurpose = purposeRepository.findWithFilters(name, slug, pageable, entityManager);
+		listPurpose = purposeRepository.findWithFilters(name, slug, createdAt, updatedAt, pageable, entityManager);
 
 		listPurposeDto = listPurpose.stream().map(purpose -> {
 			PurposeDTO purposeDto = MapperUtils.mapToDTO(purpose, PurposeDTO.class);

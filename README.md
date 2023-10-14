@@ -4,14 +4,15 @@
 - fix menu product (done)
 - fix created - updated null when created (done)
 - fix created - updated null image menu (done)
-
 - fix payload entity (doing)
-- add find product by user id
-- add find product by rating review
-- add find review by rating number
-- add filter product saved by user
+- add find product by user id (done)
+- add find product by rating average number (done)
+- add find review by rating average number (done)
+- add filter product saved by user (done)
 - add filter by time closed/open
 - fix image in menu (done)
 - add statistic 
 - add logging
+- fix error logger error details when get body json
 - refactor all code (doing)
+- add filter by createdAt and updatedAt all get all entities (done)

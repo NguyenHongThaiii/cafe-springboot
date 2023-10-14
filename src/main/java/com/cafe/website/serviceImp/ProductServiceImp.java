@@ -124,9 +124,9 @@ public class ProductServiceImp implements ProductService {
 	}
 
 	@Override
-	public List<ProductDTO> getListProducts(int limit, int page, int status, String rating, Boolean isWatingDelete,
+	public List<ProductDTO> getListProducts(int limit, int page, Integer status, String rating, Boolean isWatingDelete,
 			String name, String slugArea, String slugConvenience, String slugKind, String slugPurpose, Double latitude,
-			Double longitude, String sortBy) {
+			Double longitude, Integer userId, Float ratingsAverage, String createdAt, String updatedAt, String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.PRICEMIN,
 				SortField.PRICEMAX, SortField.UPDATEDAT, SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC,
 				SortField.PRICEMINDESC, SortField.PRICEMAXDESC, SortField.UPDATEDATDESC, SortField.CREATEDATDESC);
@@ -157,7 +157,8 @@ public class ProductServiceImp implements ProductService {
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
 		productList = productRepository.findWithFilters(name, status, slugArea, slugConvenience, slugKind, slugPurpose,
-				isWatingDelete, latitude, longitude, pageable, entityManager);
+				isWatingDelete, latitude, longitude, userId, ratingsAverage, createdAt, updatedAt, pageable,
+				entityManager);
 		listProductDto = productList.stream().map(product -> {
 			ProductDTO pdto = MapperUtils.mapToDTO(product, ProductDTO.class);
 			List<AreaDTO> listArea = MapperUtils.loppMapToDTO(product.getAreas(), AreaDTO.class);
@@ -179,6 +180,7 @@ public class ProductServiceImp implements ProductService {
 			pdto.setListMenu(MenuDTO.generateListMenuDTO(product.getListMenus()));
 			pdto.setSchedules(listScheduleDto);
 			pdto.setOwner(MapperUtils.mapToDTO(product.getUser(), UserDTO.class));
+			logger.info(reviewService.getRatingByReviewId(product.getId()) + "");
 			pdto.setAvgRating(reviewService.getRatingByReviewId(product.getId()));
 			return pdto;
 		}).collect(Collectors.toList());
@@ -511,8 +513,7 @@ public class ProductServiceImp implements ProductService {
 			return 0f;
 		float total = 0;
 		for (Review review : listReviews) {
-			total += (review.getRating().getFood() + review.getRating().getLocation() + review.getRating().getPrice()
-					+ review.getRating().getSpace() + review.getRating().getService()) / 5;
+			total += review.getAverageRating();
 		}
 
 		return total / listReviews.size();

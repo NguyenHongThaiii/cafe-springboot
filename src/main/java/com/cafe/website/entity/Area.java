@@ -20,11 +20,6 @@ public class Area extends BaseCategory implements HasImage {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Area(int id, int status, Long createdAt, Long updatedAt, String slug, Image image) {
-		super(id, status, createdAt, updatedAt, slug);
-		this.image = image;
-	}
-
 	public Image getImage() {
 		return image;
 	}

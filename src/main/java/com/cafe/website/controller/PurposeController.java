@@ -33,11 +33,13 @@ public class PurposeController {
 	}
 
 	@GetMapping("")
-	public ResponseEntity<List<PurposeDTO>> getListPurposes(@RequestParam(defaultValue = "5") int limit,
-			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false) String name,
+	public ResponseEntity<List<PurposeDTO>> getListPurposes(@RequestParam(defaultValue = "5") Integer limit,
+			@RequestParam(defaultValue = "1") Integer page, @RequestParam(required = false) String name,
+			@RequestParam(defaultValue = "1") String createdAt, @RequestParam(required = false) String updatedAt,
 			@RequestParam(required = false) String slug,
 			@RequestParam(required = false, defaultValue = "") String sortBy) {
-		List<PurposeDTO> listPurposesDto = purposeService.getListPurposes(limit, page, name, slug, sortBy);
+		List<PurposeDTO> listPurposesDto = purposeService.getListPurposes(limit, page, name, slug, createdAt, updatedAt,
+				sortBy);
 		return new ResponseEntity<>(listPurposesDto, HttpStatus.OK);
 	}
 

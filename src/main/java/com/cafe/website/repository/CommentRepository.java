@@ -22,8 +22,8 @@ import jakarta.persistence.criteria.Root;
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
 	@Query
-	default List<Comment> findWithFilters(String name, Integer reviewId, Integer userId, Pageable pageable,
-			EntityManager entityManager) {
+	default List<Comment> findWithFilters(String name, Integer reviewId, Integer userId, String createdAt,
+			String updatedAt, Pageable pageable, EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Comment> cq = cb.createQuery(Comment.class);
@@ -33,6 +33,12 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
 		if (name != null) {
 			predicates.add(cb.like(cb.lower(comment.get("name")), "%" + name.toLowerCase() + "%"));
+		}
+		if (createdAt != null) {
+			predicates.add(cb.like(cb.lower(comment.get("createdAt")), "%" + createdAt.toLowerCase() + "%"));
+		}
+		if (updatedAt != null) {
+			predicates.add(cb.like(cb.lower(comment.get("updatedAt")), "%" + updatedAt.toLowerCase() + "%"));
 		}
 		if (reviewId != null) {
 			predicates.add(cb.equal(comment.get("review").get("id"), reviewId));

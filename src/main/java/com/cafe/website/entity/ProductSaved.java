@@ -19,7 +19,7 @@ public class ProductSaved extends BaseEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ProductSaved(int id, int status, Long createdAt, Long updatedAt, User user, Product product) {
+	public ProductSaved(int id, int status, String createdAt, String updatedAt, User user, Product product) {
 		super(id, status, createdAt, updatedAt);
 		this.user = user;
 		this.product = product;

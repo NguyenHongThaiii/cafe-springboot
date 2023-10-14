@@ -33,12 +33,15 @@ public class ConvenienceController {
 	}
 
 	@GetMapping("")
-	public ResponseEntity<List<ConvenienceDTO>> getListConveniences(@RequestParam(defaultValue = "5") int limit,
-			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false) String name,
-			@RequestParam(required = false) String slug,
+	public ResponseEntity<List<ConvenienceDTO>> getListConveniences(@RequestParam(defaultValue = "5") Integer limit,
+			@RequestParam(defaultValue = "1") Integer page, @RequestParam(required = false) String name,
+			@RequestParam(required = false) String slug
+			, @RequestParam(required = false) String createdAt,
+			@RequestParam(required = false) String updatedAt,
+
 			@RequestParam(required = false, defaultValue = "") String sortBy) {
 		List<ConvenienceDTO> listConveniencesDto = convenienceService.getListConveniences(limit, page, name, slug,
-				sortBy);
+				createdAt, updatedAt, sortBy);
 		return new ResponseEntity<>(listConveniencesDto, HttpStatus.OK);
 	}
 

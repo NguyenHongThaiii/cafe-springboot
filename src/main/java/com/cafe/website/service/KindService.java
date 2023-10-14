@@ -19,5 +19,6 @@ public interface KindService {
 
 	void deleteKind(int id) throws IOException;
 
-	List<KindDTO> getListKinds(int limit, int page, String name, String slug, String sortBy);
+	List<KindDTO> getListKinds(int limit, int page, String name, String slug, String createdAt, String updatedAt,
+			String sortBy);
 }

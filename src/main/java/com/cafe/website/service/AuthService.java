@@ -20,7 +20,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public interface AuthService {
-	List<UserDTO> getListUser(int limit, int page, String name, String email, String sortBy);
+	List<UserDTO> getListUser(Integer status, int limit, int page, String name, String email, String createdAt,
+			String updatedAt, String sortBy);
 
 	String login(LoginDTO loginDto);
 

@@ -1,5 +1,8 @@
 package com.cafe.website.entity;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -8,6 +11,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 
 @MappedSuperclass
 public class BaseEntity {
@@ -18,13 +23,16 @@ public class BaseEntity {
 	@Column(nullable = false, columnDefinition = "int default 1")
 	private int status;
 
-	@CreationTimestamp
-	private Long createdAt;
+	private String createdAt;
 
-	@UpdateTimestamp
-	private Long updatedAt;
+	private String updatedAt;
 
-	public BaseEntity(int id, int status, Long createdAt, Long updatedAt) {
+	public BaseEntity() {
+		super();
+		this.status = 1;
+	}
+
+	public BaseEntity(int id, int status, String createdAt, String updatedAt) {
 		super();
 		this.id = id;
 		this.status = status;
@@ -32,9 +40,17 @@ public class BaseEntity {
 		this.updatedAt = updatedAt;
 	}
 
-	public BaseEntity() {
-		super();
-		this.status = 1;
+	@PrePersist
+	public void prePersist() {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy:HH:mm:ss");
+		this.createdAt = LocalDateTime.now().format(formatter);
+		this.updatedAt = LocalDateTime.now().format(formatter);
+	}
+
+	@PreUpdate
+	public void preUpdate() {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy:HH:mm:ss");
+		this.updatedAt = LocalDateTime.now().format(formatter);
 	}
 
 	public int getId() {
@@ -53,19 +69,19 @@ public class BaseEntity {
 		this.status = status;
 	}
 
-	public Long getCreatedAt() {
+	public String getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(Long createdAt) {
+	public void setCreatedAt(String createdAt) {
 		this.createdAt = createdAt;
 	}
 
-	public Long getUpdatedAt() {
+	public String getUpdatedAt() {
 		return updatedAt;
 	}
 
-	public void setUpdatedAt(Long updatedAt) {
+	public void setUpdatedAt(String updatedAt) {
 		this.updatedAt = updatedAt;
 	}
 

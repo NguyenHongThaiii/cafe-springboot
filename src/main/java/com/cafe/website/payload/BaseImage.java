@@ -3,7 +3,7 @@ package com.cafe.website.payload;
 public class BaseImage extends BaseEntityDTO {
 	private String url;
 
-	public BaseImage(int id, Integer status, Long createdAt, Long updatedAt, String url) {
+	public BaseImage(int id, Integer status, String createdAt, String updatedAt, String url) {
 		super(id, status, createdAt, updatedAt);
 		this.url = url;
 	}

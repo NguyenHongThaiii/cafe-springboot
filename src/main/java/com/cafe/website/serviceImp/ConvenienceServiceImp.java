@@ -62,7 +62,8 @@ public class ConvenienceServiceImp implements ConvenienceService {
 	}
 
 	@Override
-	public List<ConvenienceDTO> getListConveniences(int limit, int page, String name, String slug, String sortBy) {
+	public List<ConvenienceDTO> getListConveniences(int limit, int page, String name, String slug, String createdAt,
+			String updatedAt, String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
 				SortField.CREATEDATDESC);
@@ -91,7 +92,8 @@ public class ConvenienceServiceImp implements ConvenienceService {
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
-		listConvenience = convenienceRepository.findWithFilters(name, slug, pageable, entityManager);
+		listConvenience = convenienceRepository.findWithFilters(name, slug, createdAt, updatedAt, pageable,
+				entityManager);
 
 		listConvenienceDto = listConvenience.stream().map(convenience -> {
 			ConvenienceDTO convenienceDto = MapperUtils.mapToDTO(convenience, ConvenienceDTO.class);

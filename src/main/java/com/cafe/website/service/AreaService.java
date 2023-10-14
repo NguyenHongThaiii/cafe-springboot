@@ -8,7 +8,8 @@ import com.cafe.website.payload.AreaDTO;
 import com.cafe.website.payload.AreaUpdateDTO;
 
 public interface AreaService {
-	List<AreaDTO> getListAreas(int limit, int page, String name, String slug, String sortBy);
+	List<AreaDTO> getListAreas(int limit, int page, Integer status, String name, String slug, String createdAt,
+			String updatedAt, String sortBy);
 
 	AreaDTO getAreaById(int id);
 

@@ -99,7 +99,7 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 
 	@Override
 	public List<ProductDiscountDTO> getListProductDiscount(int limit, int page, String name, Boolean expriteDays,
-			Integer percent, String sortBy) {
+			Integer percent, String createdAt, String updatedAt, String sortBy) {
 
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
@@ -130,8 +130,8 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
-		productDiscountList = productDiscountRepository.findWithFilters(name, expriteDays, percent, pageable,
-				entityManager);
+		productDiscountList = productDiscountRepository.findWithFilters(name, expriteDays, percent, createdAt,
+				updatedAt, pageable, entityManager);
 		listProductDiscountDto = productDiscountList.stream().map(productDiscount -> {
 			ProductDiscountDTO temp = MapperUtils.mapToDTO(productDiscount, ProductDiscountDTO.class);
 			temp.setProductDto(MapperUtils.mapToDTO(productDiscount.getProduct(), ProductDTO.class));

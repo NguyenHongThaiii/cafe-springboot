@@ -70,7 +70,7 @@ public class Product extends BaseEntity {
 	@Column(nullable = false, columnDefinition = "int default 0")
 	private Boolean isWaitingDelete;
 
-	public Product(int id, int status, Long createdAt, Long updatedAt, String name, String slug, String phone,
+	public Product(int id, int status, String createdAt, String updatedAt, String name, String slug, String phone,
 			List<Purpose> purposes, List<Area> areas, List<Kind> kinds, List<Convenience> conveniences,
 			List<Review> reviews, List<ProductSchedule> schedules, List<Menu> listMenus, List<Image> listImages,
 			User user, int priceMin, int priceMax, int outstanding, String email, String facebook, Integer latitude,

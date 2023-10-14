@@ -33,8 +33,8 @@ public interface ConvenienceRepository extends JpaRepository<Convenience, Intege
 	Optional<Convenience> findBySlug(String slug);
 
 	@Query
-	default List<Convenience> findWithFilters(String name, String slug, Pageable pageable,
-			EntityManager entityManager) {
+	default List<Convenience> findWithFilters(String name, String slug, String createdAt, String updatedAt,
+			Pageable pageable, EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Convenience> cq = cb.createQuery(Convenience.class);
@@ -44,6 +44,12 @@ public interface ConvenienceRepository extends JpaRepository<Convenience, Intege
 
 		if (name != null) {
 			predicates.add(cb.like(cb.lower(convenience.get("name")), "%" + name.toLowerCase() + "%"));
+		}
+		if (createdAt != null) {
+			predicates.add(cb.like(cb.lower(convenience.get("createdAt")), "%" + createdAt.toLowerCase() + "%"));
+		}
+		if (updatedAt != null) {
+			predicates.add(cb.like(cb.lower(convenience.get("updatedAt")), "%" + updatedAt.toLowerCase() + "%"));
 		}
 		if (slug != null) {
 			predicates.add(cb.equal(convenience.get("slug"), slug));

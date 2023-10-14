@@ -8,7 +8,8 @@ import com.cafe.website.payload.ConvenienceDTO;
 import com.cafe.website.payload.ConvenienceUpdateDTO;
 
 public interface ConvenienceService {
-	List<ConvenienceDTO> getListConveniences(int limit, int page, String name, String slug, String sortBy);
+	List<ConvenienceDTO> getListConveniences(int limit, int page, String name, String slug, String createdAt,
+			String updatedAt, String sortBy);
 
 	ConvenienceDTO getConvenienceById(int id);
 

@@ -23,7 +23,8 @@ import jakarta.persistence.criteria.Root;
 public interface AreaRepository extends JpaRepository<Area, Integer> {
 
 	@Query
-	default List<Area> findWithFilters(String name, String slug, Pageable pageable, EntityManager entityManager) {
+	default List<Area> findWithFilters(Integer status, String name, String slug, String createdAt, String updatedAt,
+			Pageable pageable, EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Area> cq = cb.createQuery(Area.class);
@@ -34,9 +35,19 @@ public interface AreaRepository extends JpaRepository<Area, Integer> {
 		if (name != null) {
 			predicates.add(cb.like(cb.lower(area.get("name")), "%" + name.toLowerCase() + "%"));
 		}
+		if (createdAt != null) {
+			predicates.add(cb.like(cb.lower(area.get("createdAt")), "%" + createdAt.toLowerCase() + "%"));
+		}
+		if (updatedAt != null) {
+			predicates.add(cb.like(cb.lower(area.get("updatedAt")), "%" + updatedAt.toLowerCase() + "%"));
+		}
 		if (slug != null) {
 			predicates.add(cb.equal(area.get("slug"), slug));
 		}
+		if (status != null) {
+			predicates.add(cb.equal(area.get("status"), status));
+		}
+
 		if (pageable.getSort() != null) {
 			List<Order> orders = new ArrayList<>();
 			for (Sort.Order order : pageable.getSort()) {

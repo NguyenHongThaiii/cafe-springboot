@@ -1,6 +1,5 @@
 package com.cafe.website.entity;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -13,8 +12,8 @@ public class Rating extends BaseEntity {
 	private int service;
 	private int price;
 
-	public Rating(int id, int status, Long createdAt, Long updatedAt, int location, int space, int food, int service,
-			int price) {
+	public Rating(int id, int status, String createdAt, String updatedAt, int location, int space, int food,
+			int service, int price) {
 		super(id, status, createdAt, updatedAt);
 		this.location = location;
 		this.space = space;
@@ -65,6 +64,10 @@ public class Rating extends BaseEntity {
 
 	public void setPrice(int price) {
 		this.price = price;
+	}
+
+	public float getAverageRating() {
+		return (float) (location + space + food + service + price) / 5;
 	}
 
 	@Override

@@ -17,6 +17,6 @@ public interface ProductDiscountService {
 	void deleteProductDiscountById(Integer id);
 
 	List<ProductDiscountDTO> getListProductDiscount(int limit, int page, String name, Boolean expriteDays,
-			Integer percent, String sortBy);
+			Integer percent, String createdAt, String updatedAt, String sortBy);
 
 }

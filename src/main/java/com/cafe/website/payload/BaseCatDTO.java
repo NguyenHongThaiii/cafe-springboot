@@ -1,20 +1,16 @@
 package com.cafe.website.payload;
 
-
 public class BaseCatDTO extends BaseEntityDTO {
 	private String name;
 	private String slug;
 	private String image;
 
-	public BaseCatDTO(int id, int status, Long createdAt, Long updatedAt, String name, String slug, String image) {
+	public BaseCatDTO(int id, Integer status, String createdAt, String updatedAt, String name, String slug,
+			String image) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;
 		this.slug = slug;
 		this.image = image;
-	}
-
-	public BaseCatDTO(int id, int status, Long createdAt, Long updatedAt) {
-		super(id, status, createdAt, updatedAt);
 	}
 
 	public BaseCatDTO() {

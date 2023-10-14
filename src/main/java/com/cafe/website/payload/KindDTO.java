@@ -7,7 +7,8 @@ public class KindDTO extends BaseEntityDTO implements HasImageDTO {
 
 	private ImageDTO image;
 
-	public KindDTO(int id, int status, Long createdAt, Long updatedAt, String name, String slug, ImageDTO image) {
+	public KindDTO(int id, Integer status, String createdAt, String updatedAt, String name, String slug,
+			ImageDTO image) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;
 		this.slug = slug;

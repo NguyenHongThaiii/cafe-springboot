@@ -35,7 +35,8 @@ public interface KindRepository extends JpaRepository<Kind, Integer> {
 	Optional<Kind> findBySlug(String slug);
 
 	@Query
-	default List<Kind> findWithFilters(String name, String slug, Pageable pageable, EntityManager entityManager) {
+	default List<Kind> findWithFilters(String name, String slug, String createdAt, String updatedAt, Pageable pageable,
+			EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Kind> cq = cb.createQuery(Kind.class);
@@ -45,6 +46,12 @@ public interface KindRepository extends JpaRepository<Kind, Integer> {
 
 		if (name != null) {
 			predicates.add(cb.like(cb.lower(kind.get("name")), "%" + name.toLowerCase() + "%"));
+		}
+		if (createdAt != null) {
+			predicates.add(cb.like(cb.lower(kind.get("createdAt")), "%" + createdAt.toLowerCase() + "%"));
+		}
+		if (updatedAt != null) {
+			predicates.add(cb.like(cb.lower(kind.get("updatedAt")), "%" + updatedAt.toLowerCase() + "%"));
 		}
 		if (slug != null) {
 			predicates.add(cb.equal(kind.get("slug"), slug));

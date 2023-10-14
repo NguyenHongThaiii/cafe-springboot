@@ -18,7 +18,7 @@ public class UserDTO extends BaseEntityDTO {
 	private ImageDTO image;
 	private Boolean isWaitingDelete;
 
-	public UserDTO(int id, Integer status, Long createdAt, Long updatedAt, int id2, String email, String name,
+	public UserDTO(int id, Integer status, String createdAt, String updatedAt, int id2, String email, String name,
 			String address, String phone, String slug, List<Role> roles, ImageDTO image, Boolean isWaitingDelete) {
 		super(id, status, createdAt, updatedAt);
 		id = id2;

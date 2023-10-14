@@ -49,7 +49,7 @@ public class Image extends BaseEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Image(int id, int status, Long createdAt, Long updatedAt, String image, User user, Menu menu,
+	public Image(int id, int status, String createdAt, String updatedAt, String image, User user, Menu menu,
 			Product product, Review review, Area area, Kind kind, Convenience convenience, Purpose purpose) {
 		super(id, status, createdAt, updatedAt);
 		this.image = image;

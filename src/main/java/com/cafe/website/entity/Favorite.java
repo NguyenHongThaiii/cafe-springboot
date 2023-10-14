@@ -22,7 +22,7 @@ public class Favorite extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Review review;
 
-	public Favorite(int id, int status, Long createdAt, Long updatedAt, Comment comment, User user, Review review) {
+	public Favorite(int id, int status, String createdAt, String updatedAt, Comment comment, User user, Review review) {
 		super(id, status, createdAt, updatedAt);
 		this.comment = comment;
 		this.user = user;

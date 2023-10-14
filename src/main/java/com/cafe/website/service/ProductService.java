@@ -24,7 +24,7 @@ public interface ProductService {
 
 	Float getRateReviewByProduct(Integer productId);
 
-	List<ProductDTO> getListProducts(int limit, int page, int status, String rating, Boolean isWatingDelete,
+	List<ProductDTO> getListProducts(int limit, int page, Integer status, String rating, Boolean isWatingDelete,
 			String name, String slugArea, String slugConvenience, String slugKind, String slugPurpose, Double latitude,
-			Double longitude, String sortBy);
+			Double longitude, Integer userId, Float ratingsAverage, String createdAt, String updatedAt, String sortBy);
 }

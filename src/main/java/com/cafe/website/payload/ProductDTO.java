@@ -32,18 +32,18 @@ public class ProductDTO extends BaseEntityDTO {
 	private List<MenuDTO> listMenu = new ArrayList<>();
 	private UserDTO owner;
 	private Boolean isWaitingDelete;
-	private float avgRating;
+	private Float avgRating;
 
 	public ProductDTO() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ProductDTO(int id, Integer status, Long createdAt, Long updatedAt, List<PurposeDTO> purposes,
+	public ProductDTO(int id, Integer status, String createdAt, String updatedAt, List<PurposeDTO> purposes,
 			List<AreaDTO> areas, List<KindDTO> kinds, List<ConvenienceDTO> conveniences,
 			List<ProductScheduleDTO> schedules, String name, String slug, String phone, int priceMin, int priceMax,
 			int outstanding, Integer latitude, Integer longitude, String email, String facebook, String description,
 			String location, List<ImageDTO> listImage, List<MenuDTO> listMenu, UserDTO owner, Boolean isWaitingDelete,
-			float avgRating) {
+			Float avgRating) {
 		super(id, status, createdAt, updatedAt);
 		this.purposes = purposes;
 		this.areas = areas;
@@ -237,11 +237,11 @@ public class ProductDTO extends BaseEntityDTO {
 		this.isWaitingDelete = isWaitingDelete;
 	}
 
-	public double getAvgRating() {
+	public Float getAvgRating() {
 		return avgRating;
 	}
 
-	public void setAvgRating(float avgRating) {
+	public void setAvgRating(Float avgRating) {
 		this.avgRating = avgRating;
 	}
 

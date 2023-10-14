@@ -49,11 +49,14 @@ public class AuthController {
 	}
 
 	@GetMapping("/users")
-	public ResponseEntity<List<UserDTO>> getListUsers(@RequestParam(defaultValue = "5") int limit,
-			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false) String name,
-			@RequestParam(required = false) String email,
+	public ResponseEntity<List<UserDTO>> getListUsers(@RequestParam(defaultValue = "5") Integer limit,
+			@RequestParam(defaultValue = "1") Integer page, @RequestParam(required = false) Integer status,
+			@RequestParam(required = false) String name, @RequestParam(required = false) String email,
+			@RequestParam(required = false) String createdAt, @RequestParam(required = false) String updatedAt,
+
 			@RequestParam(required = false, defaultValue = "") String sortBy) {
-		List<UserDTO> listUserDto = authService.getListUser(limit, page, name, email, sortBy);
+		List<UserDTO> listUserDto = authService.getListUser(status, limit, page, name, email, createdAt, updatedAt,
+				sortBy);
 		return ResponseEntity.ok(listUserDto);
 	}
 

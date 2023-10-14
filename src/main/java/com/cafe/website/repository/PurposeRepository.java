@@ -36,7 +36,8 @@ public interface PurposeRepository extends JpaRepository<Purpose, Integer> {
 	Optional<Purpose> findBySlug(String slug);
 
 	@Query
-	default List<Purpose> findWithFilters(String name, String slug, Pageable pageable, EntityManager entityManager) {
+	default List<Purpose> findWithFilters(String name, String slug, String createdAt, String updatedAt,
+			Pageable pageable, EntityManager entityManager) {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Purpose> cq = cb.createQuery(Purpose.class);
 
@@ -45,6 +46,12 @@ public interface PurposeRepository extends JpaRepository<Purpose, Integer> {
 
 		if (name != null) {
 			predicates.add(cb.like(cb.lower(kind.get("name")), "%" + name.toLowerCase() + "%"));
+		}
+		if (createdAt != null) {
+			predicates.add(cb.like(cb.lower(kind.get("createdAt")), "%" + createdAt.toLowerCase() + "%"));
+		}
+		if (updatedAt != null) {
+			predicates.add(cb.like(cb.lower(kind.get("updatedAt")), "%" + updatedAt.toLowerCase() + "%"));
 		}
 		if (slug != null) {
 			predicates.add(cb.equal(kind.get("slug"), slug));

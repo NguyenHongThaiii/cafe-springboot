@@ -43,7 +43,7 @@ public class Review extends BaseEntity {
 	@Column(unique = true)
 	private List<Favorite> favorites = new ArrayList<>();
 
-	public Review(int id, int status, Long createdAt, Long updatedAt, User user, Product product, Rating rating,
+	public Review(int id, int status, String createdAt, String updatedAt, User user, Product product, Rating rating,
 			List<Comment> comments, List<Image> listImages, String name, List<Favorite> favorites) {
 		super(id, status, createdAt, updatedAt);
 		this.user = user;
@@ -113,6 +113,10 @@ public class Review extends BaseEntity {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public float getAverageRating() {
+		return this.rating.getAverageRating();
 	}
 
 	@Override

@@ -23,7 +23,8 @@ import jakarta.persistence.criteria.Root;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 	@Query
-	default List<User> findWithFilters(String name, String email, Pageable pageable, EntityManager entityManager) {
+	default List<User> findWithFilters(Integer status, String name, String email, String createdAt, String updatedAt,
+			Pageable pageable, EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(User.class);
@@ -34,11 +35,19 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 		if (name != null) {
 			predicates.add(cb.like(cb.lower(user.get("name")), "%" + name.toLowerCase() + "%"));
 		}
+		if (createdAt != null) {
+			predicates.add(cb.like(cb.lower(user.get("createdAt")), "%" + createdAt.toLowerCase() + "%"));
+		}
+		if (updatedAt != null) {
+			predicates.add(cb.like(cb.lower(user.get("updatedAt")), "%" + updatedAt.toLowerCase() + "%"));
+		}
 
 		if (email != null) {
 			predicates.add(cb.like(cb.lower(user.get("email")), "%" + email.toLowerCase() + "%"));
 		}
-		
+		if (status != null) {
+			predicates.add(cb.equal(user.get("status"), status));
+		}
 		if (pageable.getSort() != null) {
 			List<Order> orders = new ArrayList<>();
 			for (Sort.Order order : pageable.getSort()) {

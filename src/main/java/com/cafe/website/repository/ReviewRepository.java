@@ -11,11 +11,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import com.cafe.website.entity.Rating;
 import com.cafe.website.entity.Review;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -24,9 +27,8 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
 	List<Review> findReviewByProductId(Integer productId);
 
-	@Query
 	default List<Review> findWithFilters(String name, Integer productId, Integer userId, Integer ratingId,
-			Pageable pageable, EntityManager entityManager) {
+			String createdAt, String updatedAt, Float ratingAverage, Pageable pageable, EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Review> cq = cb.createQuery(Review.class);
@@ -37,6 +39,12 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 		if (name != null) {
 			predicates.add(cb.like(cb.lower(review.get("name")), "%" + name.toLowerCase() + "%"));
 		}
+		if (createdAt != null) {
+			predicates.add(cb.like(cb.lower(review.get("createdAt")), "%" + createdAt.toLowerCase() + "%"));
+		}
+		if (updatedAt != null) {
+			predicates.add(cb.like(cb.lower(review.get("updatedAt")), "%" + updatedAt.toLowerCase() + "%"));
+		}
 		if (productId != null) {
 			predicates.add(cb.equal(review.get("product").get("id"), productId));
 		}
@@ -45,6 +53,15 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 		}
 		if (ratingId != null) {
 			predicates.add(cb.equal(review.get("rating").get("id"), ratingId));
+		}
+		if (ratingAverage != null) {
+			Join<Review, Rating> rating = review.join("rating");
+			Expression<Float> sumOfRatings = cb
+					.sum(cb.sum(cb.sum(cb.sum(rating.get("location"), rating.get("space")), rating.get("food")),
+							rating.get("service")), rating.get("price"));
+
+			Expression<Number> calculatedAverage = cb.quot(sumOfRatings, 5.0f);
+			predicates.add(cb.equal(calculatedAverage, ratingAverage));
 		}
 		if (pageable.getSort() != null) {
 			List<Order> orders = new ArrayList<>();
@@ -59,4 +76,25 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 		return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
 				.setMaxResults(pageable.getPageSize()).getResultList();
 	}
+
+	default List<Review> findAllByOrderByRatingAverageRating(Float ratingAverage, EntityManager entityManager) {
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Review> cq = cb.createQuery(Review.class);
+		Root<Review> review = cq.from(Review.class);
+		Join<Review, Rating> rating = review.join("rating");
+
+		Expression<Float> sumOfRatings = cb
+				.sum(cb.sum(cb.sum(cb.sum(rating.get("location"), rating.get("space")), rating.get("food")),
+						rating.get("service")), rating.get("price"));
+
+		Expression<Number> calculatedAverage = cb.quot(sumOfRatings, 5.0f);
+
+		Predicate ratingPredicate = cb.equal(calculatedAverage, ratingAverage);
+
+		cq.select(review).where(ratingPredicate);
+
+		List<Review> results = entityManager.createQuery(cq).getResultList();
+		return results;
+	}
+
 }

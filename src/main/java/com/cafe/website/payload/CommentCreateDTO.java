@@ -1,7 +1,7 @@
 package com.cafe.website.payload;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import com.cafe.website.annotation.CheckStatus;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -14,8 +14,7 @@ public class CommentCreateDTO {
 	@NotNull
 	private Integer userId;
 	@NotNull
-	@Min(value = 0, message = "Status should not be less than 0")
-	@Max(value = 1, message = "status should not be greater than 1")
+	@CheckStatus(allowedValues = { 0, 1 })
 	private Integer status;
 
 	public CommentCreateDTO(String name, Integer reviewId, Integer userId, Integer status) {

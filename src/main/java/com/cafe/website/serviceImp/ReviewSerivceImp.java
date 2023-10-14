@@ -1,6 +1,8 @@
 package com.cafe.website.serviceImp;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -76,7 +78,7 @@ public class ReviewSerivceImp implements ReviewService {
 
 	@Override
 	public List<ReviewDTO> getListReviews(int limit, int page, String name, Integer productId, Integer userId,
-			Integer ratingId, String sortBy) {
+			Integer ratingId, String createdAt, String updatedAt, Float ratingAverage, String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
 				SortField.CREATEDATDESC);
@@ -107,7 +109,8 @@ public class ReviewSerivceImp implements ReviewService {
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
-		listReview = reviewRepository.findWithFilters(name, productId, userId, ratingId, pageable, entityManager);
+		listReview = reviewRepository.findWithFilters(name, productId, userId, ratingId, createdAt, updatedAt,
+				ratingAverage, pageable, entityManager);
 		listReviewDto = listReview.stream().map(review -> {
 			ReviewDTO reviewDto = MapperUtils.mapToDTO(review, ReviewDTO.class);
 			reviewDto.setListImages(ImageDTO.generateListImageDTO(review.getListImages()));
@@ -226,22 +229,16 @@ public class ReviewSerivceImp implements ReviewService {
 	@Override
 	public Float getRatingByReviewId(int productId) {
 		Product product = productRepository.findById(productId).orElse(null);
+
 		List<Review> listReviews = reviewRepository.findReviewByProductId(productId);
 		if (listReviews == null || product == null || listReviews.size() == 0)
 			return 0f;
 		float total = 0f;
 		for (Review review : listReviews) {
-			logger.info(review.getRating().getFood() + " getFood");
-			logger.info(review.getRating().getLocation() + " getLocation");
-			logger.info(review.getRating().getPrice() + " getPrice");
-			logger.info(review.getRating().getSpace() + " getSpace");
-			logger.info(review.getRating().getService() + " getService");
-			total += (float) (review.getRating().getFood() + review.getRating().getLocation()
-					+ review.getRating().getPrice() + review.getRating().getSpace() + review.getRating().getService())
-					/ 5;
-			logger.info(total + " total");
+			total += review.getAverageRating();
 		}
-		return (total / listReviews.size());
+		Float res = (total / listReviews.size());
+		return res;
 	}
 
 	@Override
@@ -249,9 +246,24 @@ public class ReviewSerivceImp implements ReviewService {
 		Product product = productRepository.findById(productId).orElse(null);
 		if (product == null)
 			return null;
-		List<ReviewDTO> listReviewsDto = this.getListReviews(limit, page, null, productId, null, null, sortBy);
-		// TODO Auto-generated method stub
-		return listReviewsDto;
+//		List<ReviewDTO> listReviewsDto = this.getListReviews(limit, page, null, productId, null, null, sortBy);
+//		// TODO Auto-generated method stub
+//		return listReviewsDto;
+		return null;
+	}
+
+	@Override
+	public List<ReviewDTO> findAllByOrderByRatingAverageRating(Float ratingAverage) {
+		List<Review> reviews = reviewRepository.findAllByOrderByRatingAverageRating(ratingAverage, entityManager);
+		List<ReviewDTO> listReviewDto = new ArrayList<>();
+		listReviewDto = reviews.stream().map(review -> {
+			ReviewDTO reviewDto = MapperUtils.mapToDTO(review, ReviewDTO.class);
+			reviewDto.setListImages(ImageDTO.generateListImageDTO(review.getListImages()));
+			reviewDto.setProductId(review.getProduct().getId());
+			return reviewDto;
+		}).collect(Collectors.toList());
+
+		return listReviewDto;
 	}
 
 }

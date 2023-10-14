@@ -45,7 +45,7 @@ public class CommentServiceImp implements CommentService {
 
 	@Override
 	public List<CommentDTO> getListComments(int limit, int page, String name, Integer userId, Integer reviewId,
-			String sortBy) {
+			String createdAt, String updatedAt, String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
 				SortField.CREATEDATDESC);
@@ -74,7 +74,8 @@ public class CommentServiceImp implements CommentService {
 
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
-		listComment = commentRepository.findWithFilters(name, reviewId, userId, pageable, entityManager);
+		listComment = commentRepository.findWithFilters(name, reviewId, userId, createdAt, updatedAt, pageable,
+				entityManager);
 
 		listCommentDto = listComment.stream().map(comment -> {
 			CommentDTO commentDto = MapperUtils.mapToDTO(comment, CommentDTO.class);
@@ -139,9 +140,9 @@ public class CommentServiceImp implements CommentService {
 
 	@Override
 	public List<CommentDTO> getListCommentsByReviewId(int limit, int page, Integer reviewId, String sortBy) {
-		List<CommentDTO> list = this.getListComments(limit, page, sortBy, null, reviewId, sortBy);
-
-		return list;
+//		List<CommentDTO> list = this.getListComments(limit, page, sortBy, null, reviewId, sortBy);
+		return null;
+//		return list;
 	}
 
 }

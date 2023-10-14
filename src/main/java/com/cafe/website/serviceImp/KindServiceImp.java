@@ -61,7 +61,8 @@ public class KindServiceImp implements KindService {
 	}
 
 	@Override
-	public List<KindDTO> getListKinds(int limit, int page, String name, String slug, String sortBy) {
+	public List<KindDTO> getListKinds(int limit, int page, String name, String slug, String createdAt, String updatedAt,
+			String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
 				SortField.CREATEDATDESC);
@@ -90,7 +91,7 @@ public class KindServiceImp implements KindService {
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
-		listKind = kindRepository.findWithFilters(name, slug, pageable, entityManager);
+		listKind = kindRepository.findWithFilters(name, slug, createdAt, updatedAt, pageable, entityManager);
 
 		listKindDto = listKind.stream().map(kind -> {
 			KindDTO kindDto = MapperUtils.mapToDTO(kind, KindDTO.class);

@@ -37,13 +37,14 @@ public class ReviewController {
 	}
 
 	@GetMapping("")
-	public ResponseEntity<List<ReviewDTO>> getListReviews(@RequestParam(defaultValue = "5") int limit,
-			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false) String name,
+	public ResponseEntity<List<ReviewDTO>> getListReviews(@RequestParam(defaultValue = "5") Integer limit,
+			@RequestParam(defaultValue = "1") Integer page, @RequestParam(required = false) String name,
 			@RequestParam(required = false) Integer ratingId, @RequestParam(required = false) Integer productId,
-			@RequestParam(required = false) Integer userId,
+			@RequestParam(required = false) String createdAt, @RequestParam(required = false) String updatedAt,
+			@RequestParam(required = false) Integer userId, @RequestParam(required = false) Float ratingAverage,
 			@RequestParam(required = false, defaultValue = "null") String sortBy) {
 		List<ReviewDTO> listAreasDto = reviewService.getListReviews(limit, page, name, productId, userId, ratingId,
-				sortBy);
+				createdAt, updatedAt, ratingAverage, sortBy);
 		return new ResponseEntity<>(listAreasDto, HttpStatus.OK);
 	}
 
@@ -81,6 +82,14 @@ public class ReviewController {
 			@RequestParam(required = false, defaultValue = "null") String sortBy) {
 
 		List<ReviewDTO> listAreasDto = reviewService.getListReviewsByProductId(limit, page, productId, sortBy);
+		return new ResponseEntity<>(listAreasDto, HttpStatus.OK);
+	}
+
+	@GetMapping("/ratingsAverage")
+	public ResponseEntity<List<ReviewDTO>> findAllByOrderByRatingAverageRating(
+			@RequestParam(required = true) Float ratingAverage) {
+
+		List<ReviewDTO> listAreasDto = reviewService.findAllByOrderByRatingAverageRating(ratingAverage);
 		return new ResponseEntity<>(listAreasDto, HttpStatus.OK);
 	}
 

@@ -6,7 +6,7 @@ public class ProductDiscountDTO extends BaseEntityDTO {
 	private String name;
 	private Long expiryDate;
 
-	public ProductDiscountDTO(int id, Integer status, Long createdAt, Long updatedAt, ProductDTO productDto,
+	public ProductDiscountDTO(int id, Integer status, String createdAt, String updatedAt, ProductDTO productDto,
 			Integer percent, String name, Long expiryDate) {
 		super(id, status, createdAt, updatedAt);
 		this.productDto = productDto;
