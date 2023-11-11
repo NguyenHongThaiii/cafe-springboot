@@ -1,17 +1,25 @@
 package com.cafe.website.repository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.cafe.website.entity.Product;
+import com.cafe.website.entity.ProductSchedule;
 import com.cafe.website.entity.Rating;
 import com.cafe.website.entity.Review;
+import com.cafe.website.serviceImp.ProductServiceImp;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -24,6 +32,7 @@ import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 
 public interface ProductRepository extends JpaRepository<Product, Integer> {
+	static final Logger logger = LoggerFactory.getLogger(ProductRepository.class);
 
 	Optional<Product> findBySlugOrName(String slug, String name);
 
@@ -43,8 +52,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 	@Query
 	default List<Product> findWithFilters(String name, Integer status, String slugArea, String slugConvenience,
 			String slugKind, String slugPurpose, Boolean isWatingDelete, Double latitude, Double longitude,
-			Integer userId, Float ratingsAverage, String createdAt, String updatedAt, Pageable pageable,
-			EntityManager entityManager) {
+			Integer userId, Float ratingsAverage, String createdAt, String updatedAt, String timeStatus,
+			Pageable pageable, EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Product> cq = cb.createQuery(Product.class);
@@ -98,6 +107,28 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 							rating.get("service")), rating.get("price"));
 			Expression<Number> calculatedAverage = cb.quot(sumOfRatings, 5.0f);
 			predicates.add(cb.equal(calculatedAverage, ratingsAverage));
+		}
+		if (timeStatus != null && !timeStatus.isEmpty()) {
+			Join<Product, ProductSchedule> productScheduleJoin = product.join("schedules");
+
+			int currentDayOfWeek = LocalDate.now().getDayOfWeek().getValue();
+			int currentTimeInSeconds = LocalTime.now().toSecondOfDay();
+
+			if ("open".equals(timeStatus)) {
+				Predicate isOpenNow = cb.and(cb.equal(productScheduleJoin.get("dayOfWeek"), currentDayOfWeek),
+						cb.lessThanOrEqualTo(productScheduleJoin.get("startTime").as(Integer.class),
+								currentTimeInSeconds),
+						cb.greaterThanOrEqualTo(productScheduleJoin.get("endTime").as(Integer.class),
+								currentTimeInSeconds));
+				predicates.add(isOpenNow);
+			} else if ("close".equals(timeStatus)) {
+				Predicate isClosedNow = cb.or(cb.notEqual(productScheduleJoin.get("dayOfWeek"), currentDayOfWeek),
+						cb.lessThan(productScheduleJoin.get("endTime").as(Integer.class), currentTimeInSeconds),
+						cb.greaterThan(productScheduleJoin.get("startTime").as(Integer.class), currentTimeInSeconds));
+				predicates.add(isClosedNow);
+				logger.info("timeStatus Time Seconds: " + currentTimeInSeconds);
+				logger.info("timeStatus Day: " + currentDayOfWeek);
+			}
 		}
 		if (pageable.getSort() != null) {
 			for (Sort.Order order : pageable.getSort()) {

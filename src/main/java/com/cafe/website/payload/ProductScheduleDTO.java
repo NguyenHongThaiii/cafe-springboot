@@ -1,11 +1,11 @@
 package com.cafe.website.payload;
 
 public class ProductScheduleDTO extends BaseEntityDTO {
-	private Long dayOfWeek;
+	private Integer dayOfWeek;
 	private Long startTime;
 	private Long endTime;
 
-	public ProductScheduleDTO(int id, Integer status, String createdAt, String updatedAt, Long dayOfWeek,
+	public ProductScheduleDTO(int id, Integer status, String createdAt, String updatedAt, Integer dayOfWeek,
 			Long startTime, Long endTime) {
 		super(id, status, createdAt, updatedAt);
 		this.dayOfWeek = dayOfWeek;
@@ -17,11 +17,11 @@ public class ProductScheduleDTO extends BaseEntityDTO {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Long getDayOfWeek() {
+	public Integer getDayOfWeek() {
 		return dayOfWeek;
 	}
 
-	public void setDayOfWeek(Long dayOfWeek) {
+	public void setDayOfWeek(Integer dayOfWeek) {
 		this.dayOfWeek = dayOfWeek;
 	}
 

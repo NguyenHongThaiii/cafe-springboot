@@ -14,7 +14,7 @@ public class ProductSchedule extends BaseEntity {
 	@JoinColumn(name = "product_id", nullable = false)
 	private Product product;
 
-	private Long dayOfWeek;
+	private Integer dayOfWeek;
 	private Long startTime;
 	private Long endTime;
 
@@ -22,7 +22,7 @@ public class ProductSchedule extends BaseEntity {
 
 	}
 
-	public ProductSchedule(int id, int status, String createdAt, String updatedAt, Product product, Long dayOfWeek,
+	public ProductSchedule(int id, int status, String createdAt, String updatedAt, Product product, Integer dayOfWeek,
 			Long startTime, Long endTime) {
 		super(id, status, createdAt, updatedAt);
 		this.product = product;
@@ -39,11 +39,11 @@ public class ProductSchedule extends BaseEntity {
 		this.product = product;
 	}
 
-	public Long getDayOfWeek() {
+	public Integer getDayOfWeek() {
 		return dayOfWeek;
 	}
 
-	public void setDayOfWeek(Long dayOfWeek) {
+	public void setDayOfWeek(Integer dayOfWeek) {
 		this.dayOfWeek = dayOfWeek;
 	}
 

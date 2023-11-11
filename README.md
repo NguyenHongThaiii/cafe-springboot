@@ -9,7 +9,7 @@
 - add find product by rating average number (done)
 - add find review by rating average number (done)
 - add filter product saved by user (done)
-- add filter by time closed/open
+- add filter by time closed/open (done)
 - fix image in menu (done)
 - add statistic 
 - add logging

@@ -26,5 +26,6 @@ public interface ProductService {
 
 	List<ProductDTO> getListProducts(int limit, int page, Integer status, String rating, Boolean isWatingDelete,
 			String name, String slugArea, String slugConvenience, String slugKind, String slugPurpose, Double latitude,
-			Double longitude, Integer userId, Float ratingsAverage, String createdAt, String updatedAt, String sortBy);
+			Double longitude, Integer userId, Float ratingsAverage, String createdAt, String updatedAt,
+			String timeStatus, String sortBy);
 }

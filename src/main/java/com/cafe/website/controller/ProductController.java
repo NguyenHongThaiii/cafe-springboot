@@ -48,12 +48,12 @@ public class ProductController {
 			@RequestParam(required = false) String slugArea, @RequestParam(required = false) String slugKind,
 			@RequestParam(required = false) String slugConvenience, @RequestParam(required = false) String slugPurpose,
 			@RequestParam(required = false) String createdAt, @RequestParam(required = false) String updatedAt,
-			@RequestParam(required = false) Float ratingsAverage,
+			@RequestParam(required = false) Float ratingsAverage, @RequestParam(required = false) String timeStatus,
 
 			@RequestParam(required = false, defaultValue = "") String sortBy) {
 		List<ProductDTO> listproducts = productService.getListProducts(limit, page, status, rating, isWaitingDelete,
 				name, slugArea, slugConvenience, slugKind, slugPurpose, latitude, longitude, userId, ratingsAverage,
-				createdAt, updatedAt, sortBy);
+				createdAt, updatedAt, timeStatus, sortBy);
 		return new ResponseEntity<>(listproducts, HttpStatus.OK);
 	}
 

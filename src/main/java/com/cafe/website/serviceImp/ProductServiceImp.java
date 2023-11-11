@@ -126,7 +126,8 @@ public class ProductServiceImp implements ProductService {
 	@Override
 	public List<ProductDTO> getListProducts(int limit, int page, Integer status, String rating, Boolean isWatingDelete,
 			String name, String slugArea, String slugConvenience, String slugKind, String slugPurpose, Double latitude,
-			Double longitude, Integer userId, Float ratingsAverage, String createdAt, String updatedAt, String sortBy) {
+			Double longitude, Integer userId, Float ratingsAverage, String createdAt, String updatedAt,
+			String timeStatus, String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.PRICEMIN,
 				SortField.PRICEMAX, SortField.UPDATEDAT, SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC,
 				SortField.PRICEMINDESC, SortField.PRICEMAXDESC, SortField.UPDATEDATDESC, SortField.CREATEDATDESC);
@@ -157,7 +158,7 @@ public class ProductServiceImp implements ProductService {
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
 		productList = productRepository.findWithFilters(name, status, slugArea, slugConvenience, slugKind, slugPurpose,
-				isWatingDelete, latitude, longitude, userId, ratingsAverage, createdAt, updatedAt, pageable,
+				isWatingDelete, latitude, longitude, userId, ratingsAverage, createdAt, updatedAt, timeStatus, pageable,
 				entityManager);
 		listProductDto = productList.stream().map(product -> {
 			ProductDTO pdto = MapperUtils.mapToDTO(product, ProductDTO.class);
@@ -180,7 +181,6 @@ public class ProductServiceImp implements ProductService {
 			pdto.setListMenu(MenuDTO.generateListMenuDTO(product.getListMenus()));
 			pdto.setSchedules(listScheduleDto);
 			pdto.setOwner(MapperUtils.mapToDTO(product.getUser(), UserDTO.class));
-			logger.info(reviewService.getRatingByReviewId(product.getId()) + "");
 			pdto.setAvgRating(reviewService.getRatingByReviewId(product.getId()));
 			return pdto;
 		}).collect(Collectors.toList());
