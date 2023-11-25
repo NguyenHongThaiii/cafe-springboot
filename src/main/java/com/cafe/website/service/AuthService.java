@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 
+import com.cafe.website.entity.User;
 import com.cafe.website.payload.LoginDTO;
 import com.cafe.website.payload.RegisterDTO;
 import com.cafe.website.payload.RegisterResponse;
@@ -23,19 +24,19 @@ public interface AuthService {
 	List<UserDTO> getListUser(Integer status, int limit, int page, String name, String email, String createdAt,
 			String updatedAt, String sortBy);
 
-	String login(LoginDTO loginDto);
+	String login(LoginDTO loginDto, HttpServletRequest request);
 
 	String refreshToken(HttpServletRequest request, HttpServletResponse response);
 
-	RegisterResponse createUser(RegisterDTO registerDto);
+	RegisterResponse createUser(RegisterDTO registerDto, HttpServletRequest request);
 
-	void forgotPassword(String email) throws MessagingException;
+	void forgotPassword(String email, HttpServletRequest request) throws MessagingException;
 
-	UserDTO updateUser(String slug, UserUpdateDTO userUpdateDto);
+	UserDTO updateUser(String slug, UserUpdateDTO userUpdateDto, HttpServletRequest request);
 
-	RegisterResponse validateRegister(ValidateOtpDTO validateDto);
+	RegisterResponse validateRegister(ValidateOtpDTO validateDto, HttpServletRequest request);
 
-	void handleValidateResetPassword(ValidateOtpDTO validateOtpDto);
+	void handleValidateResetPassword(ValidateOtpDTO validateOtpDto, HttpServletRequest request);
 
 	Boolean validateOtp(String otp, String key);
 
@@ -43,9 +44,9 @@ public interface AuthService {
 
 	UserDTO getUserById(int id);
 
-	void updateProfileImage(String slug, UpdateAvatarDTO profileDto);
+	void updateProfileImage(String slug, UpdateAvatarDTO profileDto, HttpServletRequest request);
 
-	void handleResePassword(ResetPasswordDTO reset);
+	void handleResePassword(ResetPasswordDTO reset, HttpServletRequest request);
 
 	void deleteUserById(Integer id) throws IOException;
 
@@ -53,6 +54,7 @@ public interface AuthService {
 
 	UserDTO getUserBySlug(String slug);
 
-	String setIsWaitingDeleteUser(Integer user);
+	String setIsWaitingDeleteUser(Integer user, HttpServletRequest request);
 
+	User getUserFromHeader(HttpServletRequest request);
 }

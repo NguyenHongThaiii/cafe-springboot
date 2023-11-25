@@ -63,7 +63,7 @@ public class OTPSerivceImp implements OTPService {
 		do {
 			otp = RandomStringUtils.randomAlphanumeric(6);
 		} while (isOtpExists(otpCache, otp));
-		otpCache.put(email, otp);
+		otpCache.put(email.toLowerCase(), otp);
 		return otp;
 	}
 

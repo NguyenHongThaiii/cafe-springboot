@@ -25,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.cafe.website.constant.SortField;
+import com.cafe.website.constant.StatusLog;
 import com.cafe.website.constant.TokenType;
 import com.cafe.website.entity.Image;
 import com.cafe.website.entity.Role;
@@ -50,9 +51,11 @@ import com.cafe.website.security.JwtTokenProvider;
 import com.cafe.website.service.AuthService;
 import com.cafe.website.service.CloudinaryService;
 import com.cafe.website.service.EmailService;
+import com.cafe.website.service.LogService;
 import com.cafe.website.service.OTPService;
 import com.cafe.website.util.MapperUtils;
 import com.cafe.website.util.UserMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.slugify.Slugify;
 
 import io.micrometer.common.util.StringUtils;
@@ -79,6 +82,8 @@ public class AuthServiceImp implements AuthService {
 	private UserMapper userMapper;
 	private CloudinaryService cloudinaryService;
 	private ScheduledExecutorService scheduler;
+	private LogService logService;
+	private ObjectMapper objectMapper;
 	@Value("${app.path-user}")
 	private String path_user;
 	private Slugify slugify = Slugify.builder().build();
@@ -86,30 +91,37 @@ public class AuthServiceImp implements AuthService {
 	@Value("${app.timeout}")
 	private String timeout;
 
-	public AuthServiceImp(AuthenticationManager authenticationManager, UserRepository userRepository,
-			RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider,
-			TokenRepository tokenRepository, EmailService emailService, OTPService otpService, UserMapper userMapper,
-			CloudinaryService cloudinaryService, ImageRepository imageRepository, ProductRepository productRepository,
-			ScheduledExecutorService scheduler) {
+	public AuthServiceImp(EntityManager entityManager, AuthenticationManager authenticationManager,
+			UserRepository userRepository, ProductRepository productRepository, RoleRepository roleRepository,
+			PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, TokenRepository tokenRepository,
+			ImageRepository imageRepository, EmailService emailService, OTPService otpService, UserMapper userMapper,
+			CloudinaryService cloudinaryService, ScheduledExecutorService scheduler, LogService logService,
+			ObjectMapper objectMapper) {
+		super();
+		this.entityManager = entityManager;
 		this.authenticationManager = authenticationManager;
 		this.userRepository = userRepository;
+		this.productRepository = productRepository;
 		this.roleRepository = roleRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.jwtTokenProvider = jwtTokenProvider;
 		this.tokenRepository = tokenRepository;
 		this.imageRepository = imageRepository;
 		this.emailService = emailService;
-		this.userMapper = userMapper;
 		this.otpService = otpService;
+		this.userMapper = userMapper;
 		this.cloudinaryService = cloudinaryService;
-		this.productRepository = productRepository;
 		this.scheduler = scheduler;
+		this.logService = logService;
+		this.objectMapper = objectMapper;
 	}
 
 	@Override
-	public String login(LoginDTO loginDto) {
+	public String login(LoginDTO loginDto, HttpServletRequest request) {
 		User user = userRepository.findByEmail(loginDto.getEmail())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "email", loginDto.getEmail()));
+		if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword()))
+			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Email or password is not correct.");
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
 
@@ -118,12 +130,19 @@ public class AuthServiceImp implements AuthService {
 
 		revokeAllUserTokens(user);
 		saveUserToken(user, token);
-
+		try {
+			loginDto.setPassword("");
+			logService.createLog(request, user, "Login SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
+					objectMapper.writeValueAsString(loginDto), "Login");
+		} catch (IOException e) {
+			logService.createLog(request, user, e.getMessage(), StatusLog.FAILED.toString(), "Login");
+			e.printStackTrace();
+		}
 		return token;
 	}
 
 	@Override
-	public RegisterResponse createUser(RegisterDTO registerDto) {
+	public RegisterResponse createUser(RegisterDTO registerDto, HttpServletRequest request) {
 
 		if (userRepository.existsByEmail(registerDto.getEmail()))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Email is already exists!.");
@@ -148,6 +167,14 @@ public class AuthServiceImp implements AuthService {
 		userRepository.save(user);
 
 		RegisterResponse reg = MapperUtils.mapToEntity(user, RegisterResponse.class);
+		try {
+			registerDto.setPassword("");
+			logService.createLog(request, user, "Create User SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
+					objectMapper.writeValueAsString(registerDto), "Create User");
+		} catch (IOException e) {
+			logService.createLog(request, user, e.getMessage(), StatusLog.FAILED.toString(), "Create User");
+			e.printStackTrace();
+		}
 		return reg;
 	}
 
@@ -161,7 +188,7 @@ public class AuthServiceImp implements AuthService {
 	}
 
 	@Override
-	public RegisterResponse validateRegister(ValidateOtpDTO validateDto) {
+	public RegisterResponse validateRegister(ValidateOtpDTO validateDto, HttpServletRequest request) {
 		String otpCache = otpService.getOtpByEmail(validateDto.getEmail());
 		this.validateOtp(validateDto.getOtp(), otpCache);
 
@@ -177,6 +204,13 @@ public class AuthServiceImp implements AuthService {
 		RegisterResponse reg = MapperUtils.mapToDTO(user, RegisterResponse.class);
 		reg.setToken(token);
 		otpService.clearCache("otpCache", validateDto.getEmail());
+		try {
+			logService.createLog(request, null, "Validate Register SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
+					objectMapper.writeValueAsString(validateDto), "Validate Register");
+		} catch (IOException e) {
+			logService.createLog(request, null, e.getMessage(), StatusLog.FAILED.toString(), "Validate Register");
+			e.printStackTrace();
+		}
 		return reg;
 	}
 
@@ -208,7 +242,7 @@ public class AuthServiceImp implements AuthService {
 	}
 
 	@Override
-	public UserDTO updateUser(String slug, UserUpdateDTO userUpdateDto) {
+	public UserDTO updateUser(String slug, UserUpdateDTO userUpdateDto, HttpServletRequest request) {
 		User userCurrent = userRepository.findBySlug(slug)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "slug", slug));
 
@@ -217,6 +251,7 @@ public class AuthServiceImp implements AuthService {
 		if (userRepository.existsByNameAndIdNot(userUpdateDto.getName(), userCurrent.getId()))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
 
+		userUpdateDto.setEmail(null);
 		UserDTO userDto = MapperUtils.mapToDTO(userUpdateDto, UserDTO.class);
 
 		userDto.setId(userCurrent.getId());
@@ -233,27 +268,53 @@ public class AuthServiceImp implements AuthService {
 		UserDTO res = MapperUtils.mapToDTO(userCurrent, UserDTO.class);
 		if (userCurrent.getAvatar() != null)
 			res.setImage(ImageDTO.generateImageDTO(userCurrent.getAvatar()));
+
+		try {
+			userUpdateDto.setPassword("");
+			logService.createLog(request, this.getUserFromHeader(request), "Update User SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(userUpdateDto), "Update User");
+		} catch (IOException e) {
+			logService.createLog(request, this.getUserFromHeader(request), e.getMessage(), StatusLog.FAILED.toString(),
+					"Update User");
+			e.printStackTrace();
+		}
 		return res;
 	}
 
 	@Override
-	public void forgotPassword(String email) throws MessagingException {
+	public void forgotPassword(String email, HttpServletRequest request) throws MessagingException {
 		if (email.contains("@")) {
 			String otp = otpService.generateAndStoreOtp(email);
 			emailService.sendSimpleEmail(email, "resetPassword", otp);
 		}
+		try {
+			logService.createLog(request, null, "Send Email SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
+					objectMapper.writeValueAsString(email), "Forgot Password");
+		} catch (IOException e) {
+			logService.createLog(request, null, e.getMessage(), StatusLog.FAILED.toString(), "Forgot Password");
+			e.printStackTrace();
+		}
 	}
 
 	@Override
-	public void handleValidateResetPassword(ValidateOtpDTO validateOtpDto) {
+	public void handleValidateResetPassword(ValidateOtpDTO validateOtpDto, HttpServletRequest request) {
 		String otpEmail = otpService.getOtpByEmail(validateOtpDto.getEmail());
 		this.validateOtp(otpEmail, validateOtpDto.getOtp());
 		otpService.clearCache("otpCache", validateOtpDto.getEmail());
 		otpService.generateAndStoreAnotherData(validateOtpDto.getEmail());
+		try {
+			logService.createLog(request, null, "Handle Validate Reset Password SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(validateOtpDto),
+					"Handle Validate Reset Password");
+		} catch (IOException e) {
+			logService.createLog(request, null, e.getMessage(), StatusLog.FAILED.toString(),
+					"Handle Validate Reset Password");
+			e.printStackTrace();
+		}
 	}
 
 	@Override
-	public void handleResePassword(ResetPasswordDTO reset) {
+	public void handleResePassword(ResetPasswordDTO reset, HttpServletRequest request) {
 		User user = userRepository.findByEmail(reset.getEmail())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "email", reset.getEmail()));
 		if (!reset.getPassword().equals(reset.getRetypePassword()))
@@ -267,6 +328,13 @@ public class AuthServiceImp implements AuthService {
 		user.setPassword(passwordEncryt);
 
 		userRepository.save(user);
+		try {
+			logService.createLog(request, null, "Handle Reset Password SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
+					objectMapper.writeValueAsString(reset), "Handle Reset Password");
+		} catch (IOException e) {
+			logService.createLog(request, null, e.getMessage(), StatusLog.FAILED.toString(), "Handle Reset Password");
+			e.printStackTrace();
+		}
 
 	}
 
@@ -285,13 +353,11 @@ public class AuthServiceImp implements AuthService {
 	}
 
 	@Override
-	public void updateProfileImage(String slug, UpdateAvatarDTO profileDto) {
+	public void updateProfileImage(String slug, UpdateAvatarDTO profileDto, HttpServletRequest request) {
 		User user = userRepository.findBySlug(slug)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "slug", slug));
 		Image image = imageRepository.findImageByUserId(user.getId()).orElse(null);
-
 		try {
-//			logger.info(user.getAvartar());
 			if (image != null)
 				cloudinaryService.removeImageFromCloudinary(image.getImage(), path_user);
 			String avatar = cloudinaryService.uploadImage(profileDto.getAvatar(), path_user, "image");
@@ -301,10 +367,14 @@ public class AuthServiceImp implements AuthService {
 
 			user.setAvatar(imageTemp);
 			userRepository.save(user);
-
+			logService.createLog(request, this.getUserFromHeader(request), "Update Image SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(), avatar, "Update Profile Image");
 		} catch (IOException e) {
+			logService.createLog(request, this.getUserFromHeader(request), e.getMessage(), StatusLog.FAILED.toString(),
+					"Update Profile Image");
 			e.printStackTrace();
 		}
+
 	}
 
 	private String generateSlug(String initialSlug) {
@@ -403,14 +473,22 @@ public class AuthServiceImp implements AuthService {
 	}
 
 	@Override
-	public String setIsWaitingDeleteUser(Integer userId) {
+	public String setIsWaitingDeleteUser(Integer userId, HttpServletRequest request) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
 		user.setIsWaitingDelete(true);
 		userRepository.save(user);
 		this.excuteDeleteUser(userId);
-
+		try {
+			logService.createLog(request, this.getUserFromHeader(request), "Set Waiting Delete User SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(userId),
+					"Set Waiting Delete User");
+		} catch (IOException e) {
+			logService.createLog(request, this.getUserFromHeader(request), e.getMessage(), StatusLog.FAILED.toString(),
+					"Set Waiting Delete User");
+			e.printStackTrace();
+		}
 		return "Your account will be deleted after 24 hours";
 
 	}
@@ -423,5 +501,17 @@ public class AuthServiceImp implements AuthService {
 			} catch (IOException e) {
 			}
 		}, Integer.parseInt(timeout), TimeUnit.SECONDS);
+
+	}
+
+	@Override
+	public User getUserFromHeader(HttpServletRequest request) {
+		User user = null;
+		String token = request.getHeader("Authorization");
+		if (token != null && token.startsWith("Bearer ")) {
+			String jwtToken = token.substring(7);
+			user = userRepository.findByEmail(jwtTokenProvider.getUsername(jwtToken)).orElse(null);
+		}
+		return user;
 	}
 }

@@ -1,76 +1,128 @@
 package com.cafe.website.exception;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 
+import com.cafe.website.constant.StatusLog;
+import com.cafe.website.entity.User;
 import com.cafe.website.payload.ErrorDetails;
+import com.cafe.website.repository.UserRepository;
+import com.cafe.website.security.JwtTokenProvider;
+import com.cafe.website.service.AuthService;
+import com.cafe.website.service.LogService;
 
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
 public class GlobalAPIException extends ResponseEntityExceptionHandler {
+	@Autowired
+	private LogService loggerService;
+	@Autowired
+	private AuthService authService;
+	private static final Logger logger = LoggerFactory.getLogger(GlobalAPIException.class);
+
+	private String getBody(HttpServletRequest request) {
+		if (request instanceof ContentCachingRequestWrapper) {
+			ContentCachingRequestWrapper wrapper = (ContentCachingRequestWrapper) request;
+			byte[] buf = wrapper.getContentAsByteArray();
+			if (buf.length > 0) {
+				int length = Math.min(buf.length, 1024);
+				try {
+					return new String(buf, 0, length, wrapper.getCharacterEncoding());
+				} catch (UnsupportedEncodingException ex) {
+					// Encoding issue - use default encoding
+					return new String(buf, 0, length);
+				}
+			}
+		}
+		return "";
+	}
 
 	// handle specific exceptions
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<ErrorDetails> handleResourceNotFoundException(ResourceNotFoundException exception,
-			WebRequest webRequest) {
+			WebRequest webRequest, HttpServletRequest request) {
 		ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(),
 				webRequest.getDescription(false));
+		User user = null;
+		String requestBody = getBody(request);
+		loggerService.createLog(request, user, exception.getMessage(), StatusLog.FAILED.toString(), requestBody,
+				"No Specific");
+
 		return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
 	}
 
 	// Cafe exceptions
 	@ExceptionHandler(CafeAPIException.class)
-	public ResponseEntity<ErrorDetails> handleBlogAPIException(CafeAPIException exception, WebRequest webRequest) {
+	public ResponseEntity<ErrorDetails> handleBlogAPIException(CafeAPIException exception, WebRequest webRequest,
+			HttpServletRequest request) {
 		ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(),
 				webRequest.getDescription(false));
-
+		User user = authService.getUserFromHeader(request);
+		String requestBody = getBody(request);
+		loggerService.createLog(request, user, exception.getMessage(), StatusLog.FAILED.toString(), requestBody,
+				"No Specific");
 		return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
 	}
 
 	// global exceptions
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorDetails> handleGlobalException(Exception exception, WebRequest webRequest) {
+	public ResponseEntity<ErrorDetails> handleGlobalException(Exception exception, WebRequest webRequest,
+			HttpServletRequest request) {
 		ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(),
 				webRequest.getDescription(false));
+		User user = authService.getUserFromHeader(request);
+		String requestBody = getBody(request);
+		loggerService.createLog(request, user, exception.getMessage(), StatusLog.FAILED.toString(), requestBody,
+				"No Specific");
 		return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 //	UsernameNotFoundException 
 	@ExceptionHandler(UsernameNotFoundException.class)
 	public ResponseEntity<ErrorDetails> handleAccessDeniedException(UsernameNotFoundException exception,
-			WebRequest webRequest) {
+			WebRequest webRequest, HttpServletRequest request) {
 		ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(),
 				webRequest.getDescription(false));
-
+		User user = authService.getUserFromHeader(request);
+		String requestBody = getBody(request);
+		loggerService.createLog(request, user, exception.getMessage(), StatusLog.FAILED.toString(), requestBody,
+				"No Specific");
 		return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
 	}
 
 //	BadCredentialsException 
 	@ExceptionHandler(BadCredentialsException.class)
 	public ResponseEntity<ErrorDetails> handleAccessDeniedException(BadCredentialsException exception,
-			WebRequest webRequest) {
+			WebRequest webRequest, HttpServletRequest request) {
 		ErrorDetails errorDetails = new ErrorDetails(new Date(), "User not found", webRequest.getDescription(false));
-
+		User user = authService.getUserFromHeader(request);
+		String requestBody = getBody(request);
+		loggerService.createLog(request, user, exception.getMessage(), StatusLog.FAILED.toString(), requestBody,
+				"No Specific");
 		return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
 	}
 
@@ -84,37 +136,55 @@ public class GlobalAPIException extends ResponseEntityExceptionHandler {
 			String message = error.getDefaultMessage();
 			errors.put(fieldName, message);
 		});
-
+		if (request instanceof ServletWebRequest) {
+			ServletWebRequest servletWebRequest = (ServletWebRequest) request;
+			HttpServletRequest httpServletRequest = servletWebRequest.getRequest();
+			User user = authService.getUserFromHeader(httpServletRequest);
+			String requestBody = getBody(httpServletRequest);
+			loggerService.createLog(httpServletRequest, user, ex.getMessage(), StatusLog.FAILED.toString(), requestBody,
+					"No Specific");
+		}
 		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 	}
 
 	// access denied exceptions
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<ErrorDetails> handleAccessDeniedException(AccessDeniedException exception,
-			WebRequest webRequest) {
+			WebRequest webRequest, HttpServletRequest request) {
 		ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(),
 				webRequest.getDescription(false));
-
+		User user = authService.getUserFromHeader(request);
+		String requestBody = getBody(request);
+		loggerService.createLog(request, user, exception.getMessage(), StatusLog.FAILED.toString(), requestBody,
+				"No Specific");
 		return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
 	}
 
 	// insufficient exceptions
 	@ExceptionHandler(InsufficientAuthenticationException.class)
 	public ResponseEntity<ErrorDetails> handleAccessDeniedException(InsufficientAuthenticationException exception,
-			WebRequest webRequest) {
+			WebRequest webRequest, HttpServletRequest request) {
 
 		ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(),
 				webRequest.getDescription(false));
+		User user = authService.getUserFromHeader(request);
+		String requestBody = getBody(request);
+		loggerService.createLog(request, user, exception.getMessage(), StatusLog.FAILED.toString(), requestBody,
+				"No Specific");
 		return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
 	}
 
 	// signature exceptions
 	@ExceptionHandler(SignatureException.class)
-	public ResponseEntity<ErrorDetails> handleAccessDeniedException(SignatureException exception,
-			WebRequest webRequest) {
+	public ResponseEntity<ErrorDetails> handleAccessDeniedException(SignatureException exception, WebRequest webRequest,
+			HttpServletRequest request) {
 
 		ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(),
 				webRequest.getDescription(false));
+		User user = authService.getUserFromHeader(request);
+		String requestBody = getBody(request);
+		loggerService.createLog(request, user, exception.getMessage(), StatusLog.FAILED.toString(), requestBody,
+				"No Specific");
 		return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
 	}
 

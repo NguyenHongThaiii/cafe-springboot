@@ -61,8 +61,8 @@ public class AuthController {
 	}
 
 	@PostMapping(value = { "/login", "/signin" })
-	public ResponseEntity<JWTAuthResponse> login(@Valid @RequestBody LoginDTO loginDto) {
-		String token = authService.login(loginDto);
+	public ResponseEntity<JWTAuthResponse> login(@Valid @RequestBody LoginDTO loginDto, HttpServletRequest request) {
+		String token = authService.login(loginDto, request);
 
 		JWTAuthResponse jwtAuthResponse = new JWTAuthResponse();
 		jwtAuthResponse.setAccessToken(token);
@@ -70,9 +70,10 @@ public class AuthController {
 	}
 
 	@PostMapping(value = { "/register", "/signup" })
-	public ResponseEntity<RegisterResponse> createUser(@Valid @RequestBody RegisterDTO regsiterDto) {
+	public ResponseEntity<RegisterResponse> createUser(@Valid @RequestBody RegisterDTO regsiterDto,
+			HttpServletRequest request) {
 		logger.info(regsiterDto.toString());
-		RegisterResponse reg = authService.createUser(regsiterDto);
+		RegisterResponse reg = authService.createUser(regsiterDto, request);
 
 		return new ResponseEntity<RegisterResponse>(reg, HttpStatus.CREATED);
 
@@ -113,43 +114,46 @@ public class AuthController {
 	}
 
 	@PostMapping(value = { "/validateRegister", })
-	public ResponseEntity<RegisterResponse> validateRegister(@Valid @RequestBody ValidateOtpDTO validate) {
-		RegisterResponse reg = authService.validateRegister(validate);
+	public ResponseEntity<RegisterResponse> validateRegister(@Valid @RequestBody ValidateOtpDTO validate,
+			HttpServletRequest request) {
+		RegisterResponse reg = authService.validateRegister(validate, request);
 		return new ResponseEntity<>(reg, HttpStatus.CREATED);
 	}
 
 	@PostMapping(value = { "/validateReset", })
-	public ResponseEntity<String> validateReset(@Valid @RequestBody ValidateOtpDTO validate) {
-		authService.handleValidateResetPassword(validate);
+	public ResponseEntity<String> validateReset(@Valid @RequestBody ValidateOtpDTO validate,
+			HttpServletRequest request) {
+		authService.handleValidateResetPassword(validate, request);
 		return ResponseEntity.ok("Ok");
 	}
 
 	@PostMapping(value = { "/forgotPassword", })
-	public ResponseEntity<String> forgotPassword(@Valid @RequestBody ForgotPasswordDTO forgotPasswordDto)
-			throws MessagingException {
-		authService.forgotPassword(forgotPasswordDto.getEmail());
+	public ResponseEntity<String> forgotPassword(@Valid @RequestBody ForgotPasswordDTO forgotPasswordDto,
+			HttpServletRequest request) throws MessagingException {
+		authService.forgotPassword(forgotPasswordDto.getEmail(), request);
 		return ResponseEntity.ok("Ok");
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@PatchMapping("/update/{slug}")
 	public ResponseEntity<UserDTO> updateUser(@Valid @ModelAttribute UserUpdateDTO userUpdateDto,
-			@PathVariable(name = "slug") String slug) {
-		UserDTO userDto = authService.updateUser(slug, userUpdateDto);
+			@PathVariable(name = "slug") String slug, HttpServletRequest request) {
+		UserDTO userDto = authService.updateUser(slug, userUpdateDto, request);
 		return new ResponseEntity<>(userDto, HttpStatus.CREATED);
 	}
 
 	@PostMapping("/resetPassword")
-	public ResponseEntity<String> resetPassword(@Valid @RequestBody(required = true) ResetPasswordDTO reset) {
-		authService.handleResePassword(reset);
+	public ResponseEntity<String> resetPassword(@Valid @RequestBody(required = true) ResetPasswordDTO reset,
+			HttpServletRequest request) {
+		authService.handleResePassword(reset, request);
 		return ResponseEntity.ok("Ok");
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@PatchMapping("/avatar/{slug}")
 	public ResponseEntity<String> updateAvatar(@Valid @ModelAttribute UpdateAvatarDTO avatarDto,
-			@PathVariable(name = "slug") String slug) {
-		authService.updateProfileImage(slug, avatarDto);
+			@PathVariable(name = "slug") String slug, HttpServletRequest request) {
+		authService.updateProfileImage(slug, avatarDto, request);
 		return ResponseEntity.ok("Ok");
 	}
 

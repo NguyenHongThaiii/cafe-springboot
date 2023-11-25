@@ -18,7 +18,6 @@ public class UserUpdateDTO {
 	private int status;
 	private String slug;
 	private List<Product> listProductSaved = new ArrayList<>();
-
 	private List<Role> roles;
 
 	public UserUpdateDTO(String email, String password, String name, String address, MultipartFile avartar,
