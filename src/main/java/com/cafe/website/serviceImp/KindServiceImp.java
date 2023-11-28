@@ -157,7 +157,7 @@ public class KindServiceImp implements KindService {
 			logService.createLog(request, authService.getUserFromHeader(request), "Create Kind SUCCESSFULY",
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(kindCreateDto), "Create Kind");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
 					StatusLog.FAILED.toString(), "Create Kind");
 			e.printStackTrace();
 		}
@@ -197,7 +197,7 @@ public class KindServiceImp implements KindService {
 					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(kindUpdateDto),
 					"Update Kind");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
 					StatusLog.FAILED.toString(), "Update Kind");
 			e.printStackTrace();
 		}
@@ -217,7 +217,8 @@ public class KindServiceImp implements KindService {
 					StatusLog.SUCCESSFULLY.toString(),
 					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(id), "Delete Kind");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request),
+					e.getMessage().substring(0, 255),
 					StatusLog.FAILED.toString(), "Delete Kind");
 			e.printStackTrace();
 		}

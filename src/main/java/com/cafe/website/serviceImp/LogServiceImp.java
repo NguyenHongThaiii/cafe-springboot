@@ -102,7 +102,7 @@ public class LogServiceImp implements LogService {
 		log.setParams(this.getParamsAsJson(request));
 		log.setResult(result);
 		log.setUser(user);
-
+		log.setAction(action);
 		logRepository.save(log);
 	}
 
@@ -118,6 +118,7 @@ public class LogServiceImp implements LogService {
 		log.setParams(this.getParamsAsJson(request));
 		log.setResult(result);
 		log.setUser(user);
+		log.setAction(action);
 
 		logRepository.save(log);
 	}

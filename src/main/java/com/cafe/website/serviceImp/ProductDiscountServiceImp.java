@@ -90,7 +90,7 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(productDiscountCreateDto),
 					"Create Product Discount");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
 					StatusLog.FAILED.toString(), "Create Product Discount");
 			e.printStackTrace();
 		}
@@ -108,7 +108,7 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(id),
 					"Delete Product Discount");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
 					StatusLog.FAILED.toString(), "Delete Product Discount");
 			e.printStackTrace();
 		}
@@ -192,7 +192,7 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 							+ objectMapper.writeValueAsString(productDiscountUpdateDto),
 					"Update Product Discount");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
 					StatusLog.FAILED.toString(), "Update Product Discount");
 			e.printStackTrace();
 		}

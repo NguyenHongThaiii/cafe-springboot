@@ -160,7 +160,7 @@ public class ConvenienceServiceImp implements ConvenienceService {
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(convenienceCreateDto),
 					"Create Convenience");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0, 255),
 					StatusLog.FAILED.toString(), "Create Convenience");
 			e.printStackTrace();
 		}
@@ -204,7 +204,7 @@ public class ConvenienceServiceImp implements ConvenienceService {
 					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(convenienceUpdateDto),
 					"Update Convenience");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0, 255),
 					StatusLog.FAILED.toString(), "Update Convenience");
 			e.printStackTrace();
 		}
@@ -226,7 +226,7 @@ public class ConvenienceServiceImp implements ConvenienceService {
 					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(id),
 					"Delete Convenience");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0, 255),
 					StatusLog.FAILED.toString(), "Delete Convenience");
 			e.printStackTrace();
 		}

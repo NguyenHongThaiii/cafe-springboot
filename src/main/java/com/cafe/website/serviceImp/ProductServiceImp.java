@@ -304,7 +304,7 @@ public class ProductServiceImp implements ProductService {
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(productCreateDto),
 					"Create Product SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0, 255),
 					StatusLog.FAILED.toString(), "Create Product SUCCESSFULY");
 			e.printStackTrace();
 		}
@@ -452,7 +452,7 @@ public class ProductServiceImp implements ProductService {
 					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(productUpdateDto),
 					"Update Product SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0, 255),
 					StatusLog.FAILED.toString(), "Update Product SUCCESSFULY");
 			e.printStackTrace();
 		}
@@ -565,7 +565,7 @@ public class ProductServiceImp implements ProductService {
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(productDeleteDto),
 					"Delete Product SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0, 255),
 					StatusLog.FAILED.toString(), "Delete Product SUCCESSFULY");
 			e.printStackTrace();
 		}

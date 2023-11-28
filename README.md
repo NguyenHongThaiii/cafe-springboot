@@ -16,5 +16,6 @@
 - fix error logger error details when get body json
 - refactor all code (doing)
 - add filter by createdAt and updatedAt all get all entities (done)
-- need to refactor code \id to \ when update or delete (WARNING)
+- need to refactor code \id to \ when update or delete (WARNING-doing)
 - need to finish all services impl of all services (For Admin)
+- fix catch by user to by token 

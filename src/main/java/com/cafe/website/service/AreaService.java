@@ -19,7 +19,7 @@ public interface AreaService {
 
 	AreaDTO createArea(AreaCreateDTO areaCreateDto, HttpServletRequest request) throws IOException;
 
-	AreaDTO updateArea(int id, AreaUpdateDTO areaDto, HttpServletRequest request) throws IOException;
+	AreaDTO updateArea(Integer id, AreaUpdateDTO areaDto, HttpServletRequest request) throws IOException;
 
 	void deleteArea(int id, HttpServletRequest request) throws IOException;
 }

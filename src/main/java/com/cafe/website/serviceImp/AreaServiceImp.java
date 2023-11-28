@@ -38,6 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.slugify.Slugify;
 
 import io.micrometer.common.util.StringUtils;
+import io.swagger.v3.core.util.Json;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletRequest;
@@ -158,7 +159,7 @@ public class AreaServiceImp implements AreaService {
 			logService.createLog(request, authService.getUserFromHeader(request), "Create Area SUCCESSFULY",
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(areaCreateDto), "Create Area");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0, 255),
 					StatusLog.FAILED.toString(), "Create Area");
 			e.printStackTrace();
 		}
@@ -166,7 +167,7 @@ public class AreaServiceImp implements AreaService {
 	}
 
 	@Override
-	public AreaDTO updateArea(int id, AreaUpdateDTO areaUpdateDto, HttpServletRequest request) throws IOException {
+	public AreaDTO updateArea(Integer id, AreaUpdateDTO areaUpdateDto, HttpServletRequest request) throws IOException {
 		AreaDTO newdto = this.getAreaById(id);
 
 		if (areaRepository.existsBySlugAndIdNot(slugify.slugify(areaUpdateDto.getSlug()), newdto.getId()))
@@ -198,7 +199,7 @@ public class AreaServiceImp implements AreaService {
 					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(areaUpdateDto),
 					"Update Area");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0, 255),
 					StatusLog.FAILED.toString(), "Create Area");
 			e.printStackTrace();
 		}
@@ -218,7 +219,7 @@ public class AreaServiceImp implements AreaService {
 					StatusLog.SUCCESSFULLY.toString(),
 					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(id), "Delete Area");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0, 255),
 					StatusLog.FAILED.toString(), "Create Area");
 			e.printStackTrace();
 		}

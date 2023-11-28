@@ -74,7 +74,7 @@ public class ProductSavedServiceImp implements ProductSavedService {
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(productSavedCreate),
 					"Toggle Product Saved Discount");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
 					StatusLog.FAILED.toString(), "Toggle Product Saved Discount");
 			e.printStackTrace();
 		}

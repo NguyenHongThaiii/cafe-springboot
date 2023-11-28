@@ -67,8 +67,8 @@ public class AreaController {
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PatchMapping("/id/{id}")
-	public ResponseEntity<AreaDTO> updateArea(@Valid @ModelAttribute AreaUpdateDTO areaDto,
-			@PathVariable(name = "id") int id, HttpServletRequest request) throws IOException {
+	public ResponseEntity<AreaDTO> updateArea(@PathVariable(name = "id") Integer id,
+			@Valid @ModelAttribute AreaUpdateDTO areaDto, HttpServletRequest request) throws IOException {
 		AreaDTO newAreaDto = areaService.updateArea(id, areaDto, request);
 		return new ResponseEntity<>(newAreaDto, HttpStatus.OK);
 	}

@@ -78,7 +78,8 @@ public class FavoriteServiceImp implements FavoriteService {
 			logService.createLog(request, user, "Toggle Favorite SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(favoriteCreate), "Toggle Favorite");
 		} catch (IOException e) {
-			logService.createLog(request, user, e.getMessage(), StatusLog.FAILED.toString(), "Toggle Favorite");
+			logService.createLog(request, user, e.getMessage().substring(0, 255), StatusLog.FAILED.toString(),
+					"Toggle Favorite");
 			e.printStackTrace();
 		}
 

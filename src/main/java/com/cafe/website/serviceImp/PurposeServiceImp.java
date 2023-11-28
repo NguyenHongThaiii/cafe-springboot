@@ -162,7 +162,7 @@ public class PurposeServiceImp implements PurposeService {
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(purposeCreateDto),
 					"Create Purpose SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
 					StatusLog.FAILED.toString(), "Create Purpose SUCCESSFULY");
 			e.printStackTrace();
 		}
@@ -203,7 +203,7 @@ public class PurposeServiceImp implements PurposeService {
 					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(purposeUpdateDto),
 					"Update Purpose SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
 					StatusLog.FAILED.toString(), "Update Purpose SUCCESSFULY");
 			e.printStackTrace();
 		}
@@ -223,7 +223,7 @@ public class PurposeServiceImp implements PurposeService {
 					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("id", id),
 					"Delete Purpose SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
 					StatusLog.FAILED.toString(), "Delete Purpose SUCCESSFULY");
 			e.printStackTrace();
 		}

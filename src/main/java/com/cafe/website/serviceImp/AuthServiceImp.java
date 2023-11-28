@@ -128,7 +128,6 @@ public class AuthServiceImp implements AuthService {
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String token = jwtTokenProvider.generateToken(authentication);
-
 		revokeAllUserTokens(user);
 		saveUserToken(user, token);
 		try {
@@ -136,7 +135,7 @@ public class AuthServiceImp implements AuthService {
 			logService.createLog(request, user, "Login SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(loginDto), "Login");
 		} catch (IOException e) {
-			logService.createLog(request, user, e.getMessage(), StatusLog.FAILED.toString(), "Login");
+			logService.createLog(request, user, e.getMessage().substring(0, 255), StatusLog.FAILED.toString(), "Login");
 			e.printStackTrace();
 		}
 		return token;
@@ -173,7 +172,8 @@ public class AuthServiceImp implements AuthService {
 			logService.createLog(request, user, "Create User SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(registerDto), "Create User");
 		} catch (IOException e) {
-			logService.createLog(request, user, e.getMessage(), StatusLog.FAILED.toString(), "Create User");
+			logService.createLog(request, user, e.getMessage().substring(0, 255), StatusLog.FAILED.toString(),
+					"Create User");
 			e.printStackTrace();
 		}
 		return reg;
@@ -209,7 +209,8 @@ public class AuthServiceImp implements AuthService {
 			logService.createLog(request, null, "Validate Register SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(validateDto), "Validate Register");
 		} catch (IOException e) {
-			logService.createLog(request, null, e.getMessage(), StatusLog.FAILED.toString(), "Validate Register");
+			logService.createLog(request, null, e.getMessage().substring(0, 255), StatusLog.FAILED.toString(),
+					"Validate Register");
 			e.printStackTrace();
 		}
 		return reg;
@@ -277,8 +278,8 @@ public class AuthServiceImp implements AuthService {
 					JsonConverter.convertToJSON("Slug", slug) + " " + objectMapper.writeValueAsString(userUpdateDto),
 					"Update User");
 		} catch (IOException e) {
-			logService.createLog(request, this.getUserFromHeader(request), e.getMessage(), StatusLog.FAILED.toString(),
-					"Update User");
+			logService.createLog(request, this.getUserFromHeader(request), e.getMessage().substring(0, 255),
+					StatusLog.FAILED.toString(), "Update User");
 			e.printStackTrace();
 		}
 		return res;
@@ -294,7 +295,8 @@ public class AuthServiceImp implements AuthService {
 			logService.createLog(request, null, "Send Email SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(email), "Forgot Password");
 		} catch (IOException e) {
-			logService.createLog(request, null, e.getMessage(), StatusLog.FAILED.toString(), "Forgot Password");
+			logService.createLog(request, null, e.getMessage().substring(0, 255), StatusLog.FAILED.toString(),
+					"Forgot Password");
 			e.printStackTrace();
 		}
 	}
@@ -310,7 +312,7 @@ public class AuthServiceImp implements AuthService {
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(validateOtpDto),
 					"Handle Validate Reset Password");
 		} catch (IOException e) {
-			logService.createLog(request, null, e.getMessage(), StatusLog.FAILED.toString(),
+			logService.createLog(request, null, e.getMessage().substring(0, 255), StatusLog.FAILED.toString(),
 					"Handle Validate Reset Password");
 			e.printStackTrace();
 		}
@@ -335,7 +337,8 @@ public class AuthServiceImp implements AuthService {
 			logService.createLog(request, null, "Handle Reset Password SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(reset), "Handle Reset Password");
 		} catch (IOException e) {
-			logService.createLog(request, null, e.getMessage(), StatusLog.FAILED.toString(), "Handle Reset Password");
+			logService.createLog(request, null, e.getMessage().substring(0, 255), StatusLog.FAILED.toString(),
+					"Handle Reset Password");
 			e.printStackTrace();
 		}
 
@@ -374,8 +377,8 @@ public class AuthServiceImp implements AuthService {
 					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("Slug", slug) + " " + avatar,
 					"Update Profile Image");
 		} catch (IOException e) {
-			logService.createLog(request, this.getUserFromHeader(request), e.getMessage(), StatusLog.FAILED.toString(),
-					"Update Profile Image");
+			logService.createLog(request, this.getUserFromHeader(request), e.getMessage().substring(0, 255),
+					StatusLog.FAILED.toString(), "Update Profile Image");
 			e.printStackTrace();
 		}
 
@@ -489,8 +492,8 @@ public class AuthServiceImp implements AuthService {
 					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("userId", userId),
 					"Set Waiting Delete User");
 		} catch (IOException e) {
-			logService.createLog(request, this.getUserFromHeader(request), e.getMessage(), StatusLog.FAILED.toString(),
-					"Set Waiting Delete User");
+			logService.createLog(request, this.getUserFromHeader(request), e.getMessage().substring(0, 255),
+					StatusLog.FAILED.toString(), "Set Waiting Delete User");
 			e.printStackTrace();
 		}
 		return "Your account will be deleted after 24 hours";

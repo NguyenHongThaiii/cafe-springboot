@@ -129,7 +129,7 @@ public class CommentServiceImp implements CommentService {
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(commentCreateDto),
 					"Create Comment");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
 					StatusLog.FAILED.toString(), "Create Comment");
 			e.printStackTrace();
 		}
@@ -158,7 +158,7 @@ public class CommentServiceImp implements CommentService {
 					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(commentUpdateDto),
 					"Create Comment");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
 					StatusLog.FAILED.toString(), "Update Comment");
 			e.printStackTrace();
 		}
@@ -174,7 +174,7 @@ public class CommentServiceImp implements CommentService {
 			logService.createLog(request, authService.getUserFromHeader(request), "Delete Comment SUCCESSFULY",
 					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(id), "Create Comment");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
 					StatusLog.FAILED.toString(), "Delete Comment");
 			e.printStackTrace();
 		}

@@ -17,18 +17,19 @@ public class AreaUpdateDTO {
 	@FileSize(max = 1048576 * 5)
 	private MultipartFile imageFile;
 
-	public AreaUpdateDTO(int status, String name, String slug, MultipartFile imageFile) {
+	public AreaUpdateDTO() {
+		super();
+		this.status = 1;
+
+	}
+
+	public AreaUpdateDTO(int status, @Size(min = 5, max = 50) String name, @Size(min = 5, max = 50) String slug,
+			MultipartFile imageFile) {
 		super();
 		this.status = status;
 		this.name = name;
 		this.slug = slug;
 		this.imageFile = imageFile;
-	}
-
-	public AreaUpdateDTO() {
-		super();
-		this.status = 1;
-
 	}
 
 	public int getStatus() {
