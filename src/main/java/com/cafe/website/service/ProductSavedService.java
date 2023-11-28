@@ -7,9 +7,11 @@ import com.cafe.website.payload.ProductDTO;
 import com.cafe.website.payload.ProductSavedCreateDTO;
 import com.cafe.website.payload.ProductSavedDTO;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public interface ProductSavedService {
 
-	void toggleProductSaved(ProductSavedCreateDTO productSavedCreate);
+	void toggleProductSaved(ProductSavedCreateDTO productSavedCreate, HttpServletRequest request);
 
 	List<ProductDTO> getListProductSavedByUser(Integer userId);
 }

@@ -53,6 +53,7 @@ import com.cafe.website.service.CloudinaryService;
 import com.cafe.website.service.EmailService;
 import com.cafe.website.service.LogService;
 import com.cafe.website.service.OTPService;
+import com.cafe.website.util.JsonConverter;
 import com.cafe.website.util.MapperUtils;
 import com.cafe.website.util.UserMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -272,7 +273,9 @@ public class AuthServiceImp implements AuthService {
 		try {
 			userUpdateDto.setPassword("");
 			logService.createLog(request, this.getUserFromHeader(request), "Update User SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(userUpdateDto), "Update User");
+					StatusLog.SUCCESSFULLY.toString(),
+					JsonConverter.convertToJSON("Slug", slug) + " " + objectMapper.writeValueAsString(userUpdateDto),
+					"Update User");
 		} catch (IOException e) {
 			logService.createLog(request, this.getUserFromHeader(request), e.getMessage(), StatusLog.FAILED.toString(),
 					"Update User");
@@ -368,7 +371,8 @@ public class AuthServiceImp implements AuthService {
 			user.setAvatar(imageTemp);
 			userRepository.save(user);
 			logService.createLog(request, this.getUserFromHeader(request), "Update Image SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(), avatar, "Update Profile Image");
+					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("Slug", slug) + " " + avatar,
+					"Update Profile Image");
 		} catch (IOException e) {
 			logService.createLog(request, this.getUserFromHeader(request), e.getMessage(), StatusLog.FAILED.toString(),
 					"Update Profile Image");
@@ -482,7 +486,7 @@ public class AuthServiceImp implements AuthService {
 		this.excuteDeleteUser(userId);
 		try {
 			logService.createLog(request, this.getUserFromHeader(request), "Set Waiting Delete User SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(userId),
+					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("userId", userId),
 					"Set Waiting Delete User");
 		} catch (IOException e) {
 			logService.createLog(request, this.getUserFromHeader(request), e.getMessage(), StatusLog.FAILED.toString(),

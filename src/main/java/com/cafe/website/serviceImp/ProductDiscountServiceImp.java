@@ -1,6 +1,6 @@
 package com.cafe.website.serviceImp;
 
-import java.time.LocalDateTime;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -16,26 +16,29 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.cafe.website.constant.SortField;
-import com.cafe.website.entity.Image;
+import com.cafe.website.constant.StatusLog;
 import com.cafe.website.entity.Product;
 import com.cafe.website.entity.ProductDiscount;
 import com.cafe.website.exception.CafeAPIException;
 import com.cafe.website.exception.ResourceNotFoundException;
-import com.cafe.website.payload.AreaDTO;
-import com.cafe.website.payload.ImageDTO;
 import com.cafe.website.payload.ProductDTO;
 import com.cafe.website.payload.ProductDiscountCreateDTO;
 import com.cafe.website.payload.ProductDiscountDTO;
 import com.cafe.website.payload.ProductDiscountUpdateDTO;
 import com.cafe.website.repository.ProductDiscountRepository;
 import com.cafe.website.repository.ProductRepository;
+import com.cafe.website.service.AuthService;
+import com.cafe.website.service.LogService;
 import com.cafe.website.service.ProductDiscountService;
+import com.cafe.website.util.JsonConverter;
 import com.cafe.website.util.MapperUtils;
 import com.cafe.website.util.ProductDiscountMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class ProductDiscountServiceImp implements ProductDiscountService {
@@ -44,19 +47,27 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 	private ProductDiscountRepository productDiscountRepository;
 	private ProductRepository productRepository;
 	private ProductDiscountMapper productDiscountMapper;
+	private LogService logService;
+	private AuthService authService;
+	private ObjectMapper objectMapper;
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 
 	public ProductDiscountServiceImp(EntityManager entityManager, ProductDiscountRepository productDiscountRepository,
-			ProductRepository productRepository, ProductDiscountMapper productDiscountMapper) {
+			ProductRepository productRepository, ProductDiscountMapper productDiscountMapper, LogService logService,
+			AuthService authService, ObjectMapper objectMapper) {
 		super();
 		this.entityManager = entityManager;
 		this.productDiscountRepository = productDiscountRepository;
 		this.productRepository = productRepository;
 		this.productDiscountMapper = productDiscountMapper;
+		this.logService = logService;
+		this.authService = authService;
+		this.objectMapper = objectMapper;
 	}
 
 	@Override
-	public ProductDiscountDTO createProductDiscount(ProductDiscountCreateDTO productDiscountCreateDto) {
+	public ProductDiscountDTO createProductDiscount(ProductDiscountCreateDTO productDiscountCreateDto,
+			HttpServletRequest request) {
 		Product product = productRepository.findById(productDiscountCreateDto.getProductId()).orElseThrow(
 				() -> new ResourceNotFoundException("Product", "id", productDiscountCreateDto.getProductId()));
 
@@ -74,14 +85,33 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 		productDiscountRepository.save(productDiscount);
 		ProductDiscountDTO productDiscountDto = MapperUtils.mapToDTO(productDiscount, ProductDiscountDTO.class);
 		productDiscountDto.setProductDto(MapperUtils.mapToDTO(product, ProductDTO.class));
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Create Product Discount SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(productDiscountCreateDto),
+					"Create Product Discount");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Create Product Discount");
+			e.printStackTrace();
+		}
 		return productDiscountDto;
 	}
 
 	@Override
-	public void deleteProductDiscountById(Integer id) {
+	public void deleteProductDiscountById(Integer id, HttpServletRequest request) {
 		ProductDiscount productDiscount = productDiscountRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("ProductDiscount", "id", id));
 		productDiscountRepository.delete(productDiscount);
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Delete Product Discount SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(),
+					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(id),
+					"Delete Product Discount");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Delete Product Discount");
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -144,7 +174,7 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 
 	@Override
 	public ProductDiscountDTO updateProductDiscount(Integer productId,
-			ProductDiscountUpdateDTO productDiscountUpdateDto) {
+			ProductDiscountUpdateDTO productDiscountUpdateDto, HttpServletRequest request) {
 		ProductDiscount productDiscount = productDiscountRepository.findByProductId(productId)
 				.orElseThrow(() -> new ResourceNotFoundException("ProductDiscount", "id_product", productId));
 		ProductDiscountDTO productDiscountDto = MapperUtils.mapToDTO(productDiscountUpdateDto,
@@ -156,6 +186,16 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 
 		ProductDiscountDTO res = MapperUtils.mapToDTO(productDiscount, ProductDiscountDTO.class);
 		res.setProductDto(MapperUtils.mapToDTO(productDiscount.getProduct(), ProductDTO.class));
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Update Product Discount SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("productId", productId) + " "
+							+ objectMapper.writeValueAsString(productDiscountUpdateDto),
+					"Update Product Discount");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Update Product Discount");
+			e.printStackTrace();
+		}
 		return res;
 	}
 

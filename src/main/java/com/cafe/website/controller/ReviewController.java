@@ -23,6 +23,7 @@ import com.cafe.website.payload.ReviewDTO;
 import com.cafe.website.payload.ReviewUpdateDTO;
 import com.cafe.website.service.ReviewService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -56,23 +57,25 @@ public class ReviewController {
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@PostMapping("")
-	public ResponseEntity<ReviewDTO> createReview(@Valid @ModelAttribute ReviewCreateDTO review) throws IOException {
-		ReviewDTO reviewDto = reviewService.createReview(review);
+	public ResponseEntity<ReviewDTO> createReview(@Valid @ModelAttribute ReviewCreateDTO review,
+			HttpServletRequest request) throws IOException {
+		ReviewDTO reviewDto = reviewService.createReview(review, request);
 		return new ResponseEntity<>(reviewDto, HttpStatus.OK);
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@PatchMapping("/id/{id}")
 	public ResponseEntity<ReviewDTO> updateReviewById(@PathVariable(name = "id") int id,
-			@Valid @ModelAttribute ReviewUpdateDTO review) throws IOException {
-		ReviewDTO reviewDto = reviewService.updateReview(id, review);
+			@Valid @ModelAttribute ReviewUpdateDTO review, HttpServletRequest request) throws IOException {
+		ReviewDTO reviewDto = reviewService.updateReview(id, review, request);
 		return new ResponseEntity<>(reviewDto, HttpStatus.OK);
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/id/{id}")
-	public ResponseEntity<String> delelteReviewById(@PathVariable(name = "id") int id) throws IOException {
-		reviewService.deleteReview(id);
+	public ResponseEntity<String> delelteReviewById(@PathVariable(name = "id") int id, HttpServletRequest request)
+			throws IOException {
+		reviewService.deleteReview(id, request);
 		return new ResponseEntity<>("Delete successfully", HttpStatus.OK);
 	}
 

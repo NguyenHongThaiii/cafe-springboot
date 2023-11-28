@@ -21,6 +21,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.cafe.website.constant.SortField;
+import com.cafe.website.constant.StatusLog;
 import com.cafe.website.entity.Area;
 import com.cafe.website.entity.Convenience;
 import com.cafe.website.entity.Image;
@@ -55,10 +56,13 @@ import com.cafe.website.repository.ProductScheduleRepository;
 import com.cafe.website.repository.PurposeRepository;
 import com.cafe.website.repository.ReviewRepository;
 import com.cafe.website.repository.UserRepository;
+import com.cafe.website.service.AuthService;
 import com.cafe.website.service.CloudinaryService;
+import com.cafe.website.service.LogService;
 import com.cafe.website.service.ProductService;
 import com.cafe.website.service.ReviewService;
 import com.cafe.website.util.AreaMapper;
+import com.cafe.website.util.JsonConverter;
 import com.cafe.website.util.MapperUtils;
 import com.cafe.website.util.ProductMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -68,6 +72,7 @@ import com.github.slugify.Slugify;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class ProductServiceImp implements ProductService {
@@ -88,6 +93,9 @@ public class ProductServiceImp implements ProductService {
 	private AreaMapper areaMapper;
 	private ScheduledExecutorService scheduledExecutorService;
 	private ReviewService reviewService;
+	private LogService logService;
+	private AuthService authService;
+	private ObjectMapper objectMapper;
 
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 	private Slugify slugify = Slugify.builder().build();
@@ -103,7 +111,8 @@ public class ProductServiceImp implements ProductService {
 			ConvenienceRepository conveRepository, ReviewRepository reviewRepository, ImageRepository imageRepository,
 			MenuRepository menuRepository, ProductScheduleRepository productScheduleRepository,
 			UserRepository userRepository, ProductMapper productMapper, CloudinaryService cloudinaryService,
-			AreaMapper areaMapper, ScheduledExecutorService scheduledExecutorService, ReviewService reviewService) {
+			AreaMapper areaMapper, ScheduledExecutorService scheduledExecutorService, ReviewService reviewService,
+			LogService logService, AuthService authService, ObjectMapper objectMapper) {
 		super();
 		this.entityManager = entityManager;
 		this.productRepository = productRepository;
@@ -121,6 +130,9 @@ public class ProductServiceImp implements ProductService {
 		this.areaMapper = areaMapper;
 		this.scheduledExecutorService = scheduledExecutorService;
 		this.reviewService = reviewService;
+		this.logService = logService;
+		this.authService = authService;
+		this.objectMapper = objectMapper;
 	}
 
 	@Override
@@ -193,7 +205,7 @@ public class ProductServiceImp implements ProductService {
 	}
 
 	@Override
-	public ProductDTO createProduct(ProductCreateDTO productCreateDto) throws IOException {
+	public ProductDTO createProduct(ProductCreateDTO productCreateDto, HttpServletRequest request) throws IOException {
 		User user = userRepository.findById(productCreateDto.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", productCreateDto.getUserId()));
 
@@ -287,12 +299,21 @@ public class ProductServiceImp implements ProductService {
 		res.setSchedules(listScheduleDto);
 		res.setOwner(MapperUtils.mapToDTO(user, UserDTO.class));
 		pdto.setAvgRating(reviewService.getRatingByReviewId(product.getId()));
-
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Create Product SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(productCreateDto),
+					"Create Product SUCCESSFULY");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Create Product SUCCESSFULY");
+			e.printStackTrace();
+		}
 		return res;
 	}
 
 	@Override
-	public ProductDTO updateProduct(int id, ProductUpdateDTO productUpdateDto) throws IOException {
+	public ProductDTO updateProduct(int id, ProductUpdateDTO productUpdateDto, HttpServletRequest request)
+			throws IOException {
 		User user = userRepository.findById(productUpdateDto.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", productUpdateDto.getUserId()));
 		if (!productRepository.existsByIdAndUserId(user.getId(), productUpdateDto.getId())
@@ -425,6 +446,16 @@ public class ProductServiceImp implements ProductService {
 		pdto.setSchedules(listSchedulesDto);
 		pdto.setOwner(MapperUtils.mapToDTO(product.getUser(), UserDTO.class));
 		pdto.setAvgRating(reviewService.getRatingByReviewId(product.getId()));
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Update Product SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(),
+					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(productUpdateDto),
+					"Update Product SUCCESSFULY");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Update Product SUCCESSFULY");
+			e.printStackTrace();
+		}
 		return pdto;
 	}
 
@@ -520,7 +551,8 @@ public class ProductServiceImp implements ProductService {
 	}
 
 	@Override
-	public String setIsWaitingDeleteProduct(ProductDeleteDTO productDeleteDto) throws IOException {
+	public String setIsWaitingDeleteProduct(ProductDeleteDTO productDeleteDto, HttpServletRequest request)
+			throws IOException {
 		Product product = productRepository.findById(productDeleteDto.getProductId()).orElseThrow(
 				() -> new ResourceNotFoundException("Product", "id", productDeleteDto.getProductId() + ""));
 		productRepository.findByIdAndUserId(productDeleteDto.getProductId(), productDeleteDto.getUserId())
@@ -528,6 +560,15 @@ public class ProductServiceImp implements ProductService {
 		product.setIsWaitingDelete(true);
 		productRepository.save(product);
 		executeDeleteProduct(productDeleteDto);
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Delete Product SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(productDeleteDto),
+					"Delete Product SUCCESSFULY");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Delete Product SUCCESSFULY");
+			e.printStackTrace();
+		}
 		return "Your product will be deleted after 24 hours";
 	}
 

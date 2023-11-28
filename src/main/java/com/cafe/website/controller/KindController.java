@@ -21,6 +21,7 @@ import com.cafe.website.payload.KindDTO;
 import com.cafe.website.payload.KindUpdateDTO;
 import com.cafe.website.service.KindService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -56,24 +57,26 @@ public class KindController {
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PostMapping("")
-	public ResponseEntity<KindDTO> createKind(@Valid @ModelAttribute KindCreateDTO KindCreateDto) throws IOException {
+	public ResponseEntity<KindDTO> createKind(@Valid @ModelAttribute KindCreateDTO kindCreateDto,
+			HttpServletRequest request) throws IOException {
 
-		KindDTO newKindDto = kindService.createKind(KindCreateDto);
+		KindDTO newKindDto = kindService.createKind(kindCreateDto, request);
 		return new ResponseEntity<>(newKindDto, HttpStatus.CREATED);
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PatchMapping("/id/{id}")
-	public ResponseEntity<KindDTO> updateKind(@Valid @ModelAttribute KindUpdateDTO KindDto,
-			@PathVariable(name = "id") int id) throws IOException {
-		KindDTO newKindDto = kindService.updateKind(id, KindDto);
+	public ResponseEntity<KindDTO> updateKind(@Valid @ModelAttribute KindUpdateDTO kindDto,
+			@PathVariable(name = "id") int id, HttpServletRequest request) throws IOException {
+		KindDTO newKindDto = kindService.updateKind(id, kindDto, request);
 		return new ResponseEntity<>(newKindDto, HttpStatus.OK);
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@DeleteMapping("/id/{id}")
-	public ResponseEntity<String> deleteKind(@PathVariable(name = "id") int id) throws IOException {
-		kindService.deleteKind(id);
+	public ResponseEntity<String> deleteKind(@PathVariable(name = "id") int id, HttpServletRequest request)
+			throws IOException {
+		kindService.deleteKind(id, request);
 		return new ResponseEntity<>("Delete successfully", HttpStatus.OK);
 	}
 }

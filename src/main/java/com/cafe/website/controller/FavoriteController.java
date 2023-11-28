@@ -15,6 +15,7 @@ import com.cafe.website.payload.FavoriteCreateDTO;
 import com.cafe.website.service.FavoriteService;
 import com.cafe.website.service.ReviewService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -28,8 +29,9 @@ public class FavoriteController {
 	}
 
 	@PostMapping("/toggleFavorite")
-	public ResponseEntity<String> toggleFavoriteReview(@Valid @RequestBody FavoriteCreateDTO favor) throws IOException {
-		favoriteService.toggleFavoriteReview(favor);
+	public ResponseEntity<String> toggleFavoriteReview(@Valid @RequestBody FavoriteCreateDTO favor,
+			HttpServletRequest request) throws IOException {
+		favoriteService.toggleFavoriteReview(favor, request);
 		return ResponseEntity.ok("ok");
 	}
 

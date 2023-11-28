@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.cafe.website.constant.SortField;
+import com.cafe.website.constant.StatusLog;
 import com.cafe.website.entity.Convenience;
 import com.cafe.website.entity.Image;
 import com.cafe.website.exception.CafeAPIException;
@@ -26,15 +27,20 @@ import com.cafe.website.payload.ConvenienceUpdateDTO;
 import com.cafe.website.payload.ImageDTO;
 import com.cafe.website.repository.ConvenienceRepository;
 import com.cafe.website.repository.ImageRepository;
+import com.cafe.website.service.AuthService;
 import com.cafe.website.service.CloudinaryService;
 import com.cafe.website.service.ConvenienceService;
+import com.cafe.website.service.LogService;
 import com.cafe.website.util.ConvenienceMapper;
+import com.cafe.website.util.JsonConverter;
 import com.cafe.website.util.MapperUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.slugify.Slugify;
 
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class ConvenienceServiceImp implements ConvenienceService {
@@ -44,6 +50,9 @@ public class ConvenienceServiceImp implements ConvenienceService {
 	private CloudinaryService cloudinaryService;
 	private ConvenienceRepository convenienceRepository;
 	private ImageRepository imageRepository;
+	private LogService logService;
+	private AuthService authService;
+	private ObjectMapper objectMapper;
 
 	private Slugify slugify = Slugify.builder().build();
 	private static final Logger logger = LoggerFactory.getLogger(ConvenienceServiceImp.class);
@@ -52,13 +61,17 @@ public class ConvenienceServiceImp implements ConvenienceService {
 
 	public ConvenienceServiceImp(EntityManager entityManager, ConvenienceMapper convenienceMapper,
 			CloudinaryService cloudinaryService, ConvenienceRepository convenienceRepository,
-			ImageRepository imageRepository) {
+			ImageRepository imageRepository, LogService logService, AuthService authService,
+			ObjectMapper objectMapper) {
 		super();
 		this.entityManager = entityManager;
 		this.convenienceMapper = convenienceMapper;
 		this.cloudinaryService = cloudinaryService;
 		this.convenienceRepository = convenienceRepository;
 		this.imageRepository = imageRepository;
+		this.logService = logService;
+		this.authService = authService;
+		this.objectMapper = objectMapper;
 	}
 
 	@Override
@@ -123,7 +136,8 @@ public class ConvenienceServiceImp implements ConvenienceService {
 	}
 
 	@Override
-	public ConvenienceDTO createConvenience(ConvenienceCreateDTO convenienceCreateDto) throws IOException {
+	public ConvenienceDTO createConvenience(ConvenienceCreateDTO convenienceCreateDto, HttpServletRequest request)
+			throws IOException {
 		if (convenienceRepository.existsBySlug(slugify.slugify(convenienceCreateDto.getSlug())))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Slug is already exists!");
 		if (convenienceRepository.existsByName(convenienceCreateDto.getName()))
@@ -141,11 +155,21 @@ public class ConvenienceServiceImp implements ConvenienceService {
 		Convenience newConvenience = convenienceRepository.save(convenience);
 		ConvenienceDTO newConvenienceDto = MapperUtils.mapToDTO(newConvenience, ConvenienceDTO.class);
 		newConvenienceDto.setImage(ImageDTO.generateImageDTO(newConvenience.getImage()));
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Create Convenience SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(convenienceCreateDto),
+					"Create Convenience");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Create Convenience");
+			e.printStackTrace();
+		}
 		return newConvenienceDto;
 	}
 
 	@Override
-	public ConvenienceDTO updateConvenience(int id, ConvenienceUpdateDTO convenienceUpdateDto) throws IOException {
+	public ConvenienceDTO updateConvenience(int id, ConvenienceUpdateDTO convenienceUpdateDto,
+			HttpServletRequest request) throws IOException {
 		ConvenienceDTO newDto = this.getConvenienceById(id);
 		Image image = new Image();
 
@@ -174,12 +198,21 @@ public class ConvenienceServiceImp implements ConvenienceService {
 			newConvenienceDTO.setImage(ImageDTO.generateImageDTO(convenience.getImage()));
 		else
 			newConvenienceDTO.setImage(newDto.getImage());
-
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Update Convenience SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(),
+					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(convenienceUpdateDto),
+					"Update Convenience");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Update Convenience");
+			e.printStackTrace();
+		}
 		return newConvenienceDTO;
 	}
 
 	@Override
-	public void deleteConvenience(int id) throws IOException {
+	public void deleteConvenience(int id, HttpServletRequest request) throws IOException {
 		convenienceRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Convenience", "id", id + ""));
 		Image image = imageRepository.findImageByKindId(id).orElse(null);
@@ -187,6 +220,16 @@ public class ConvenienceServiceImp implements ConvenienceService {
 			this.cloudinaryService.removeImageFromCloudinary(image.getImage(), path_category);
 
 		convenienceRepository.deleteById(id);
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Delete Convenience SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(),
+					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(id),
+					"Delete Convenience");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Delete Convenience");
+			e.printStackTrace();
+		}
 	}
 
 }

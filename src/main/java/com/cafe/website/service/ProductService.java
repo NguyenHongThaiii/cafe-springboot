@@ -8,11 +8,13 @@ import com.cafe.website.payload.ProductDTO;
 import com.cafe.website.payload.ProductDeleteDTO;
 import com.cafe.website.payload.ProductUpdateDTO;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public interface ProductService {
 
-	ProductDTO createProduct(ProductCreateDTO productCreateDto) throws IOException;
+	ProductDTO createProduct(ProductCreateDTO productCreateDto, HttpServletRequest request) throws IOException;
 
-	ProductDTO updateProduct(int id, ProductUpdateDTO productUpdateDto) throws IOException;
+	ProductDTO updateProduct(int id, ProductUpdateDTO productUpdateDto, HttpServletRequest request) throws IOException;
 
 	ProductDTO getProductById(int id);
 
@@ -20,7 +22,7 @@ public interface ProductService {
 
 	void deleteProduct(ProductDeleteDTO productDeleteDto) throws IOException;
 
-	String setIsWaitingDeleteProduct(ProductDeleteDTO productDeleteDto) throws IOException;
+	String setIsWaitingDeleteProduct(ProductDeleteDTO productDeleteDto, HttpServletRequest request) throws IOException;
 
 	Float getRateReviewByProduct(Integer productId);
 

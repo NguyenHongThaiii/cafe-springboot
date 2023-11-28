@@ -19,6 +19,7 @@ import com.cafe.website.payload.CommentDTO;
 import com.cafe.website.payload.CommentUpdateDTO;
 import com.cafe.website.service.CommentService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -49,21 +50,22 @@ public class CommentController {
 	}
 
 	@PostMapping("")
-	public ResponseEntity<CommentDTO> createComment(@Valid @RequestBody CommentCreateDTO commentCreateDto) {
-		CommentDTO comment = commentService.createComment(commentCreateDto);
+	public ResponseEntity<CommentDTO> createComment(@Valid @RequestBody CommentCreateDTO commentCreateDto,
+			HttpServletRequest request) {
+		CommentDTO comment = commentService.createComment(commentCreateDto, request);
 		return new ResponseEntity<CommentDTO>(comment, HttpStatus.CREATED);
 	}
 
 	@PatchMapping("/id/{id}")
 	public ResponseEntity<CommentDTO> updateComment(@PathVariable(name = "id") Integer id,
-			@Valid @RequestBody CommentUpdateDTO CommentUpdateDTO) {
-		CommentDTO comment = commentService.updateComment(id, CommentUpdateDTO);
+			@Valid @RequestBody CommentUpdateDTO CommentUpdateDTO, HttpServletRequest request) {
+		CommentDTO comment = commentService.updateComment(id, CommentUpdateDTO, request);
 		return new ResponseEntity<CommentDTO>(comment, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/id/{id}")
-	public ResponseEntity<String> delteCommentById(@PathVariable(name = "id") Integer id) {
-		commentService.deleteComment(id);
+	public ResponseEntity<String> delteCommentById(@PathVariable(name = "id") Integer id, HttpServletRequest request) {
+		commentService.deleteComment(id, request);
 		return new ResponseEntity<String>("Delete successfuly", HttpStatus.OK);
 	}
 }

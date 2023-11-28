@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.cafe.website.constant.SortField;
+import com.cafe.website.constant.StatusLog;
 import com.cafe.website.entity.Favorite;
 import com.cafe.website.entity.Image;
 import com.cafe.website.entity.Product;
@@ -34,15 +35,20 @@ import com.cafe.website.repository.ProductRepository;
 import com.cafe.website.repository.RatingRepository;
 import com.cafe.website.repository.ReviewRepository;
 import com.cafe.website.repository.UserRepository;
+import com.cafe.website.service.AuthService;
 import com.cafe.website.service.CloudinaryService;
+import com.cafe.website.service.LogService;
 import com.cafe.website.service.ReviewService;
+import com.cafe.website.util.JsonConverter;
 import com.cafe.website.util.MapperUtils;
 import com.cafe.website.util.ReviewMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.micrometer.common.util.StringUtils;
+import io.swagger.v3.core.util.Json;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class ReviewSerivceImp implements ReviewService {
@@ -55,25 +61,33 @@ public class ReviewSerivceImp implements ReviewService {
 	private UserRepository userRepository;
 	private ImageRepository imageRepository;
 	private FavoriterRepository favoriteRepository;
-
 	private ReviewMapper reviewMapper;
+	private LogService logService;
+	private AuthService authService;
+	private ObjectMapper objectMapper;
+
 	ObjectMapper objMapper = new ObjectMapper();
 	@Value("${app.path-review}")
 	String path_reviews;
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 
-	public ReviewSerivceImp(ReviewRepository reviewRepository, CloudinaryService cloudinaryService,
-			RatingRepository ratingRepository, ProductRepository productRepository, UserRepository userRepository,
-			ReviewMapper reviewMapper, ImageRepository imageRepository, FavoriterRepository favoriteRepository) {
+	public ReviewSerivceImp(EntityManager entityManager, ReviewRepository reviewRepository,
+			CloudinaryService cloudinaryService, RatingRepository ratingRepository, ProductRepository productRepository,
+			UserRepository userRepository, ImageRepository imageRepository, FavoriterRepository favoriteRepository,
+			ReviewMapper reviewMapper, LogService logService, AuthService authService, ObjectMapper objectMapper) {
 		super();
+		this.entityManager = entityManager;
 		this.reviewRepository = reviewRepository;
 		this.cloudinaryService = cloudinaryService;
 		this.ratingRepository = ratingRepository;
 		this.productRepository = productRepository;
 		this.userRepository = userRepository;
-		this.reviewMapper = reviewMapper;
 		this.imageRepository = imageRepository;
 		this.favoriteRepository = favoriteRepository;
+		this.reviewMapper = reviewMapper;
+		this.logService = logService;
+		this.authService = authService;
+		this.objectMapper = objectMapper;
 	}
 
 	@Override
@@ -134,7 +148,7 @@ public class ReviewSerivceImp implements ReviewService {
 	}
 
 	@Override
-	public ReviewDTO createReview(ReviewCreateDTO reviewCreateDto) throws IOException {
+	public ReviewDTO createReview(ReviewCreateDTO reviewCreateDto, HttpServletRequest request) throws IOException {
 		// TODO Auto-generated method stub
 		List<Image> listImages = new ArrayList<>();
 		List<String> images = new ArrayList<>();
@@ -172,12 +186,21 @@ public class ReviewSerivceImp implements ReviewService {
 		if (review.getListImages().size() > 0)
 			reviewDto.setListImages(ImageDTO.generateListImageDTO(review.getListImages()));
 		reviewDto.setProductId(review.getProduct().getId());
-
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Create Review SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(reviewCreateDto),
+					"Create Review SUCCESSFULY");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Create Review SUCCESSFULY");
+			e.printStackTrace();
+		}
 		return reviewDto;
 	}
 
 	@Override
-	public ReviewDTO updateReview(int id, ReviewUpdateDTO reviewUpdateDto) throws IOException {
+	public ReviewDTO updateReview(int id, ReviewUpdateDTO reviewUpdateDto, HttpServletRequest request)
+			throws IOException {
 		Review review = reviewRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Review", "id", id));
 		String path_reviews = "cafe-springboot/reviews";
@@ -208,12 +231,21 @@ public class ReviewSerivceImp implements ReviewService {
 
 		reviewDto.setListImages(ImageDTO.generateListImageDTO(review.getListImages()));
 		reviewDto.setProductId(review.getProduct().getId());
-
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Update Review SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(),
+					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(reviewUpdateDto),
+					"Update Review SUCCESSFULY");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Update Review SUCCESSFULY");
+			e.printStackTrace();
+		}
 		return reviewDto;
 	}
 
 	@Override
-	public void deleteReview(int id) throws IOException {
+	public void deleteReview(int id, HttpServletRequest request) throws IOException {
 		this.getReviewById(id);
 		String path_reviews = "cafe-springboot/reviews";
 		List<Image> listEntityImages = imageRepository.findAllImageByReviewId(id);
@@ -223,7 +255,15 @@ public class ReviewSerivceImp implements ReviewService {
 				cloudinaryService.removeImageFromCloudinary(temp.getImage(), path_reviews);
 
 		reviewRepository.deleteById(id);
-
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Delete Review SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("id", id),
+					"Delete Review SUCCESSFULY");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Delete Review SUCCESSFULY");
+			e.printStackTrace();
+		}
 	}
 
 	@Override

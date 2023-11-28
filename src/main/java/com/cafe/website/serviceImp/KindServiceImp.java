@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.cafe.website.constant.SortField;
+import com.cafe.website.constant.StatusLog;
 import com.cafe.website.entity.Image;
 import com.cafe.website.entity.Kind;
 import com.cafe.website.exception.CafeAPIException;
@@ -26,15 +27,20 @@ import com.cafe.website.payload.KindDTO;
 import com.cafe.website.payload.KindUpdateDTO;
 import com.cafe.website.repository.ImageRepository;
 import com.cafe.website.repository.KindRepository;
+import com.cafe.website.service.AuthService;
 import com.cafe.website.service.CloudinaryService;
 import com.cafe.website.service.KindService;
+import com.cafe.website.service.LogService;
+import com.cafe.website.util.JsonConverter;
 import com.cafe.website.util.KindMapper;
 import com.cafe.website.util.MapperUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.slugify.Slugify;
 
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class KindServiceImp implements KindService {
@@ -44,6 +50,9 @@ public class KindServiceImp implements KindService {
 	private CloudinaryService cloudinaryService;
 	private KindRepository kindRepository;
 	private ImageRepository imageRepository;
+	private LogService logService;
+	private AuthService authService;
+	private ObjectMapper objectMapper;
 
 	private Slugify slugify = Slugify.builder().build();
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
@@ -51,13 +60,17 @@ public class KindServiceImp implements KindService {
 	private String path_category;
 
 	public KindServiceImp(EntityManager entityManager, KindMapper kindMapper, CloudinaryService cloudinaryService,
-			KindRepository kindRepository, ImageRepository imageRepository) {
+			KindRepository kindRepository, ImageRepository imageRepository, LogService logService,
+			AuthService authService, ObjectMapper objectMapper) {
 		super();
 		this.entityManager = entityManager;
 		this.kindMapper = kindMapper;
 		this.cloudinaryService = cloudinaryService;
 		this.kindRepository = kindRepository;
 		this.imageRepository = imageRepository;
+		this.logService = logService;
+		this.authService = authService;
+		this.objectMapper = objectMapper;
 	}
 
 	@Override
@@ -121,7 +134,7 @@ public class KindServiceImp implements KindService {
 	}
 
 	@Override
-	public KindDTO createKind(KindCreateDTO kindCreateDto) throws IOException {
+	public KindDTO createKind(KindCreateDTO kindCreateDto, HttpServletRequest request) throws IOException {
 		if (kindRepository.existsBySlug(slugify.slugify(kindCreateDto.getSlug())))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Slug is already exists!");
 		if (kindRepository.existsByName(kindCreateDto.getName()))
@@ -140,11 +153,19 @@ public class KindServiceImp implements KindService {
 
 		KindDTO newKindDto = MapperUtils.mapToDTO(newKind, KindDTO.class);
 		newKindDto.setImage(ImageDTO.generateImageDTO(newKind.getImage()));
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Create Kind SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(kindCreateDto), "Create Kind");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Create Kind");
+			e.printStackTrace();
+		}
 		return newKindDto;
 	}
 
 	@Override
-	public KindDTO updateKind(int id, KindUpdateDTO kindUpdateDto) throws IOException {
+	public KindDTO updateKind(int id, KindUpdateDTO kindUpdateDto, HttpServletRequest request) throws IOException {
 		KindDTO newDto = this.getKindById(id);
 
 		if (kindRepository.existsBySlugAndIdNot(slugify.slugify(kindUpdateDto.getSlug()), newDto.getId()))
@@ -170,18 +191,36 @@ public class KindServiceImp implements KindService {
 
 		KindDTO newKindDto = MapperUtils.mapToDTO(kind, KindDTO.class);
 		newKindDto.setImage(ImageDTO.generateImageDTO(kind.getImage()));
-
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Update Kind SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(),
+					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(kindUpdateDto),
+					"Update Kind");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Update Kind");
+			e.printStackTrace();
+		}
 		return newKindDto;
 	}
 
 	@Override
-	public void deleteKind(int id) throws IOException {
+	public void deleteKind(int id, HttpServletRequest request) throws IOException {
 		kindRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("kind", "id", id + ""));
 		Image image = imageRepository.findImageByKindId(id).orElse(null);
 		if (image != null)
 			this.cloudinaryService.removeImageFromCloudinary(image.getImage(), path_category);
 
 		kindRepository.deleteById(id);
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Delete Kind SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(),
+					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(id), "Delete Kind");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Delete Kind");
+			e.printStackTrace();
+		}
 	}
 
 }

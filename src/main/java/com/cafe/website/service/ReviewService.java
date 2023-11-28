@@ -9,6 +9,8 @@ import com.cafe.website.payload.ReviewCreateDTO;
 import com.cafe.website.payload.ReviewDTO;
 import com.cafe.website.payload.ReviewUpdateDTO;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public interface ReviewService {
 	List<ReviewDTO> getListReviews(int limit, int page, String name, Integer productId, Integer userId,
 			Integer ratingId, String createdAt, String updatedAt, Float ratingAverage, String sortBy);
@@ -19,11 +21,11 @@ public interface ReviewService {
 
 	ReviewDTO getReviewById(int id);
 
-	ReviewDTO createReview(ReviewCreateDTO areaCreateDto) throws IOException;
+	ReviewDTO createReview(ReviewCreateDTO areaCreateDto, HttpServletRequest request) throws IOException;
 
-	ReviewDTO updateReview(int id, ReviewUpdateDTO areaUpdateDto) throws IOException;
+	ReviewDTO updateReview(int id, ReviewUpdateDTO areaUpdateDto, HttpServletRequest request) throws IOException;
 
-	void deleteReview(int id) throws IOException;
+	void deleteReview(int id, HttpServletRequest request) throws IOException;
 
 	Float getRatingByReviewId(int id);
 

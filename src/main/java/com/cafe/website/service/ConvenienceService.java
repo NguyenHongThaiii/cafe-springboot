@@ -7,6 +7,8 @@ import com.cafe.website.payload.ConvenienceCreateDTO;
 import com.cafe.website.payload.ConvenienceDTO;
 import com.cafe.website.payload.ConvenienceUpdateDTO;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public interface ConvenienceService {
 	List<ConvenienceDTO> getListConveniences(int limit, int page, String name, String slug, String createdAt,
 			String updatedAt, String sortBy);
@@ -15,9 +17,11 @@ public interface ConvenienceService {
 
 	ConvenienceDTO getConvenienceBySlug(String slug);
 
-	ConvenienceDTO createConvenience(ConvenienceCreateDTO convenienceCreateDto) throws IOException;
+	ConvenienceDTO createConvenience(ConvenienceCreateDTO convenienceCreateDto, HttpServletRequest request)
+			throws IOException;
 
-	ConvenienceDTO updateConvenience(int id, ConvenienceUpdateDTO convenienceDto) throws IOException;
+	ConvenienceDTO updateConvenience(int id, ConvenienceUpdateDTO convenienceDto, HttpServletRequest request)
+			throws IOException;
 
-	void deleteConvenience(int id) throws IOException;
+	void deleteConvenience(int id, HttpServletRequest request) throws IOException;
 }

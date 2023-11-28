@@ -15,6 +15,7 @@ import com.cafe.website.payload.ProductDTO;
 import com.cafe.website.payload.ProductSavedCreateDTO;
 import com.cafe.website.service.ProductSavedService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -28,8 +29,9 @@ public class ProductSavedController {
 	}
 
 	@PostMapping("/toggle")
-	public ResponseEntity<String> toggleProductSaved(@Valid @RequestBody ProductSavedCreateDTO productSavedCreate) {
-		productSavedService.toggleProductSaved(productSavedCreate);
+	public ResponseEntity<String> toggleProductSaved(@Valid @RequestBody ProductSavedCreateDTO productSavedCreate,
+			HttpServletRequest request) {
+		productSavedService.toggleProductSaved(productSavedCreate, request);
 		return new ResponseEntity<String>("ok", HttpStatus.CREATED);
 
 	}

@@ -19,6 +19,7 @@ import com.cafe.website.payload.ProductDiscountDTO;
 import com.cafe.website.payload.ProductDiscountUpdateDTO;
 import com.cafe.website.service.ProductDiscountService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -51,8 +52,8 @@ public class ProductDiscountController {
 
 	@PostMapping("")
 	public ResponseEntity<ProductDiscountDTO> createProductDiscount(
-			@Valid @RequestBody ProductDiscountCreateDTO productDiscountDto) {
-		ProductDiscountDTO product = productDiscountService.createProductDiscount(productDiscountDto);
+			@Valid @RequestBody ProductDiscountCreateDTO productDiscountDto, HttpServletRequest request) {
+		ProductDiscountDTO product = productDiscountService.createProductDiscount(productDiscountDto, request);
 
 		return new ResponseEntity<ProductDiscountDTO>(product, HttpStatus.CREATED);
 	}
@@ -60,15 +61,17 @@ public class ProductDiscountController {
 	@PatchMapping("/products/{productId}")
 	public ResponseEntity<ProductDiscountDTO> updateProductDiscount(
 			@Valid @RequestBody ProductDiscountUpdateDTO productDiscountUpdateDto,
-			@PathVariable(name = "productId") Integer productId) {
-		ProductDiscountDTO product = productDiscountService.updateProductDiscount(productId, productDiscountUpdateDto);
+			@PathVariable(name = "productId") Integer productId, HttpServletRequest request) {
+		ProductDiscountDTO product = productDiscountService.updateProductDiscount(productId, productDiscountUpdateDto,
+				request);
 
 		return new ResponseEntity<ProductDiscountDTO>(product, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/id/{id}")
-	public ResponseEntity<String> deleteProductDiscountById(@PathVariable(name = "id") Integer id) {
-		productDiscountService.deleteProductDiscountById(id);
+	public ResponseEntity<String> deleteProductDiscountById(@PathVariable(name = "id") Integer id,
+			HttpServletRequest request) {
+		productDiscountService.deleteProductDiscountById(id, request);
 
 		return ResponseEntity.ok("Ok");
 	}

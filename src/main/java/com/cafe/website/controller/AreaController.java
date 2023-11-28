@@ -21,6 +21,7 @@ import com.cafe.website.payload.AreaDTO;
 import com.cafe.website.payload.AreaUpdateDTO;
 import com.cafe.website.service.AreaService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -57,24 +58,26 @@ public class AreaController {
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PostMapping("")
-	public ResponseEntity<AreaDTO> createArea(@Valid @ModelAttribute AreaCreateDTO areaCreateDto) throws IOException {
+	public ResponseEntity<AreaDTO> createArea(@Valid @ModelAttribute AreaCreateDTO areaCreateDto,
+			HttpServletRequest request) throws IOException {
 
-		AreaDTO newAreaDto = areaService.createArea(areaCreateDto);
+		AreaDTO newAreaDto = areaService.createArea(areaCreateDto, request);
 		return new ResponseEntity<>(newAreaDto, HttpStatus.CREATED);
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PatchMapping("/id/{id}")
 	public ResponseEntity<AreaDTO> updateArea(@Valid @ModelAttribute AreaUpdateDTO areaDto,
-			@PathVariable(name = "id") int id) throws IOException {
-		AreaDTO newAreaDto = areaService.updateArea(id, areaDto);
+			@PathVariable(name = "id") int id, HttpServletRequest request) throws IOException {
+		AreaDTO newAreaDto = areaService.updateArea(id, areaDto, request);
 		return new ResponseEntity<>(newAreaDto, HttpStatus.OK);
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@DeleteMapping("/id/{id}")
-	public ResponseEntity<String> deleteArea(@PathVariable(name = "id") int id) throws IOException {
-		areaService.deleteArea(id);
+	public ResponseEntity<String> deleteArea(@PathVariable(name = "id") int id, HttpServletRequest request)
+			throws IOException {
+		areaService.deleteArea(id, request);
 		return new ResponseEntity<>("Delete successfully", HttpStatus.OK);
 	}
 }

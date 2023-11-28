@@ -21,6 +21,7 @@ import com.cafe.website.payload.ConvenienceDTO;
 import com.cafe.website.payload.ConvenienceUpdateDTO;
 import com.cafe.website.service.ConvenienceService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -35,8 +36,7 @@ public class ConvenienceController {
 	@GetMapping("")
 	public ResponseEntity<List<ConvenienceDTO>> getListConveniences(@RequestParam(defaultValue = "5") Integer limit,
 			@RequestParam(defaultValue = "1") Integer page, @RequestParam(required = false) String name,
-			@RequestParam(required = false) String slug
-			, @RequestParam(required = false) String createdAt,
+			@RequestParam(required = false) String slug, @RequestParam(required = false) String createdAt,
 			@RequestParam(required = false) String updatedAt,
 
 			@RequestParam(required = false, defaultValue = "") String sortBy) {
@@ -60,24 +60,27 @@ public class ConvenienceController {
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PostMapping("")
 	public ResponseEntity<ConvenienceDTO> createConvenience(
-			@Valid @ModelAttribute ConvenienceCreateDTO ConvenienceCreateDto) throws IOException {
+			@Valid @ModelAttribute ConvenienceCreateDTO convenienceCreateDto, HttpServletRequest request)
+			throws IOException {
 
-		ConvenienceDTO convenienceDto = convenienceService.createConvenience(ConvenienceCreateDto);
+		ConvenienceDTO convenienceDto = convenienceService.createConvenience(convenienceCreateDto, request);
 		return new ResponseEntity<>(convenienceDto, HttpStatus.CREATED);
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PatchMapping("/id/{id}")
-	public ResponseEntity<ConvenienceDTO> updateConvenience(@Valid @ModelAttribute ConvenienceUpdateDTO ConvenienceDto,
-			@PathVariable(name = "id") int id) throws IOException {
-		ConvenienceDTO convenienceDto = convenienceService.updateConvenience(id, ConvenienceDto);
+	public ResponseEntity<ConvenienceDTO> updateConvenience(
+			@Valid @ModelAttribute ConvenienceUpdateDTO convenienceUpdateDto, @PathVariable(name = "id") int id,
+			HttpServletRequest request) throws IOException {
+		ConvenienceDTO convenienceDto = convenienceService.updateConvenience(id, convenienceUpdateDto, request);
 		return new ResponseEntity<>(convenienceDto, HttpStatus.OK);
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@DeleteMapping("/id/{id}")
-	public ResponseEntity<String> deleteConvenience(@PathVariable(name = "id") int id) throws IOException {
-		convenienceService.deleteConvenience(id);
+	public ResponseEntity<String> deleteConvenience(@PathVariable(name = "id") int id, HttpServletRequest request)
+			throws IOException {
+		convenienceService.deleteConvenience(id, request);
 		return new ResponseEntity<>("Delete successfully", HttpStatus.OK);
 	}
 }

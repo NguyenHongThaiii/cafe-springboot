@@ -21,6 +21,7 @@ import com.cafe.website.payload.PurposeDTO;
 import com.cafe.website.payload.PurposeUpdateDTO;
 import com.cafe.website.service.PurposeService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -57,25 +58,26 @@ public class PurposeController {
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PostMapping("")
-	public ResponseEntity<PurposeDTO> createPurpose(@Valid @ModelAttribute PurposeCreateDTO PurposeCreateDto)
-			throws IOException {
+	public ResponseEntity<PurposeDTO> createPurpose(@Valid @ModelAttribute PurposeCreateDTO purposeCreateDto,
+			HttpServletRequest request) throws IOException {
 
-		PurposeDTO newPurposeDto = purposeService.createPurpose(PurposeCreateDto);
+		PurposeDTO newPurposeDto = purposeService.createPurpose(purposeCreateDto, request);
 		return new ResponseEntity<>(newPurposeDto, HttpStatus.CREATED);
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PatchMapping("/id/{id}")
-	public ResponseEntity<PurposeDTO> updatePurpose(@Valid @ModelAttribute PurposeUpdateDTO PurposeDto,
-			@PathVariable(name = "id") int id) throws IOException {
-		PurposeDTO newPurposeDto = purposeService.updatePurpose(id, PurposeDto);
+	public ResponseEntity<PurposeDTO> updatePurpose(@Valid @ModelAttribute PurposeUpdateDTO purposeDto,
+			@PathVariable(name = "id") int id, HttpServletRequest request) throws IOException {
+		PurposeDTO newPurposeDto = purposeService.updatePurpose(id, purposeDto, request);
 		return new ResponseEntity<>(newPurposeDto, HttpStatus.OK);
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@DeleteMapping("/id/{id}")
-	public ResponseEntity<String> deletePurpose(@PathVariable(name = "id") int id) throws IOException {
-		purposeService.deletePurpose(id);
+	public ResponseEntity<String> deletePurpose(@PathVariable(name = "id") int id, HttpServletRequest request)
+			throws IOException {
+		purposeService.deletePurpose(id, request);
 		return new ResponseEntity<>("Delete successfully", HttpStatus.OK);
 	}
 }

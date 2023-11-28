@@ -6,6 +6,8 @@ import com.cafe.website.payload.CommentCreateDTO;
 import com.cafe.website.payload.CommentDTO;
 import com.cafe.website.payload.CommentUpdateDTO;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public interface CommentService {
 	List<CommentDTO> getListComments(int limit, int page, String name, Integer userId, Integer reviewId,
 			String createdAt, String updatedAt, String sortBy);
@@ -14,10 +16,10 @@ public interface CommentService {
 
 	CommentDTO getCommentById(int id);
 
-	CommentDTO createComment(CommentCreateDTO commentCreateDto);
+	CommentDTO createComment(CommentCreateDTO commentCreateDto, HttpServletRequest request);
 
-	CommentDTO updateComment(int id, CommentUpdateDTO commentUpdateDto);
+	CommentDTO updateComment(int id, CommentUpdateDTO commentUpdateDto, HttpServletRequest request);
 
-	void deleteComment(int id);
+	void deleteComment(int id, HttpServletRequest request);
 
 }

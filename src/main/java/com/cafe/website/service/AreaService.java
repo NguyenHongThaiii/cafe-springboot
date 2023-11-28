@@ -7,6 +7,8 @@ import com.cafe.website.payload.AreaCreateDTO;
 import com.cafe.website.payload.AreaDTO;
 import com.cafe.website.payload.AreaUpdateDTO;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public interface AreaService {
 	List<AreaDTO> getListAreas(int limit, int page, Integer status, String name, String slug, String createdAt,
 			String updatedAt, String sortBy);
@@ -15,9 +17,9 @@ public interface AreaService {
 
 	AreaDTO getAreaBySlug(String slug);
 
-	AreaDTO createArea(AreaCreateDTO areaCreateDto) throws IOException;
+	AreaDTO createArea(AreaCreateDTO areaCreateDto, HttpServletRequest request) throws IOException;
 
-	AreaDTO updateArea(int id, AreaUpdateDTO areaDto) throws IOException;
+	AreaDTO updateArea(int id, AreaUpdateDTO areaDto, HttpServletRequest request) throws IOException;
 
-	void deleteArea(int id) throws IOException;
+	void deleteArea(int id, HttpServletRequest request) throws IOException;
 }

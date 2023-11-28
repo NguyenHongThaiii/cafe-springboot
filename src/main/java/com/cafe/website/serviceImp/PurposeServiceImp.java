@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.cafe.website.constant.SortField;
+import com.cafe.website.constant.StatusLog;
 import com.cafe.website.entity.Image;
 import com.cafe.website.entity.Purpose;
 import com.cafe.website.entity.Purpose;
@@ -30,15 +31,20 @@ import com.cafe.website.payload.PurposeDTO;
 import com.cafe.website.payload.PurposeUpdateDTO;
 import com.cafe.website.repository.ImageRepository;
 import com.cafe.website.repository.PurposeRepository;
+import com.cafe.website.service.AuthService;
 import com.cafe.website.service.CloudinaryService;
+import com.cafe.website.service.LogService;
 import com.cafe.website.service.PurposeService;
+import com.cafe.website.util.JsonConverter;
 import com.cafe.website.util.MapperUtils;
 import com.cafe.website.util.PurposeMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.slugify.Slugify;
 
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class PurposeServiceImp implements PurposeService {
@@ -48,20 +54,25 @@ public class PurposeServiceImp implements PurposeService {
 	private CloudinaryService cloudinaryService;
 	private PurposeRepository purposeRepository;
 	private ImageRepository imageRepository;
-
+	private LogService logService;
+	private AuthService authService;
+	private ObjectMapper objectMapper;
 	private Slugify slugify = Slugify.builder().build();
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 	@Value("${app.path-category-purpose}")
 	String path_category;
 
 	public PurposeServiceImp(EntityManager entityManager, PurposeMapper purposeMapper,
-			CloudinaryService cloudinaryService, PurposeRepository purposeRepository, ImageRepository imageRepository) {
+			CloudinaryService cloudinaryService, PurposeRepository purposeRepository, ImageRepository imageRepository,
+			LogService logService, AuthService authService) {
 		super();
 		this.entityManager = entityManager;
 		this.purposeMapper = purposeMapper;
 		this.cloudinaryService = cloudinaryService;
 		this.purposeRepository = purposeRepository;
 		this.imageRepository = imageRepository;
+		this.logService = logService;
+		this.authService = authService;
 	}
 
 	@Override
@@ -128,7 +139,7 @@ public class PurposeServiceImp implements PurposeService {
 	}
 
 	@Override
-	public PurposeDTO createPurpose(PurposeCreateDTO purposeCreateDto) throws IOException {
+	public PurposeDTO createPurpose(PurposeCreateDTO purposeCreateDto, HttpServletRequest request) throws IOException {
 		if (purposeRepository.existsBySlug(slugify.slugify(purposeCreateDto.getSlug())))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Slug is already exists!");
 		if (purposeRepository.existsByName(purposeCreateDto.getName()))
@@ -146,11 +157,21 @@ public class PurposeServiceImp implements PurposeService {
 		Purpose newPurpose = purposeRepository.save(purpose);
 		PurposeDTO newPurposeDto = MapperUtils.mapToDTO(newPurpose, PurposeDTO.class);
 		newPurposeDto.setImage(ImageDTO.generateImageDTO(image));
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Create Purpose SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(purposeCreateDto),
+					"Create Purpose SUCCESSFULY");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Create Purpose SUCCESSFULY");
+			e.printStackTrace();
+		}
 		return newPurposeDto;
 	}
 
 	@Override
-	public PurposeDTO updatePurpose(int id, PurposeUpdateDTO purposeUpdateDto) throws IOException {
+	public PurposeDTO updatePurpose(int id, PurposeUpdateDTO purposeUpdateDto, HttpServletRequest request)
+			throws IOException {
 		PurposeDTO newDto = this.getPurposeById(id);
 
 		if (purposeRepository.existsBySlugAndIdNot(slugify.slugify(purposeUpdateDto.getSlug()), newDto.getId()))
@@ -176,18 +197,36 @@ public class PurposeServiceImp implements PurposeService {
 
 		PurposeDTO newPurposeDTO = MapperUtils.mapToDTO(purpose, PurposeDTO.class);
 		newPurposeDTO.setImage(ImageDTO.generateImageDTO(purpose.getImage()));
-
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Update Purpose SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(),
+					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(purposeUpdateDto),
+					"Update Purpose SUCCESSFULY");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Update Purpose SUCCESSFULY");
+			e.printStackTrace();
+		}
 		return newPurposeDTO;
 	}
 
 	@Override
-	public void deletePurpose(int id) throws IOException {
+	public void deletePurpose(int id, HttpServletRequest request) throws IOException {
 		purposeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Purpose", "id", id + ""));
 		Image image = imageRepository.findImageByKindId(id).orElse(null);
 		if (image != null)
 			this.cloudinaryService.removeImageFromCloudinary(image.getImage(), path_category);
 
 		purposeRepository.deleteById(id);
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Delete Purpose SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("id", id),
+					"Delete Purpose SUCCESSFULY");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Delete Purpose SUCCESSFULY");
+			e.printStackTrace();
+		}
 
 	}
 

@@ -1,23 +1,33 @@
 package com.cafe.website.serviceImp;
 
+import java.io.IOException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
 
+import com.cafe.website.constant.StatusLog;
 import com.cafe.website.entity.Token;
 import com.cafe.website.repository.TokenRepository;
+import com.cafe.website.service.AuthService;
+import com.cafe.website.service.LogService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public class LogoutService implements LogoutHandler {
+	@Autowired
 	private TokenRepository tokenRepository;
-
-	public LogoutService(TokenRepository tokenRepository) {
-		this.tokenRepository = tokenRepository;
-	}
+	@Lazy
+	@Autowired
+	private LogService logService;
+	@Lazy
+	@Autowired
+	private AuthService authService;
 
 	@Override
 	public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
@@ -35,6 +45,8 @@ public class LogoutService implements LogoutHandler {
 			tokenRepository.save(storedToken);
 			SecurityContextHolder.clearContext();
 		}
+		logService.createLog(request, authService.getUserFromHeader(request), "Logout User SUCCESSFULY",
+				StatusLog.SUCCESSFULLY.toString(), "", "Logout");
 	}
 
 }

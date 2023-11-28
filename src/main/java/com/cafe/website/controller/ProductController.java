@@ -26,6 +26,7 @@ import com.cafe.website.payload.ProductUpdateDTO;
 import com.cafe.website.service.ProductService;
 import com.cafe.website.serviceImp.ProductServiceImp;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -75,17 +76,17 @@ public class ProductController {
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PostMapping("")
-	public ResponseEntity<ProductDTO> createProduct(@Valid @ModelAttribute ProductCreateDTO productCreateDto)
-			throws IOException {
-		ProductDTO product = productService.createProduct(productCreateDto);
+	public ResponseEntity<ProductDTO> createProduct(@Valid @ModelAttribute ProductCreateDTO productCreateDto,
+			HttpServletRequest request) throws IOException {
+		ProductDTO product = productService.createProduct(productCreateDto, request);
 		return new ResponseEntity<ProductDTO>(product, HttpStatus.CREATED);
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@PatchMapping("/id/{id}")
 	public ResponseEntity<ProductDTO> updateProduct(@PathVariable(name = "id") int id,
-			@Valid @ModelAttribute ProductUpdateDTO productUpdateDto) throws IOException {
-		ProductDTO productDto = productService.updateProduct(id, productUpdateDto);
+			@Valid @ModelAttribute ProductUpdateDTO productUpdateDto, HttpServletRequest request) throws IOException {
+		ProductDTO productDto = productService.updateProduct(id, productUpdateDto, request);
 		return new ResponseEntity<ProductDTO>(productDto, HttpStatus.OK);
 	}
 
@@ -105,9 +106,9 @@ public class ProductController {
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@DeleteMapping("/setDelete")
-	public ResponseEntity<String> setIsWaitingDeleteProduct(@Valid @RequestBody ProductDeleteDTO productDeleteDto)
-			throws IOException {
-		String res = productService.setIsWaitingDeleteProduct(productDeleteDto);
+	public ResponseEntity<String> setIsWaitingDeleteProduct(@Valid @RequestBody ProductDeleteDTO productDeleteDto,
+			HttpServletRequest request) throws IOException {
+		String res = productService.setIsWaitingDeleteProduct(productDeleteDto, request);
 		return new ResponseEntity<String>(res, HttpStatus.OK);
 	}
 

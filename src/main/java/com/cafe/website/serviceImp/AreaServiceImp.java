@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.cafe.website.constant.SortField;
+import com.cafe.website.constant.StatusLog;
 import com.cafe.website.entity.Area;
 import com.cafe.website.entity.Image;
 import com.cafe.website.exception.CafeAPIException;
@@ -27,14 +28,19 @@ import com.cafe.website.payload.ImageDTO;
 import com.cafe.website.repository.AreaRepository;
 import com.cafe.website.repository.ImageRepository;
 import com.cafe.website.service.AreaService;
+import com.cafe.website.service.AuthService;
 import com.cafe.website.service.CloudinaryService;
+import com.cafe.website.service.LogService;
 import com.cafe.website.util.AreaMapper;
+import com.cafe.website.util.JsonConverter;
 import com.cafe.website.util.MapperUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.slugify.Slugify;
 
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class AreaServiceImp implements AreaService {
@@ -44,18 +50,27 @@ public class AreaServiceImp implements AreaService {
 	private CloudinaryService cloudinaryService;
 	private AreaRepository areaRepository;
 	private ImageRepository imageRepository;
+	private LogService logService;
+	private AuthService authService;
+	private ObjectMapper objectMapper;
 
 	private Slugify slugify = Slugify.builder().build();
 	private static final Logger logger = LoggerFactory.getLogger(AreaServiceImp.class);
 	@Value("${app.path-category-area}")
 	private String path_category;
 
-	public AreaServiceImp(AreaRepository areaRepository, AreaMapper areaMapper, CloudinaryService cloudinaryService,
-			ImageRepository imageRepository) {
-		this.areaRepository = areaRepository;
+	public AreaServiceImp(EntityManager entityManager, AreaMapper areaMapper, CloudinaryService cloudinaryService,
+			AreaRepository areaRepository, ImageRepository imageRepository, LogService logService,
+			AuthService authService, ObjectMapper objectMapper) {
+		super();
+		this.entityManager = entityManager;
 		this.areaMapper = areaMapper;
 		this.cloudinaryService = cloudinaryService;
+		this.areaRepository = areaRepository;
 		this.imageRepository = imageRepository;
+		this.logService = logService;
+		this.authService = authService;
+		this.objectMapper = objectMapper;
 	}
 
 	@Override
@@ -119,7 +134,7 @@ public class AreaServiceImp implements AreaService {
 	}
 
 	@Override
-	public AreaDTO createArea(AreaCreateDTO areaCreateDto) throws IOException {
+	public AreaDTO createArea(AreaCreateDTO areaCreateDto, HttpServletRequest request) throws IOException {
 
 		if (areaRepository.existsBySlug(slugify.slugify(areaCreateDto.getSlug())))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Slug is already exists!");
@@ -139,11 +154,19 @@ public class AreaServiceImp implements AreaService {
 
 		AreaDTO newAreaDto = MapperUtils.mapToDTO(newArea, AreaDTO.class);
 		newAreaDto.setImage(ImageDTO.generateImageDTO(newArea.getImage()));
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Create Area SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(areaCreateDto), "Create Area");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Create Area");
+			e.printStackTrace();
+		}
 		return newAreaDto;
 	}
 
 	@Override
-	public AreaDTO updateArea(int id, AreaUpdateDTO areaUpdateDto) throws IOException {
+	public AreaDTO updateArea(int id, AreaUpdateDTO areaUpdateDto, HttpServletRequest request) throws IOException {
 		AreaDTO newdto = this.getAreaById(id);
 
 		if (areaRepository.existsBySlugAndIdNot(slugify.slugify(areaUpdateDto.getSlug()), newdto.getId()))
@@ -169,19 +192,36 @@ public class AreaServiceImp implements AreaService {
 
 		AreaDTO newAreaDto = MapperUtils.mapToDTO(area, AreaDTO.class);
 		newAreaDto.setImage(ImageDTO.generateImageDTO(area.getImage()));
-
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Update Area SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(),
+					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(areaUpdateDto),
+					"Update Area");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Create Area");
+			e.printStackTrace();
+		}
 		return newAreaDto;
 	}
 
 	@Override
-	public void deleteArea(int id) throws IOException {
+	public void deleteArea(int id, HttpServletRequest request) throws IOException {
 		areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area", "id", id + ""));
 
 		Image image = imageRepository.findImageByAreaId(id).orElse(null);
 		if (image != null)
 			this.cloudinaryService.removeImageFromCloudinary(image.getImage(), path_category);
-
 		areaRepository.deleteById(id);
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Delete Area SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(),
+					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(id), "Delete Area");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage(),
+					StatusLog.FAILED.toString(), "Create Area");
+			e.printStackTrace();
+		}
 	}
 
 }
