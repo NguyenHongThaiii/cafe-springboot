@@ -12,8 +12,8 @@
 - add filter by time closed/open (done)
 - fix image in menu (done)
 - add statistic 
-- add logging
-- fix error logger error details when get body json
+- add logging (done)
+- fix error logger error details when get body json (done)
 - refactor all code (doing)
 - add filter by createdAt and updatedAt all get all entities (done)
 - need to refactor code \id to \ when update or delete (WARNING-doing)

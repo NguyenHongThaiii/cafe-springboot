@@ -6,10 +6,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.WebSocketSession;
 
 import com.cafe.website.constant.SortField;
 import com.cafe.website.constant.StatusLog;
@@ -28,6 +32,7 @@ import com.cafe.website.service.CommentService;
 import com.cafe.website.service.LogService;
 import com.cafe.website.util.JsonConverter;
 import com.cafe.website.util.MapperUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.micrometer.common.util.StringUtils;
@@ -111,11 +116,14 @@ public class CommentServiceImp implements CommentService {
 	}
 
 	@Override
-	public CommentDTO createComment(CommentCreateDTO commentCreateDto, HttpServletRequest request) {
+	public CommentDTO createComment(CommentCreateDTO commentCreateDto, SimpMessageHeaderAccessor headerAccessor) {
+
 		Review review = reviewRepository.findById(commentCreateDto.getReviewId())
 				.orElseThrow(() -> new ResourceNotFoundException("Review", "id", commentCreateDto.getReviewId()));
 		User user = userRepository.findById(commentCreateDto.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", commentCreateDto.getUserId()));
+		String userAgent = (String) headerAccessor.getSessionAttributes().get("userAgent");
+		String endpoint = (String) headerAccessor.getSessionAttributes().get("endpoint");
 
 		Comment comment = new Comment();
 		comment.setReview(review);
@@ -125,13 +133,17 @@ public class CommentServiceImp implements CommentService {
 		CommentDTO commentDto = MapperUtils.mapToDTO(comment, CommentDTO.class);
 		commentDto.setReivewId(comment.getReview().getId());
 		try {
-			logService.createLog(request, authService.getUserFromHeader(request), "Create Comment SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(commentCreateDto),
-					"Create Comment");
+			logService.createLog(user, "Create Comment SUCCESSFULLY", StatusLog.SUCCESSFULLY.toString(),
+					objectMapper.writeValueAsString(commentCreateDto), "Websocket", endpoint, "GET", userAgent);
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
-					StatusLog.FAILED.toString(), "Create Comment");
-			e.printStackTrace();
+
+			try {
+				logService.createLog(user, e.getMessage().substring(0, 255), StatusLog.FAILED.toString(),
+						objectMapper.writeValueAsString(commentCreateDto), "Websocket", endpoint, "GET", userAgent);
+			} catch (JsonProcessingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 		return commentDto;
 	}
@@ -155,10 +167,11 @@ public class CommentServiceImp implements CommentService {
 		commentDto.setReivewId(comment.getReview().getId());
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Update Comment SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(commentUpdateDto),
+					StatusLog.SUCCESSFULLY.toString(),
+					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(commentUpdateDto),
 					"Create Comment");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0, 255),
 					StatusLog.FAILED.toString(), "Update Comment");
 			e.printStackTrace();
 		}
@@ -172,9 +185,11 @@ public class CommentServiceImp implements CommentService {
 		commentRepository.delete(comment);
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Delete Comment SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(id), "Create Comment");
+					StatusLog.SUCCESSFULLY.toString(),
+					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(id),
+					"Create Comment");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0, 255),
 					StatusLog.FAILED.toString(), "Delete Comment");
 			e.printStackTrace();
 		}

@@ -34,7 +34,6 @@ public class CommentCreateDTO {
 	}
 
 	public CommentCreateDTO() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getName() {
@@ -59,6 +58,12 @@ public class CommentCreateDTO {
 
 	public void setUserId(Integer userId) {
 		this.userId = userId;
+	}
+
+	@Override
+	public String toString() {
+		return "CommentCreateDTO [name=" + name + ", reviewId=" + reviewId + ", userId=" + userId + ", status=" + status
+				+ "]";
 	}
 
 }

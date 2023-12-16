@@ -2,6 +2,8 @@ package com.cafe.website.service;
 
 import java.util.List;
 
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+
 import com.cafe.website.payload.CommentCreateDTO;
 import com.cafe.website.payload.CommentDTO;
 import com.cafe.website.payload.CommentUpdateDTO;
@@ -16,7 +18,7 @@ public interface CommentService {
 
 	CommentDTO getCommentById(int id);
 
-	CommentDTO createComment(CommentCreateDTO commentCreateDto, HttpServletRequest request);
+	CommentDTO createComment(CommentCreateDTO commentCreateDto, SimpMessageHeaderAccessor headerAccessor);
 
 	CommentDTO updateComment(int id, CommentUpdateDTO commentUpdateDto, HttpServletRequest request);
 

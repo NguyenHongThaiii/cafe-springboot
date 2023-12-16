@@ -161,4 +161,20 @@ public class LogServiceImp implements LogService {
 		}
 	}
 
+	@Override
+	public void createLog(User user, String message, String result, String bodyJson, String action, String endpoint,
+			String method, String agent) {
+		Log log = new Log();
+		log.setAgent(agent);
+		log.setBody(bodyJson);
+		log.setEndpoint(endpoint);
+		log.setMessage(message);
+		log.setMethod(message);
+		log.setResult(result);
+		log.setUser(user);
+		log.setAction(action);
+
+		logRepository.save(log);
+	}
+
 }
