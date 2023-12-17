@@ -1,5 +1,18 @@
 # todolist
+
+
+## Doing
+- refactor all code (doing)
 - print structure database to db.diagram (doing)
+- need to refactor code \id to \ when update or delete (WARNING-doing)
+
+
+#Todo
+- add statistic 
+- need to finish all services impl of all services (For Admin)
+- fix catch by user to by token 
+- Convert favourite and review to websocket
+#Done
 - fix image all service (done)
 - fix menu product (done)
 - fix created - updated null when created (done)
@@ -11,11 +24,8 @@
 - add filter product saved by user (done)
 - add filter by time closed/open (done)
 - fix image in menu (done)
-- add statistic 
 - add logging (done)
 - fix error logger error details when get body json (done)
-- refactor all code (doing)
 - add filter by createdAt and updatedAt all get all entities (done)
-- need to refactor code \id to \ when update or delete (WARNING-doing)
-- need to finish all services impl of all services (For Admin)
-- fix catch by user to by token 
+
+

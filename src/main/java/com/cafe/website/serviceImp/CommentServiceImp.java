@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -149,14 +150,16 @@ public class CommentServiceImp implements CommentService {
 	}
 
 	@Override
-	public CommentDTO updateComment(int id, CommentUpdateDTO commentUpdateDto, HttpServletRequest request) {
+	public CommentDTO updateComment(Integer id, CommentUpdateDTO commentUpdateDto,
+			SimpMessageHeaderAccessor headerAccessor) {
 		reviewRepository.findById(commentUpdateDto.getReviewId())
 				.orElseThrow(() -> new ResourceNotFoundException("Review", "id", commentUpdateDto.getReviewId()));
-		userRepository.findById(commentUpdateDto.getUserId())
+		User user = userRepository.findById(commentUpdateDto.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", commentUpdateDto.getUserId()));
 		Comment comment = commentRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Comment", "id", id));
-
+		String userAgent = (String) headerAccessor.getSessionAttributes().get("userAgent");
+		String endpoint = (String) headerAccessor.getSessionAttributes().get("endpoint");
 		if (commentUpdateDto.getStatus() != null)
 			comment.setStatus(commentUpdateDto.getStatus());
 
@@ -165,34 +168,45 @@ public class CommentServiceImp implements CommentService {
 
 		CommentDTO commentDto = MapperUtils.mapToDTO(comment, CommentDTO.class);
 		commentDto.setReivewId(comment.getReview().getId());
+
 		try {
-			logService.createLog(request, authService.getUserFromHeader(request), "Update Comment SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(),
-					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(commentUpdateDto),
-					"Create Comment");
+			logService.createLog(user, "Update Comment SUCCESSFULLY", StatusLog.SUCCESSFULLY.toString(),
+					objectMapper.writeValueAsString(commentUpdateDto), "Websocket", endpoint, "POST", userAgent);
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0, 255),
-					StatusLog.FAILED.toString(), "Update Comment");
-			e.printStackTrace();
+
+			try {
+				logService.createLog(user, e.getMessage().substring(0, 255), StatusLog.FAILED.toString(),
+						objectMapper.writeValueAsString(commentUpdateDto), "Websocket", endpoint, "POST", userAgent);
+			} catch (JsonProcessingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
+
 		return commentDto;
 	}
 
 	@Override
-	public void deleteComment(int id, HttpServletRequest request) {
+	public void deleteComment(int id, SimpMessageHeaderAccessor headerAccessor) {
 		Comment comment = commentRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Comment", "id", id));
 		commentRepository.delete(comment);
+		String userAgent = (String) headerAccessor.getSessionAttributes().get("userAgent");
+		String endpoint = (String) headerAccessor.getSessionAttributes().get("endpoint");
 		try {
-			logService.createLog(request, authService.getUserFromHeader(request), "Delete Comment SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(),
-					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(id),
-					"Create Comment");
+			logService.createLog(comment.getUser(), "Delete Comment SUCCESSFULLY", StatusLog.SUCCESSFULLY.toString(),
+					JsonConverter.convertToJSON("id", id), "Websocket", endpoint, "POST", userAgent);
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0, 255),
-					StatusLog.FAILED.toString(), "Delete Comment");
-			e.printStackTrace();
+
+			try {
+				logService.createLog(comment.getUser(), e.getMessage().substring(0, 255), StatusLog.FAILED.toString(),
+						JsonConverter.convertToJSON("id", id), "Websocket", endpoint, "POST", userAgent);
+			} catch (JsonProcessingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
+
 	}
 
 	@Override

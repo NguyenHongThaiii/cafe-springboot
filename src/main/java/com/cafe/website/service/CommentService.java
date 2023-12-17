@@ -3,6 +3,7 @@ package com.cafe.website.service;
 import java.util.List;
 
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import com.cafe.website.payload.CommentCreateDTO;
 import com.cafe.website.payload.CommentDTO;
@@ -20,8 +21,8 @@ public interface CommentService {
 
 	CommentDTO createComment(CommentCreateDTO commentCreateDto, SimpMessageHeaderAccessor headerAccessor);
 
-	CommentDTO updateComment(int id, CommentUpdateDTO commentUpdateDto, HttpServletRequest request);
+	CommentDTO updateComment(Integer id, CommentUpdateDTO commentUpdateDto, SimpMessageHeaderAccessor headerAccessor);
 
-	void deleteComment(int id, HttpServletRequest request);
+	void deleteComment(int id, SimpMessageHeaderAccessor headerAccessor);
 
 }

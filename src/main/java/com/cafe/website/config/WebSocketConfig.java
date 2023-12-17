@@ -24,7 +24,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
-		config.enableSimpleBroker("/topic"); // Đổi endpoint broker thành "/api/v1/comments"
+		config.enableSimpleBroker("/api/v1"); // Đổi endpoint broker thành "/api/v1/comments"
 		config.setApplicationDestinationPrefixes("/app");
 
 	}
