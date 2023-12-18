@@ -13,24 +13,17 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.socket.server.HandshakeInterceptor;
-import org.yaml.snakeyaml.tokens.CommentToken;
 
 import com.cafe.website.payload.CommentCreateDTO;
 import com.cafe.website.payload.CommentDTO;
+import com.cafe.website.payload.CommentDeleteDTO;
 import com.cafe.website.payload.CommentListDTO;
 import com.cafe.website.payload.CommentUpdateDTO;
 import com.cafe.website.service.CommentService;
-import com.cafe.website.serviceImp.DeleteDTO;
 import com.cafe.website.serviceImp.ProductServiceImp;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @Controller
@@ -102,7 +95,7 @@ public class CommentSocketController {
 	}
 
 	@MessageMapping("/deleteComment")
-	public String delteCommentById(@Payload DeleteDTO deleteDTO, SimpMessageHeaderAccessor headerAccessor) {
+	public String delteCommentById(@Payload CommentDeleteDTO deleteDTO, SimpMessageHeaderAccessor headerAccessor) {
 		commentService.deleteComment(deleteDTO.getId(), headerAccessor);
 		CommentListDTO commentlist = new CommentListDTO();
 		commentlist.setReviewId(deleteDTO.getReviewId());
@@ -111,7 +104,7 @@ public class CommentSocketController {
 	}
 
 	@MessageMapping("/admin/deleteComment")
-	public String delteCommentByIdAdmin(@Payload DeleteDTO deleteDTO, SimpMessageHeaderAccessor headerAccessor) {
+	public String delteCommentByIdAdmin(@Payload CommentDeleteDTO deleteDTO, SimpMessageHeaderAccessor headerAccessor) {
 		commentService.deleteComment(deleteDTO.getId(), headerAccessor);
 		CommentListDTO commentlist = new CommentListDTO();
 		this.getListComment(commentlist);

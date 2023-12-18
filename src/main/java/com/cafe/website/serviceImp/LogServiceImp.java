@@ -169,7 +169,7 @@ public class LogServiceImp implements LogService {
 		log.setBody(bodyJson);
 		log.setEndpoint(endpoint);
 		log.setMessage(message);
-		log.setMethod(message);
+		log.setMethod(method);
 		log.setResult(result);
 		log.setUser(user);
 		log.setAction(action);

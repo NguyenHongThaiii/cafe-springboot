@@ -55,6 +55,7 @@ import com.cafe.website.service.LogService;
 import com.cafe.website.service.OTPService;
 import com.cafe.website.util.JsonConverter;
 import com.cafe.website.util.MapperUtils;
+import com.cafe.website.util.MethodUtil;
 import com.cafe.website.util.UserMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.slugify.Slugify;
@@ -135,7 +136,7 @@ public class AuthServiceImp implements AuthService {
 			logService.createLog(request, user, "Login SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(loginDto), "Login");
 		} catch (IOException e) {
-			logService.createLog(request, user, e.getMessage().substring(0, 255), StatusLog.FAILED.toString(), "Login");
+			logService.createLog(request, user, MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(), "Login");
 			e.printStackTrace();
 		}
 		return token;
@@ -172,7 +173,7 @@ public class AuthServiceImp implements AuthService {
 			logService.createLog(request, user, "Create User SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(registerDto), "Create User");
 		} catch (IOException e) {
-			logService.createLog(request, user, e.getMessage().substring(0, 255), StatusLog.FAILED.toString(),
+			logService.createLog(request, user, MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
 					"Create User");
 			e.printStackTrace();
 		}
@@ -209,7 +210,7 @@ public class AuthServiceImp implements AuthService {
 			logService.createLog(request, null, "Validate Register SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(validateDto), "Validate Register");
 		} catch (IOException e) {
-			logService.createLog(request, null, e.getMessage().substring(0, 255), StatusLog.FAILED.toString(),
+			logService.createLog(request, null, MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
 					"Validate Register");
 			e.printStackTrace();
 		}
@@ -278,7 +279,7 @@ public class AuthServiceImp implements AuthService {
 					JsonConverter.convertToJSON("Slug", slug) + " " + objectMapper.writeValueAsString(userUpdateDto),
 					"Update User");
 		} catch (IOException e) {
-			logService.createLog(request, this.getUserFromHeader(request), e.getMessage().substring(0, 255),
+			logService.createLog(request, this.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
 					StatusLog.FAILED.toString(), "Update User");
 			e.printStackTrace();
 		}
@@ -295,7 +296,7 @@ public class AuthServiceImp implements AuthService {
 			logService.createLog(request, null, "Send Email SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(email), "Forgot Password");
 		} catch (IOException e) {
-			logService.createLog(request, null, e.getMessage().substring(0, 255), StatusLog.FAILED.toString(),
+			logService.createLog(request, null, MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
 					"Forgot Password");
 			e.printStackTrace();
 		}
@@ -312,7 +313,7 @@ public class AuthServiceImp implements AuthService {
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(validateOtpDto),
 					"Handle Validate Reset Password");
 		} catch (IOException e) {
-			logService.createLog(request, null, e.getMessage().substring(0, 255), StatusLog.FAILED.toString(),
+			logService.createLog(request, null, MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
 					"Handle Validate Reset Password");
 			e.printStackTrace();
 		}
@@ -337,7 +338,7 @@ public class AuthServiceImp implements AuthService {
 			logService.createLog(request, null, "Handle Reset Password SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(reset), "Handle Reset Password");
 		} catch (IOException e) {
-			logService.createLog(request, null, e.getMessage().substring(0, 255), StatusLog.FAILED.toString(),
+			logService.createLog(request, null, MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
 					"Handle Reset Password");
 			e.printStackTrace();
 		}
@@ -377,7 +378,7 @@ public class AuthServiceImp implements AuthService {
 					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("Slug", slug) + " " + avatar,
 					"Update Profile Image");
 		} catch (IOException e) {
-			logService.createLog(request, this.getUserFromHeader(request), e.getMessage().substring(0, 255),
+			logService.createLog(request, this.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
 					StatusLog.FAILED.toString(), "Update Profile Image");
 			e.printStackTrace();
 		}
@@ -492,7 +493,7 @@ public class AuthServiceImp implements AuthService {
 					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("userId", userId),
 					"Set Waiting Delete User");
 		} catch (IOException e) {
-			logService.createLog(request, this.getUserFromHeader(request), e.getMessage().substring(0, 255),
+			logService.createLog(request, this.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
 					StatusLog.FAILED.toString(), "Set Waiting Delete User");
 			e.printStackTrace();
 		}

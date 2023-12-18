@@ -41,6 +41,7 @@ import com.cafe.website.service.LogService;
 import com.cafe.website.service.ReviewService;
 import com.cafe.website.util.JsonConverter;
 import com.cafe.website.util.MapperUtils;
+import com.cafe.website.util.MethodUtil;
 import com.cafe.website.util.ReviewMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -191,7 +192,7 @@ public class ReviewSerivceImp implements ReviewService {
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(reviewCreateDto),
 					"Create Review SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
+			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
 					StatusLog.FAILED.toString(), "Create Review SUCCESSFULY");
 			e.printStackTrace();
 		}
@@ -237,7 +238,7 @@ public class ReviewSerivceImp implements ReviewService {
 					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(reviewUpdateDto),
 					"Update Review SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
+			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
 					StatusLog.FAILED.toString(), "Update Review SUCCESSFULY");
 			e.printStackTrace();
 		}
@@ -260,7 +261,7 @@ public class ReviewSerivceImp implements ReviewService {
 					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("id", id),
 					"Delete Review SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
+			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
 					StatusLog.FAILED.toString(), "Delete Review SUCCESSFULY");
 			e.printStackTrace();
 		}

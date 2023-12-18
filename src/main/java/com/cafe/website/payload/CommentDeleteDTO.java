@@ -1,18 +1,18 @@
-package com.cafe.website.serviceImp;
+package com.cafe.website.payload;
 
 import jakarta.validation.constraints.NotNull;
 
-public class DeleteDTO {
+public class CommentDeleteDTO {
 	@NotNull
 	private Integer id;
 	@NotNull
 	private Integer reviewId;
 
-	public DeleteDTO() {
+	public CommentDeleteDTO() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public DeleteDTO(@NotNull Integer id, @NotNull Integer reviewId) {
+	public CommentDeleteDTO(@NotNull Integer id, @NotNull Integer reviewId) {
 		super();
 		this.id = id;
 		this.reviewId = reviewId;

@@ -34,6 +34,7 @@ import com.cafe.website.service.LogService;
 import com.cafe.website.util.AreaMapper;
 import com.cafe.website.util.JsonConverter;
 import com.cafe.website.util.MapperUtils;
+import com.cafe.website.util.MethodUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.slugify.Slugify;
 
@@ -159,8 +160,9 @@ public class AreaServiceImp implements AreaService {
 			logService.createLog(request, authService.getUserFromHeader(request), "Create Area SUCCESSFULY",
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(areaCreateDto), "Create Area");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0, 255),
+			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
 					StatusLog.FAILED.toString(), "Create Area");
+			
 			e.printStackTrace();
 		}
 		return newAreaDto;
@@ -199,7 +201,7 @@ public class AreaServiceImp implements AreaService {
 					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(areaUpdateDto),
 					"Update Area");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0, 255),
+			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
 					StatusLog.FAILED.toString(), "Create Area");
 			e.printStackTrace();
 		}
@@ -219,7 +221,7 @@ public class AreaServiceImp implements AreaService {
 					StatusLog.SUCCESSFULLY.toString(),
 					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(id), "Delete Area");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0, 255),
+			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
 					StatusLog.FAILED.toString(), "Create Area");
 			e.printStackTrace();
 		}

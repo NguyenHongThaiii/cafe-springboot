@@ -5,13 +5,13 @@
 - refactor all code (doing)
 - print structure database to db.diagram (doing)
 - need to refactor code \id to \ when update or delete (WARNING-doing)
+- Convert favourite and review to websocket
 
 
 #Todo
 - add statistic 
 - need to finish all services impl of all services (For Admin)
 - fix catch by user to by token 
-- Convert favourite and review to websocket
 #Done
 - fix image all service (done)
 - fix menu product (done)

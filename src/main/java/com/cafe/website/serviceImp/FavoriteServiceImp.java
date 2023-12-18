@@ -25,6 +25,7 @@ import com.cafe.website.service.AuthService;
 import com.cafe.website.service.CloudinaryService;
 import com.cafe.website.service.FavoriteService;
 import com.cafe.website.service.LogService;
+import com.cafe.website.util.MethodUtil;
 import com.cafe.website.util.ReviewMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -78,7 +79,7 @@ public class FavoriteServiceImp implements FavoriteService {
 			logService.createLog(request, user, "Toggle Favorite SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(favoriteCreate), "Toggle Favorite");
 		} catch (IOException e) {
-			logService.createLog(request, user, e.getMessage().substring(0, 255), StatusLog.FAILED.toString(),
+			logService.createLog(request, user, MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
 					"Toggle Favorite");
 			e.printStackTrace();
 		}

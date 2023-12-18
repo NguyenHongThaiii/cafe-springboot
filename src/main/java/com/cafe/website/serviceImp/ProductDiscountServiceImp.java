@@ -32,6 +32,7 @@ import com.cafe.website.service.LogService;
 import com.cafe.website.service.ProductDiscountService;
 import com.cafe.website.util.JsonConverter;
 import com.cafe.website.util.MapperUtils;
+import com.cafe.website.util.MethodUtil;
 import com.cafe.website.util.ProductDiscountMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -90,8 +91,9 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(productDiscountCreateDto),
 					"Create Product Discount");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
-					StatusLog.FAILED.toString(), "Create Product Discount");
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					"Create Product Discount");
 			e.printStackTrace();
 		}
 		return productDiscountDto;
@@ -108,8 +110,9 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(id),
 					"Delete Product Discount");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
-					StatusLog.FAILED.toString(), "Delete Product Discount");
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					"Delete Product Discount");
 			e.printStackTrace();
 		}
 	}
@@ -192,8 +195,9 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 							+ objectMapper.writeValueAsString(productDiscountUpdateDto),
 					"Update Product Discount");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
-					StatusLog.FAILED.toString(), "Update Product Discount");
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					"Update Product Discount");
 			e.printStackTrace();
 		}
 		return res;

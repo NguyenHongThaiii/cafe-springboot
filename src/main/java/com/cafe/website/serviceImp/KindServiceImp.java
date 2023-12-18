@@ -34,6 +34,7 @@ import com.cafe.website.service.LogService;
 import com.cafe.website.util.JsonConverter;
 import com.cafe.website.util.KindMapper;
 import com.cafe.website.util.MapperUtils;
+import com.cafe.website.util.MethodUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.slugify.Slugify;
 
@@ -197,7 +198,7 @@ public class KindServiceImp implements KindService {
 					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(kindUpdateDto),
 					"Update Kind");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
+			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
 					StatusLog.FAILED.toString(), "Update Kind");
 			e.printStackTrace();
 		}
@@ -218,7 +219,7 @@ public class KindServiceImp implements KindService {
 					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(id), "Delete Kind");
 		} catch (IOException e) {
 			logService.createLog(request, authService.getUserFromHeader(request),
-					e.getMessage().substring(0, 255),
+					MethodUtil.handleSubstringMessage(e.getMessage()),
 					StatusLog.FAILED.toString(), "Delete Kind");
 			e.printStackTrace();
 		}

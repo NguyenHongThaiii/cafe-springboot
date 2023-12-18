@@ -26,6 +26,7 @@ import com.cafe.website.service.LogService;
 import com.cafe.website.service.ProductSavedService;
 import com.cafe.website.util.JsonConverter;
 import com.cafe.website.util.MapperUtils;
+import com.cafe.website.util.MethodUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -74,7 +75,7 @@ public class ProductSavedServiceImp implements ProductSavedService {
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(productSavedCreate),
 					"Toggle Product Saved Discount");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
+			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
 					StatusLog.FAILED.toString(), "Toggle Product Saved Discount");
 			e.printStackTrace();
 		}

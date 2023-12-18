@@ -64,6 +64,7 @@ import com.cafe.website.service.ReviewService;
 import com.cafe.website.util.AreaMapper;
 import com.cafe.website.util.JsonConverter;
 import com.cafe.website.util.MapperUtils;
+import com.cafe.website.util.MethodUtil;
 import com.cafe.website.util.ProductMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -304,7 +305,7 @@ public class ProductServiceImp implements ProductService {
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(productCreateDto),
 					"Create Product SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0, 255),
+			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
 					StatusLog.FAILED.toString(), "Create Product SUCCESSFULY");
 			e.printStackTrace();
 		}
@@ -452,7 +453,7 @@ public class ProductServiceImp implements ProductService {
 					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(productUpdateDto),
 					"Update Product SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0, 255),
+			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
 					StatusLog.FAILED.toString(), "Update Product SUCCESSFULY");
 			e.printStackTrace();
 		}
@@ -565,7 +566,7 @@ public class ProductServiceImp implements ProductService {
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(productDeleteDto),
 					"Delete Product SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0, 255),
+			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
 					StatusLog.FAILED.toString(), "Delete Product SUCCESSFULY");
 			e.printStackTrace();
 		}

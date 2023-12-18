@@ -33,6 +33,7 @@ import com.cafe.website.service.CommentService;
 import com.cafe.website.service.LogService;
 import com.cafe.website.util.JsonConverter;
 import com.cafe.website.util.MapperUtils;
+import com.cafe.website.util.MethodUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -139,8 +140,9 @@ public class CommentServiceImp implements CommentService {
 		} catch (IOException e) {
 
 			try {
-				logService.createLog(user, e.getMessage().substring(0, 255), StatusLog.FAILED.toString(),
-						objectMapper.writeValueAsString(commentCreateDto), "Websocket", endpoint, "GET", userAgent);
+				logService.createLog(user, MethodUtil.handleSubstringMessage(e.getMessage()),
+						StatusLog.FAILED.toString(), objectMapper.writeValueAsString(commentCreateDto), "Websocket",
+						endpoint, "GET", userAgent);
 			} catch (JsonProcessingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -175,8 +177,9 @@ public class CommentServiceImp implements CommentService {
 		} catch (IOException e) {
 
 			try {
-				logService.createLog(user, e.getMessage().substring(0, 255), StatusLog.FAILED.toString(),
-						objectMapper.writeValueAsString(commentUpdateDto), "Websocket", endpoint, "POST", userAgent);
+				logService.createLog(user, MethodUtil.handleSubstringMessage(e.getMessage()),
+						StatusLog.FAILED.toString(), objectMapper.writeValueAsString(commentUpdateDto), "Websocket",
+						endpoint, "POST", userAgent);
 			} catch (JsonProcessingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -199,8 +202,9 @@ public class CommentServiceImp implements CommentService {
 		} catch (IOException e) {
 
 			try {
-				logService.createLog(comment.getUser(), e.getMessage().substring(0, 255), StatusLog.FAILED.toString(),
-						JsonConverter.convertToJSON("id", id), "Websocket", endpoint, "POST", userAgent);
+				logService.createLog(comment.getUser(), MethodUtil.handleSubstringMessage(e.getMessage()),
+						StatusLog.FAILED.toString(), JsonConverter.convertToJSON("id", id), "Websocket", endpoint,
+						"POST", userAgent);
 			} catch (JsonProcessingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

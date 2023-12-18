@@ -37,6 +37,7 @@ import com.cafe.website.service.LogService;
 import com.cafe.website.service.PurposeService;
 import com.cafe.website.util.JsonConverter;
 import com.cafe.website.util.MapperUtils;
+import com.cafe.website.util.MethodUtil;
 import com.cafe.website.util.PurposeMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.slugify.Slugify;
@@ -162,7 +163,7 @@ public class PurposeServiceImp implements PurposeService {
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(purposeCreateDto),
 					"Create Purpose SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
+			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
 					StatusLog.FAILED.toString(), "Create Purpose SUCCESSFULY");
 			e.printStackTrace();
 		}
@@ -203,7 +204,7 @@ public class PurposeServiceImp implements PurposeService {
 					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(purposeUpdateDto),
 					"Update Purpose SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
+			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
 					StatusLog.FAILED.toString(), "Update Purpose SUCCESSFULY");
 			e.printStackTrace();
 		}
@@ -223,7 +224,7 @@ public class PurposeServiceImp implements PurposeService {
 					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("id", id),
 					"Delete Purpose SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
+			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
 					StatusLog.FAILED.toString(), "Delete Purpose SUCCESSFULY");
 			e.printStackTrace();
 		}
