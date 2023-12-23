@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -19,6 +21,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cafe.website.constant.SortField;
 import com.cafe.website.constant.StatusLog;
@@ -36,6 +39,7 @@ import com.cafe.website.exception.CafeAPIException;
 import com.cafe.website.exception.ResourceNotFoundException;
 import com.cafe.website.payload.AreaDTO;
 import com.cafe.website.payload.ConvenienceDTO;
+import com.cafe.website.payload.FileMetadata;
 import com.cafe.website.payload.ImageDTO;
 import com.cafe.website.payload.KindDTO;
 import com.cafe.website.payload.MenuDTO;
@@ -287,9 +291,9 @@ public class ProductServiceImp implements ProductService {
 			listSchedule.add(schedule);
 			listScheduleDto.add(MapperUtils.mapToDTO(schedule, ProductScheduleDTO.class));
 		}
+
 		productScheduleRepository.saveAll(listSchedule);
 		ProductDTO res = MapperUtils.mapToDTO(product, ProductDTO.class);
-		logger.info(product.getCreatedAt() + "CreatedAt");
 
 		res.setListImage(ImageDTO.generateListImageDTO(listImages));
 		res.setListMenu(MenuDTO.generateListMenuDTO(listMenus));
@@ -300,16 +304,24 @@ public class ProductServiceImp implements ProductService {
 		res.setSchedules(listScheduleDto);
 		res.setOwner(MapperUtils.mapToDTO(user, UserDTO.class));
 		pdto.setAvgRating(reviewService.getRatingByReviewId(product.getId()));
+		MethodUtil.convertListFileImageToInfo(productCreateDto.getListFileMetadatas(),
+				productCreateDto.getListImageFile());
+		MethodUtil.convertListFileImageToInfo(productCreateDto.getListFileMetadatas(),
+				productCreateDto.getListMenuFile());
+		productCreateDto.setListMenuFile(null);
+		productCreateDto.setListImageFile(null);
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Create Product SUCCESSFULY",
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(productCreateDto),
 					"Create Product SUCCESSFULY");
+			return res;
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Create Product SUCCESSFULY");
-			e.printStackTrace();
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					"Create Product SUCCESSFULY");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
-		return res;
 	}
 
 	@Override
@@ -317,8 +329,8 @@ public class ProductServiceImp implements ProductService {
 			throws IOException {
 		User user = userRepository.findById(productUpdateDto.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", productUpdateDto.getUserId()));
-		if (!productRepository.existsByIdAndUserId(user.getId(), productUpdateDto.getId())
-				&& !user.isHasRoleAdmin(user.getRoles()) && !user.isHasRoleMod(user.getRoles()))
+		if (!productRepository.existsByIdAndUserId(id, user.getId()) && !user.isHasRoleAdmin(user.getRoles())
+				&& !user.isHasRoleMod(user.getRoles()))
 
 			throw new CafeAPIException(HttpStatus.UNAUTHORIZED, "Access denied");
 
@@ -333,7 +345,6 @@ public class ProductServiceImp implements ProductService {
 		List<ProductScheduleDTO> listScheduleDto = new ArrayList<>();
 
 		Product product = MapperUtils.mapToEntity(pdto, Product.class);
-		productUpdateDto.setId(id);
 		productMapper.updateProductDtoFromProductUpdateDto(pdto, productUpdateDto);
 
 		List<Area> listAreas = this.getListFromIds(productUpdateDto.getArea_id(), areaRepository, "area",
@@ -371,6 +382,9 @@ public class ProductServiceImp implements ProductService {
 			});
 			menuRepository.deleteAllMenuByProductId(id);
 			product.setListMenus(listMenus);
+			MethodUtil.convertListFileImageToInfo(productUpdateDto.getListFileMetadatas(),
+					productUpdateDto.getListMenuFile());
+			productUpdateDto.setListMenuFile(null);
 		}
 
 		if (productUpdateDto.getListImageFile().size() > 0) {
@@ -391,6 +405,9 @@ public class ProductServiceImp implements ProductService {
 			});
 			imageRepository.deleteAllImageByProductId(id);
 			product.setListImages(listImages);
+			MethodUtil.convertListFileImageToInfo(productUpdateDto.getListFileMetadatas(),
+					productUpdateDto.getListImageFile());
+			productUpdateDto.setListImageFile(null);
 		}
 //		need fix
 		if (productUpdateDto.getListScheduleDto() != null) {
@@ -447,17 +464,22 @@ public class ProductServiceImp implements ProductService {
 		pdto.setSchedules(listSchedulesDto);
 		pdto.setOwner(MapperUtils.mapToDTO(product.getUser(), UserDTO.class));
 		pdto.setAvgRating(reviewService.getRatingByReviewId(product.getId()));
+
+		Map<String, Object> logData = new HashMap<>();
+		logData.put("id", id);
+		logData.put("productUpdateDto", productUpdateDto);
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Update Product SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(),
-					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(productUpdateDto),
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(logData),
 					"Update Product SUCCESSFULY");
+			return pdto;
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Update Product SUCCESSFULY");
-			e.printStackTrace();
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					"Update Product FAILED");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
-		return pdto;
 	}
 
 	@Override
@@ -489,7 +511,7 @@ public class ProductServiceImp implements ProductService {
 	}
 
 	@Override
-	public void deleteProduct(ProductDeleteDTO productDeleteDto) throws IOException {
+	public void deleteProduct(ProductDeleteDTO productDeleteDto, HttpServletRequest request) throws IOException {
 		productRepository.findById(productDeleteDto.getProductId())
 				.orElseThrow(() -> new ResourceNotFoundException("Product", "id", productDeleteDto.getProductId()));
 		productRepository.findByIdAndUserId(productDeleteDto.getProductId(), productDeleteDto.getUserId())
@@ -507,6 +529,17 @@ public class ProductServiceImp implements ProductService {
 				cloudinaryService.removeImageFromCloudinary(menu.getImage().getImage(), path_menu);
 
 		productRepository.deleteById(productDeleteDto.getProductId());
+		try {
+			logService.createLog(request, authService.getUserFromHeader(request), "Delete Product SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(productDeleteDto),
+					"Delete Product SUCCESSFULY");
+		} catch (IOException e) {
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					"Delete Product FAILED");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
+		}
 	}
 
 	private <T, U> List<T> getListFromIds(List<Integer> ids, JpaRepository<T, Integer> repository, String entityName,
@@ -560,26 +593,29 @@ public class ProductServiceImp implements ProductService {
 				.orElseThrow(() -> new ResourceNotFoundException("Onwer", "id", "something went wrong!"));
 		product.setIsWaitingDelete(true);
 		productRepository.save(product);
-		executeDeleteProduct(productDeleteDto);
+		executeDeleteProduct(productDeleteDto, request);
 		try {
-			logService.createLog(request, authService.getUserFromHeader(request), "Delete Product SUCCESSFULY",
+			logService.createLog(request, authService.getUserFromHeader(request), "Set Delete Product SUCCESSFULY",
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(productDeleteDto),
-					"Delete Product SUCCESSFULY");
+					"Set Delete Product SUCCESSFULY");
+			return "Your product will be deleted after 24 hours";
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Delete Product SUCCESSFULY");
-			e.printStackTrace();
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					"Set Delete Product FAILED");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
-		return "Your product will be deleted after 24 hours";
 	}
 
 	@Async
-	public void executeDeleteProduct(ProductDeleteDTO productDeleteDto) throws IOException {
+	public void executeDeleteProduct(ProductDeleteDTO productDeleteDto, HttpServletRequest request) throws IOException {
 		scheduledExecutorService.schedule(() -> {
 			try {
-				this.deleteProduct(productDeleteDto);
+				this.deleteProduct(productDeleteDto, request);
 			} catch (IOException e) {
 			}
 		}, Integer.parseInt(timeout), TimeUnit.SECONDS);
 	}
+
 }

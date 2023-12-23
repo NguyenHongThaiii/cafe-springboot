@@ -5,7 +5,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -167,7 +169,7 @@ public class ReviewSerivceImp implements ReviewService {
 		User user = userRepository.findById(reviewCreateDto.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", reviewCreateDto.getUserId()));
 
-		cloudinaryService.uploadImages(images, reviewCreateDto.getlistImageFiles(), path_reviews, "image");
+		cloudinaryService.uploadImages(images, reviewCreateDto.getListImageFiles(), path_reviews, "image");
 		images.forEach(image -> {
 			Image imageItem = new Image();
 			imageItem.setImage(image);
@@ -187,13 +189,17 @@ public class ReviewSerivceImp implements ReviewService {
 		if (review.getListImages().size() > 0)
 			reviewDto.setListImages(ImageDTO.generateListImageDTO(review.getListImages()));
 		reviewDto.setProductId(review.getProduct().getId());
+		MethodUtil.convertListFileImageToInfo(reviewCreateDto.getListFileMetadatas(),
+				reviewCreateDto.getListImageFiles());
+		reviewCreateDto.setListImageFiles(null);
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Create Review SUCCESSFULY",
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(reviewCreateDto),
 					"Create Review SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Create Review SUCCESSFULY");
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					"Create Review SUCCESSFULY");
 			e.printStackTrace();
 		}
 		return reviewDto;
@@ -225,6 +231,9 @@ public class ReviewSerivceImp implements ReviewService {
 			});
 			imageRepository.deleteAllImageByReviewId(id);
 			review.setListImages(listImages);
+			MethodUtil.convertListFileImageToInfo(reviewUpdateDto.getListFileMetadatas(),
+					reviewUpdateDto.getListImageFiles());
+			reviewUpdateDto.setListImageFiles(null);
 		}
 
 		reviewMapper.updateReviewFromDto(reviewDto, review);
@@ -232,14 +241,17 @@ public class ReviewSerivceImp implements ReviewService {
 
 		reviewDto.setListImages(ImageDTO.generateListImageDTO(review.getListImages()));
 		reviewDto.setProductId(review.getProduct().getId());
+		Map<String, Object> logData = new HashMap<>();
+		logData.put("id", id);
+		logData.put("reviewUpdateDto", reviewUpdateDto);
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Update Review SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(),
-					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(reviewUpdateDto),
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(logData),
 					"Update Review SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Update Review SUCCESSFULY");
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					"Update Review SUCCESSFULY");
 			e.printStackTrace();
 		}
 		return reviewDto;
@@ -261,8 +273,9 @@ public class ReviewSerivceImp implements ReviewService {
 					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("id", id),
 					"Delete Review SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Delete Review SUCCESSFULY");
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					"Delete Review SUCCESSFULY");
 			e.printStackTrace();
 		}
 	}

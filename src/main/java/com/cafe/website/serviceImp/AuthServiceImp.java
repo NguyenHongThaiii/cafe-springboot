@@ -3,7 +3,9 @@ package com.cafe.website.serviceImp;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -33,6 +35,7 @@ import com.cafe.website.entity.Token;
 import com.cafe.website.entity.User;
 import com.cafe.website.exception.CafeAPIException;
 import com.cafe.website.exception.ResourceNotFoundException;
+import com.cafe.website.payload.ChangePasswordDTO;
 import com.cafe.website.payload.ImageDTO;
 import com.cafe.website.payload.LoginDTO;
 import com.cafe.website.payload.RegisterDTO;
@@ -57,6 +60,7 @@ import com.cafe.website.util.JsonConverter;
 import com.cafe.website.util.MapperUtils;
 import com.cafe.website.util.MethodUtil;
 import com.cafe.website.util.UserMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.slugify.Slugify;
 
@@ -135,11 +139,14 @@ public class AuthServiceImp implements AuthService {
 			loginDto.setPassword("");
 			logService.createLog(request, user, "Login SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(loginDto), "Login");
+			return token;
 		} catch (IOException e) {
-			logService.createLog(request, user, MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(), "Login");
-			e.printStackTrace();
+			logService.createLog(request, user, MethodUtil.handleSubstringMessage(e.getMessage()),
+					StatusLog.FAILED.toString(), "Login");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
-		return token;
+
 	}
 
 	@Override
@@ -172,12 +179,14 @@ public class AuthServiceImp implements AuthService {
 			registerDto.setPassword("");
 			logService.createLog(request, user, "Create User SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(registerDto), "Create User");
+			return reg;
 		} catch (IOException e) {
-			logService.createLog(request, user, MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
-					"Create User");
-			e.printStackTrace();
+			logService.createLog(request, user, MethodUtil.handleSubstringMessage(e.getMessage()),
+					StatusLog.FAILED.toString(), "Create User");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
-		return reg;
+
 	}
 
 	@Override
@@ -209,12 +218,14 @@ public class AuthServiceImp implements AuthService {
 		try {
 			logService.createLog(request, null, "Validate Register SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(validateDto), "Validate Register");
+			return reg;
 		} catch (IOException e) {
-			logService.createLog(request, null, MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
-					"Validate Register");
-			e.printStackTrace();
+			logService.createLog(request, null, MethodUtil.handleSubstringMessage(e.getMessage()),
+					StatusLog.FAILED.toString(), "Validate Register");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
-		return reg;
+
 	}
 
 	@Override
@@ -253,8 +264,8 @@ public class AuthServiceImp implements AuthService {
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Slug is already exists!");
 		if (userRepository.existsByNameAndIdNot(userUpdateDto.getName(), userCurrent.getId()))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
+		Map<String, Object> logData = new HashMap<>();
 
-		userUpdateDto.setEmail(null);
 		UserDTO userDto = MapperUtils.mapToDTO(userUpdateDto, UserDTO.class);
 
 		userDto.setId(userCurrent.getId());
@@ -266,8 +277,9 @@ public class AuthServiceImp implements AuthService {
 			userCurrent.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
 
 		userRepository.save(userCurrent);
-
 		userCurrent.setPassword(null);
+		logData.put("slug", slug);
+		logData.put("userUpdateDto", userUpdateDto);
 		UserDTO res = MapperUtils.mapToDTO(userCurrent, UserDTO.class);
 		if (userCurrent.getAvatar() != null)
 			res.setImage(ImageDTO.generateImageDTO(userCurrent.getAvatar()));
@@ -275,15 +287,15 @@ public class AuthServiceImp implements AuthService {
 		try {
 			userUpdateDto.setPassword("");
 			logService.createLog(request, this.getUserFromHeader(request), "Update User SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(),
-					JsonConverter.convertToJSON("Slug", slug) + " " + objectMapper.writeValueAsString(userUpdateDto),
-					"Update User");
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(logData), "Update User");
+			return res;
+
 		} catch (IOException e) {
-			logService.createLog(request, this.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Update User");
-			e.printStackTrace();
+			logService.createLog(request, this.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(), "Update User");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
-		return res;
 	}
 
 	@Override
@@ -296,9 +308,10 @@ public class AuthServiceImp implements AuthService {
 			logService.createLog(request, null, "Send Email SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(email), "Forgot Password");
 		} catch (IOException e) {
-			logService.createLog(request, null, MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
-					"Forgot Password");
-			e.printStackTrace();
+			logService.createLog(request, null, MethodUtil.handleSubstringMessage(e.getMessage()),
+					StatusLog.FAILED.toString(), "Forgot Password");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
 	}
 
@@ -313,9 +326,10 @@ public class AuthServiceImp implements AuthService {
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(validateOtpDto),
 					"Handle Validate Reset Password");
 		} catch (IOException e) {
-			logService.createLog(request, null, MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
-					"Handle Validate Reset Password");
-			e.printStackTrace();
+			logService.createLog(request, null, MethodUtil.handleSubstringMessage(e.getMessage()),
+					StatusLog.FAILED.toString(), "Handle Validate Reset Password");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
 	}
 
@@ -338,9 +352,10 @@ public class AuthServiceImp implements AuthService {
 			logService.createLog(request, null, "Handle Reset Password SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(reset), "Handle Reset Password");
 		} catch (IOException e) {
-			logService.createLog(request, null, MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
-					"Handle Reset Password");
-			e.printStackTrace();
+			logService.createLog(request, null, MethodUtil.handleSubstringMessage(e.getMessage()),
+					StatusLog.FAILED.toString(), "Handle Reset Password");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
 
 	}
@@ -364,6 +379,8 @@ public class AuthServiceImp implements AuthService {
 		User user = userRepository.findBySlug(slug)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "slug", slug));
 		Image image = imageRepository.findImageByUserId(user.getId()).orElse(null);
+		Map<String, Object> logData = new HashMap<>();
+
 		try {
 			if (image != null)
 				cloudinaryService.removeImageFromCloudinary(image.getImage(), path_user);
@@ -374,13 +391,21 @@ public class AuthServiceImp implements AuthService {
 
 			user.setAvatar(imageTemp);
 			userRepository.save(user);
+			profileDto.setDataToLogging(profileDto.getAvatar().getOriginalFilename(),
+					profileDto.getAvatar().getContentType(), profileDto.getAvatar().getSize(), () -> {
+						profileDto.setAvatar(null);
+					});
+			logData.put("slug", slug);
+			logData.put("profileDto", profileDto);
 			logService.createLog(request, this.getUserFromHeader(request), "Update Image SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("Slug", slug) + " " + avatar,
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(logData),
 					"Update Profile Image");
 		} catch (IOException e) {
-			logService.createLog(request, this.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Update Profile Image");
-			e.printStackTrace();
+			logService.createLog(request, this.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					"Update Profile Image");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
 
 	}
@@ -492,12 +517,14 @@ public class AuthServiceImp implements AuthService {
 			logService.createLog(request, this.getUserFromHeader(request), "Set Waiting Delete User SUCCESSFULY",
 					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("userId", userId),
 					"Set Waiting Delete User");
+			return "Your account will be deleted after 24 hours";
 		} catch (IOException e) {
-			logService.createLog(request, this.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Set Waiting Delete User");
-			e.printStackTrace();
+			logService.createLog(request, this.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					"Set Waiting Delete User");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
-		return "Your account will be deleted after 24 hours";
 
 	}
 
@@ -521,5 +548,32 @@ public class AuthServiceImp implements AuthService {
 			user = userRepository.findByEmail(jwtTokenProvider.getUsername(jwtToken)).orElse(null);
 		}
 		return user;
+	}
+
+	@Override
+	public void changePassword(ChangePasswordDTO reset, HttpServletRequest request) {
+		User user = userRepository.findByEmail(reset.getEmail())
+				.orElseThrow(() -> new ResourceNotFoundException("User", "email", reset.getEmail()));
+		try {
+			if (!reset.getPassword().equals(reset.getRetypePassword()))
+				throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Password and retype password not matches!");
+			if (!passwordEncoder.matches(reset.getOldPassword(), user.getPassword()))
+				throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Old password is not correct!");
+
+			user.setPassword(passwordEncoder.encode(reset.getPassword()));
+
+			userRepository.save(user);
+			user.setPassword(null);
+			logService.createLog(request, user, "Create User SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
+					objectMapper.writeValueAsString(reset), "Create User");
+		} catch (Exception e) {
+			user.setPassword(null);
+			logService.createLog(request, this.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					"Set Waiting Delete User");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
+		}
+
 	}
 }

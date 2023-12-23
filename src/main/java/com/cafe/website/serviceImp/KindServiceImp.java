@@ -3,7 +3,9 @@ package com.cafe.website.serviceImp;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -154,15 +156,20 @@ public class KindServiceImp implements KindService {
 
 		KindDTO newKindDto = MapperUtils.mapToDTO(newKind, KindDTO.class);
 		newKindDto.setImage(ImageDTO.generateImageDTO(newKind.getImage()));
+		kindCreateDto.setDataToLogging(kindCreateDto.getImageFile().getOriginalFilename(),
+				kindCreateDto.getImageFile().getContentType(), kindCreateDto.getImageFile().getSize(), () -> {
+					kindCreateDto.setImageFile(null);
+				});
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Create Kind SUCCESSFULY",
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(kindCreateDto), "Create Kind");
+			return newKindDto;
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0,255),
+			logService.createLog(request, authService.getUserFromHeader(request), e.getMessage().substring(0, 255),
 					StatusLog.FAILED.toString(), "Create Kind");
-			e.printStackTrace();
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
-		return newKindDto;
 	}
 
 	@Override
@@ -173,6 +180,7 @@ public class KindServiceImp implements KindService {
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Slug is already exists!");
 		if (kindRepository.existsByNameAndIdNot(kindUpdateDto.getName(), newDto.getId()))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
+		Map<String, Object> logData = new HashMap<>();
 
 		Kind kind = kindMapper.dtoToEntity(newDto);
 		KindDTO kindDto = MapperUtils.mapToDTO(kindUpdateDto, KindDTO.class);
@@ -182,6 +190,10 @@ public class KindServiceImp implements KindService {
 			image.setKind(kind);
 			image.setImage(url);
 			kind.setImage(image);
+			kindUpdateDto.setDataToLogging(kindUpdateDto.getImageFile().getOriginalFilename(),
+					kindUpdateDto.getImageFile().getContentType(), kindUpdateDto.getImageFile().getSize(), () -> {
+						kindUpdateDto.setImageFile(null);
+					});
 		}
 		kindDto.setId(id);
 		if (kindUpdateDto.getSlug() != null)
@@ -189,20 +201,22 @@ public class KindServiceImp implements KindService {
 
 		kindMapper.updateKindFromDto(kindDto, kind);
 		kindRepository.save(kind);
-
+		logData.put("id", id);
+		logData.put("kindUpdateDto", kindUpdateDto);
 		KindDTO newKindDto = MapperUtils.mapToDTO(kind, KindDTO.class);
 		newKindDto.setImage(ImageDTO.generateImageDTO(kind.getImage()));
+
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Update Kind SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(),
-					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(kindUpdateDto),
-					"Update Kind");
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(logData), "Update Kind");
+			return newKindDto;
+
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Update Kind");
-			e.printStackTrace();
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(), "Update Kind");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
-		return newKindDto;
 	}
 
 	@Override
@@ -215,13 +229,12 @@ public class KindServiceImp implements KindService {
 		kindRepository.deleteById(id);
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Delete Kind SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(),
-					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(id), "Delete Kind");
+					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("id", id), "Delete Kind");
 		} catch (IOException e) {
 			logService.createLog(request, authService.getUserFromHeader(request),
-					MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Delete Kind");
-			e.printStackTrace();
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(), "Delete Kind");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
 	}
 

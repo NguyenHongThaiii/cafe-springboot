@@ -79,9 +79,10 @@ public class FavoriteServiceImp implements FavoriteService {
 			logService.createLog(request, user, "Toggle Favorite SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(favoriteCreate), "Toggle Favorite");
 		} catch (IOException e) {
-			logService.createLog(request, user, MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
-					"Toggle Favorite");
-			e.printStackTrace();
+			logService.createLog(request, user, MethodUtil.handleSubstringMessage(e.getMessage()),
+					StatusLog.FAILED.toString(), "Toggle Favorite");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
 
 	}

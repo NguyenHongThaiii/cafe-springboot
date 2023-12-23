@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import com.cafe.website.constant.StatusLog;
 import com.cafe.website.entity.Comment;
 import com.cafe.website.entity.Review;
 import com.cafe.website.entity.User;
+import com.cafe.website.exception.CafeAPIException;
 import com.cafe.website.exception.ResourceNotFoundException;
 import com.cafe.website.payload.CommentCreateDTO;
 import com.cafe.website.payload.CommentDTO;
@@ -137,18 +139,20 @@ public class CommentServiceImp implements CommentService {
 		try {
 			logService.createLog(user, "Create Comment SUCCESSFULLY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(commentCreateDto), "Websocket", endpoint, "GET", userAgent);
+			return commentDto;
 		} catch (IOException e) {
 
 			try {
 				logService.createLog(user, MethodUtil.handleSubstringMessage(e.getMessage()),
 						StatusLog.FAILED.toString(), objectMapper.writeValueAsString(commentCreateDto), "Websocket",
 						endpoint, "GET", userAgent);
+				throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+						e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 			} catch (JsonProcessingException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+						e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 			}
 		}
-		return commentDto;
 	}
 
 	@Override
@@ -174,19 +178,22 @@ public class CommentServiceImp implements CommentService {
 		try {
 			logService.createLog(user, "Update Comment SUCCESSFULLY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(commentUpdateDto), "Websocket", endpoint, "POST", userAgent);
+			return commentDto;
 		} catch (IOException e) {
 
 			try {
 				logService.createLog(user, MethodUtil.handleSubstringMessage(e.getMessage()),
 						StatusLog.FAILED.toString(), objectMapper.writeValueAsString(commentUpdateDto), "Websocket",
 						endpoint, "POST", userAgent);
+				throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+						e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 			} catch (JsonProcessingException e1) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+						e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 			}
 		}
 
-		return commentDto;
 	}
 
 	@Override
@@ -205,9 +212,12 @@ public class CommentServiceImp implements CommentService {
 				logService.createLog(comment.getUser(), MethodUtil.handleSubstringMessage(e.getMessage()),
 						StatusLog.FAILED.toString(), JsonConverter.convertToJSON("id", id), "Websocket", endpoint,
 						"POST", userAgent);
+				throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+						e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 			} catch (JsonProcessingException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+						e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
+
 			}
 		}
 

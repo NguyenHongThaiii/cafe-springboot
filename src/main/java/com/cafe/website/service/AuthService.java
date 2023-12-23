@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 import com.cafe.website.entity.User;
+import com.cafe.website.payload.ChangePasswordDTO;
 import com.cafe.website.payload.LoginDTO;
 import com.cafe.website.payload.RegisterDTO;
 import com.cafe.website.payload.RegisterResponse;
@@ -57,4 +58,6 @@ public interface AuthService {
 	String setIsWaitingDeleteUser(Integer user, HttpServletRequest request);
 
 	User getUserFromHeader(HttpServletRequest request);
+
+	void changePassword(ChangePasswordDTO reset, HttpServletRequest request);
 }

@@ -4,7 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.constraints.NotNull;
 
-public class UpdateAvatarDTO {
+public class UpdateAvatarDTO extends FileMetadata {
 	@NotNull
 	private MultipartFile avatar;
 

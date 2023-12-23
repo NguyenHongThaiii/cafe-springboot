@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cafe.website.payload.ChangePasswordDTO;
 import com.cafe.website.payload.ForgotPasswordDTO;
 import com.cafe.website.payload.JWTAuthResponse;
 import com.cafe.website.payload.LoginDTO;
-import com.cafe.website.payload.ProfileDTO;
 import com.cafe.website.payload.RegisterDTO;
 import com.cafe.website.payload.RegisterResponse;
 import com.cafe.website.payload.ResetPasswordDTO;
@@ -33,6 +33,9 @@ import com.cafe.website.service.AuthService;
 import com.cafe.website.serviceImp.ProductServiceImp;
 
 import io.jsonwebtoken.io.IOException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -165,5 +168,16 @@ public class AuthController {
 		String token = authService.refreshToken(request, response);
 		jwtAuthResponse.setAccessToken(token);
 		return ResponseEntity.ok(jwtAuthResponse);
+	}
+
+	@SecurityRequirement(name = "jwt")
+	@Operation(summary = "Change password user")
+	@ApiResponse(responseCode = "200", description = "Http status 200 OK")
+	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
+	@PostMapping("/changePassword")
+	public ResponseEntity<String> changePassword(@Valid @RequestBody(required = true) ChangePasswordDTO reset,
+			HttpServletRequest request) {
+		authService.changePassword(reset, request);
+		return ResponseEntity.ok("Ok");
 	}
 }

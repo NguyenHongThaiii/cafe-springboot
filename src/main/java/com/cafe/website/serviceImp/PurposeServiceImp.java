@@ -3,7 +3,9 @@ package com.cafe.website.serviceImp;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -158,13 +160,18 @@ public class PurposeServiceImp implements PurposeService {
 		Purpose newPurpose = purposeRepository.save(purpose);
 		PurposeDTO newPurposeDto = MapperUtils.mapToDTO(newPurpose, PurposeDTO.class);
 		newPurposeDto.setImage(ImageDTO.generateImageDTO(image));
+		purposeCreateDto.setDataToLogging(purposeCreateDto.getImageFile().getOriginalFilename(),
+				purposeCreateDto.getImageFile().getContentType(), purposeCreateDto.getImageFile().getSize(), () -> {
+					purposeCreateDto.setImageFile(null);
+				});
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Create Purpose SUCCESSFULY",
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(purposeCreateDto),
 					"Create Purpose SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Create Purpose SUCCESSFULY");
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					"Create Purpose SUCCESSFULY");
 			e.printStackTrace();
 		}
 		return newPurposeDto;
@@ -179,6 +186,7 @@ public class PurposeServiceImp implements PurposeService {
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Slug is already exists!");
 		if (purposeRepository.existsByNameAndIdNot(purposeUpdateDto.getName(), newDto.getId()))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
+		Map<String, Object> logData = new HashMap<>();
 
 		Purpose purpose = purposeMapper.dtoToEntity(newDto);
 		PurposeDTO purposeDTO = MapperUtils.mapToDTO(purposeUpdateDto, PurposeDTO.class);
@@ -188,6 +196,10 @@ public class PurposeServiceImp implements PurposeService {
 			image.setPurpose(purpose);
 			image.setImage(url);
 			purpose.setImage(image);
+			purposeUpdateDto.setDataToLogging(purposeUpdateDto.getImageFile().getOriginalFilename(),
+					purposeUpdateDto.getImageFile().getContentType(), purposeUpdateDto.getImageFile().getSize(), () -> {
+						purposeUpdateDto.setImageFile(null);
+					});
 		}
 
 		purposeDTO.setId(id);
@@ -198,14 +210,16 @@ public class PurposeServiceImp implements PurposeService {
 
 		PurposeDTO newPurposeDTO = MapperUtils.mapToDTO(purpose, PurposeDTO.class);
 		newPurposeDTO.setImage(ImageDTO.generateImageDTO(purpose.getImage()));
+		logData.put("id", id);
+		logData.put("purposeUpdateDto", purposeUpdateDto);
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Update Purpose SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(),
-					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(purposeUpdateDto),
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(logData),
 					"Update Purpose SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Update Purpose SUCCESSFULY");
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					"Update Purpose SUCCESSFULY");
 			e.printStackTrace();
 		}
 		return newPurposeDTO;
@@ -224,8 +238,9 @@ public class PurposeServiceImp implements PurposeService {
 					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("id", id),
 					"Delete Purpose SUCCESSFULY");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Delete Purpose SUCCESSFULY");
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					"Delete Purpose SUCCESSFULY");
 			e.printStackTrace();
 		}
 

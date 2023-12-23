@@ -42,7 +42,6 @@ public class CloudinaryServiceImp implements CloudinaryService {
 	@Override
 	public void deleteImage(String publicId) throws IOException {
 		cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-
 	}
 
 	@Override
@@ -84,7 +83,6 @@ public class CloudinaryServiceImp implements CloudinaryService {
 	public void removeImageFromCloudinary(String image, String path) throws IOException {
 		if (image == null || !image.contains(System.getenv("ROOT_CLOUDINARY")) || !image.contains(path))
 			return;
-
 		String[] parts = image.split("/");
 		String lastPart = parts[parts.length - 1];
 		String idPart = path + lastPart.substring(0, lastPart.lastIndexOf("."));

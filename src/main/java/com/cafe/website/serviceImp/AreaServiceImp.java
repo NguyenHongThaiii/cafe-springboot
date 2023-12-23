@@ -3,7 +3,9 @@ package com.cafe.website.serviceImp;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -43,8 +45,10 @@ import io.swagger.v3.core.util.Json;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 
 @Service
+@Transactional(rollbackOn = Exception.class)
 public class AreaServiceImp implements AreaService {
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -146,7 +150,6 @@ public class AreaServiceImp implements AreaService {
 		Area area = MapperUtils.mapToEntity(areaCreateDto, Area.class);
 		area.setSlug(slugify.slugify(areaCreateDto.getSlug()));
 		String url = cloudinaryService.uploadImage(areaCreateDto.getImageFile(), path_category, "image");
-
 		Image image = new Image();
 		image.setArea(area);
 		image.setImage(url);
@@ -156,16 +159,23 @@ public class AreaServiceImp implements AreaService {
 
 		AreaDTO newAreaDto = MapperUtils.mapToDTO(newArea, AreaDTO.class);
 		newAreaDto.setImage(ImageDTO.generateImageDTO(newArea.getImage()));
+		areaCreateDto.setDataToLogging(areaCreateDto.getImageFile().getOriginalFilename(),
+				areaCreateDto.getImageFile().getContentType(), areaCreateDto.getImageFile().getSize(), () -> {
+					areaCreateDto.setImageFile(null);
+				});
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Create Area SUCCESSFULY",
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(areaCreateDto), "Create Area");
+			return newAreaDto;
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Create Area");
-			
-			e.printStackTrace();
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					objectMapper.writeValueAsString(areaCreateDto), "Create Area");
+			cloudinaryService.removeImageFromCloudinary(url, path_category);
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
+
 		}
-		return newAreaDto;
 	}
 
 	@Override
@@ -176,6 +186,7 @@ public class AreaServiceImp implements AreaService {
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Slug is already exists!");
 		if (areaRepository.existsByNameAndIdNot(areaUpdateDto.getName(), newdto.getId()))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
+		Map<String, Object> logData = new HashMap<>();
 
 		Area area = areaMapper.dtoToEntity(newdto);
 		AreaDTO areaDto = MapperUtils.mapToDTO(areaUpdateDto, AreaDTO.class);
@@ -185,11 +196,16 @@ public class AreaServiceImp implements AreaService {
 			image.setArea(area);
 			image.setImage(url);
 			area.setImage(image);
+			areaUpdateDto.setDataToLogging(areaUpdateDto.getImageFile().getOriginalFilename(),
+					areaUpdateDto.getImageFile().getContentType(), areaUpdateDto.getImageFile().getSize(), () -> {
+						areaUpdateDto.setImageFile(null);
+					});
 		}
 		areaDto.setId(id);
 		if (areaUpdateDto.getSlug() != null)
 			areaDto.setSlug(slugify.slugify(areaUpdateDto.getSlug()));
-
+		logData.put("id", id);
+		logData.put("areaUpdateDto", areaUpdateDto);
 		areaMapper.updateAreaFromDto(areaDto, area);
 		areaRepository.save(area);
 
@@ -197,15 +213,15 @@ public class AreaServiceImp implements AreaService {
 		newAreaDto.setImage(ImageDTO.generateImageDTO(area.getImage()));
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Update Area SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(),
-					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(areaUpdateDto),
-					"Update Area");
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(logData), "Update Area");
+			return newAreaDto;
+
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Create Area");
-			e.printStackTrace();
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(), "Create Area");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
-		return newAreaDto;
 	}
 
 	@Override
@@ -213,17 +229,19 @@ public class AreaServiceImp implements AreaService {
 		areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area", "id", id + ""));
 
 		Image image = imageRepository.findImageByAreaId(id).orElse(null);
-		if (image != null)
-			this.cloudinaryService.removeImageFromCloudinary(image.getImage(), path_category);
-		areaRepository.deleteById(id);
+		if (image != null) {
+//			this.cloudinaryService.removeImageFromCloudinary(image.getImage(), path_category);
+
+		}
+//		areaRepository.deleteById(id);
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Delete Area SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(),
-					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(id), "Delete Area");
+					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("id", id), "Delete Area");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Create Area");
-			e.printStackTrace();
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(), "Create Area");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
 	}
 

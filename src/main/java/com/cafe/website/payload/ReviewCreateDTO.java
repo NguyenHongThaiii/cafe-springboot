@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.validation.constraints.NotNull;
 
 public class ReviewCreateDTO {
@@ -28,9 +30,13 @@ public class ReviewCreateDTO {
 	@NotNull
 	private int price;
 
-	public ReviewCreateDTO(@NotNull Integer userId, @NotNull Integer productId, @NotNull List<MultipartFile> listImageFiles,
-			@NotNull String name, @NotNull int location, @NotNull int space, @NotNull int food, @NotNull int service,
-			@NotNull int price) {
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	private List<FileMetadata> listFileMetadatas = new ArrayList<>();
+
+	public ReviewCreateDTO(@NotNull Integer userId, @NotNull Integer productId,
+			@NotNull List<MultipartFile> listImageFiles, @NotNull String name, @NotNull int location,
+			@NotNull int space, @NotNull int food, @NotNull int service, @NotNull int price,
+			List<FileMetadata> listFileMetadatas) {
 		super();
 		this.userId = userId;
 		this.productId = productId;
@@ -41,10 +47,7 @@ public class ReviewCreateDTO {
 		this.food = food;
 		this.service = service;
 		this.price = price;
-	}
-
-	public ReviewCreateDTO() {
-		// TODO Auto-generated constructor stub
+		this.listFileMetadatas = listFileMetadatas;
 	}
 
 	public Integer getUserId() {
@@ -63,11 +66,11 @@ public class ReviewCreateDTO {
 		this.productId = productId;
 	}
 
-	public List<MultipartFile> getlistImageFiles() {
+	public List<MultipartFile> getListImageFiles() {
 		return listImageFiles;
 	}
 
-	public void setlistImageFiles(List<MultipartFile> listImageFiles) {
+	public void setListImageFiles(List<MultipartFile> listImageFiles) {
 		this.listImageFiles = listImageFiles;
 	}
 
@@ -117,6 +120,14 @@ public class ReviewCreateDTO {
 
 	public void setPrice(int price) {
 		this.price = price;
+	}
+
+	public List<FileMetadata> getListFileMetadatas() {
+		return listFileMetadatas;
+	}
+
+	public void setListFileMetadatas(List<FileMetadata> listFileMetadatas) {
+		this.listFileMetadatas = listFileMetadatas;
 	}
 
 }

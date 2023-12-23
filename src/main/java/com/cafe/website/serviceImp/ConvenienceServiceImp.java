@@ -3,7 +3,9 @@ package com.cafe.website.serviceImp;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -42,8 +44,10 @@ import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 
 @Service
+@Transactional(rollbackOn = Exception.class)
 public class ConvenienceServiceImp implements ConvenienceService {
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -156,16 +160,23 @@ public class ConvenienceServiceImp implements ConvenienceService {
 		Convenience newConvenience = convenienceRepository.save(convenience);
 		ConvenienceDTO newConvenienceDto = MapperUtils.mapToDTO(newConvenience, ConvenienceDTO.class);
 		newConvenienceDto.setImage(ImageDTO.generateImageDTO(newConvenience.getImage()));
+		convenienceCreateDto.setDataToLogging(convenienceCreateDto.getImageFile().getOriginalFilename(),
+				convenienceCreateDto.getImageFile().getContentType(), convenienceCreateDto.getImageFile().getSize(),
+				() -> {
+					convenienceCreateDto.setImageFile(null);
+				});
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Create Convenience SUCCESSFULY",
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(convenienceCreateDto),
 					"Create Convenience");
+			return newConvenienceDto;
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Create Convenience");
-			e.printStackTrace();
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					"Create Convenience");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
-		return newConvenienceDto;
 	}
 
 	@Override
@@ -178,6 +189,7 @@ public class ConvenienceServiceImp implements ConvenienceService {
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Slug is already exists!");
 		if (convenienceRepository.existsByNameAndIdNot(convenienceUpdateDto.getName(), newDto.getId()))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
+		Map<String, Object> logData = new HashMap<>();
 
 		Convenience convenience = convenienceMapper.dtoToEntity(newDto);
 		ConvenienceDTO convenienceDTO = MapperUtils.mapToDTO(convenienceUpdateDto, ConvenienceDTO.class);
@@ -186,6 +198,11 @@ public class ConvenienceServiceImp implements ConvenienceService {
 			image.setConvenience(convenience);
 			image.setImage(url);
 			convenience.setImage(image);
+			convenienceUpdateDto.setDataToLogging(convenienceUpdateDto.getImageFile().getOriginalFilename(),
+					convenienceUpdateDto.getImageFile().getContentType(), convenienceUpdateDto.getImageFile().getSize(),
+					() -> {
+						convenienceUpdateDto.setImageFile(null);
+					});
 		}
 
 		convenienceDTO.setId(id);
@@ -193,23 +210,25 @@ public class ConvenienceServiceImp implements ConvenienceService {
 			convenienceDTO.setSlug(slugify.slugify(convenienceUpdateDto.getSlug()));
 		convenienceMapper.updateConvenienceFromDto(convenienceDTO, convenience);
 		convenienceRepository.save(convenience);
-
+		logData.put("id", id);
+		logData.put("convenienceUpdateDto", convenienceUpdateDto);
 		ConvenienceDTO newConvenienceDTO = MapperUtils.mapToDTO(convenience, ConvenienceDTO.class);
 		if (convenience.getImage() != null)
 			newConvenienceDTO.setImage(ImageDTO.generateImageDTO(convenience.getImage()));
 		else
 			newConvenienceDTO.setImage(newDto.getImage());
+
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Update Convenience SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(),
-					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(convenienceUpdateDto),
-					"Update Convenience");
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(logData), "Update Convenience");
+			return newConvenienceDTO;
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Update Convenience");
-			e.printStackTrace();
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					"Update Convenience");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
-		return newConvenienceDTO;
 	}
 
 	@Override
@@ -223,13 +242,13 @@ public class ConvenienceServiceImp implements ConvenienceService {
 		convenienceRepository.deleteById(id);
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Delete Convenience SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(),
-					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(id),
-					"Delete Convenience");
+					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("id", id), "Delete Convenience");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Delete Convenience");
-			e.printStackTrace();
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					"Delete Convenience");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
 	}
 

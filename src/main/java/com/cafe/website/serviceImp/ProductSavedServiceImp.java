@@ -75,9 +75,11 @@ public class ProductSavedServiceImp implements ProductSavedService {
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(productSavedCreate),
 					"Toggle Product Saved Discount");
 		} catch (IOException e) {
-			logService.createLog(request, authService.getUserFromHeader(request), MethodUtil.handleSubstringMessage(e.getMessage()),
-					StatusLog.FAILED.toString(), "Toggle Product Saved Discount");
-			e.printStackTrace();
+			logService.createLog(request, authService.getUserFromHeader(request),
+					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
+					"Toggle Product Saved Discount");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
 	}
 

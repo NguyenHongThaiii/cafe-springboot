@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cafe.website.entity.Rating;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 public class ReviewUpdateDTO {
 
@@ -16,19 +17,24 @@ public class ReviewUpdateDTO {
 	private String name;
 
 	private int status;
-	
-	public ReviewUpdateDTO(Rating rating, List<MultipartFile> listImageFiles, String name, int status) {
-		super();
-		this.rating = rating;
-		this.listImageFiles = listImageFiles;
-		this.name = name;
-		this.status = status;
-	}
+
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	private List<FileMetadata> listFileMetadatas = new ArrayList<>();
 
 	public ReviewUpdateDTO() {
 		// TODO Auto-generated constructor stub
 //		this.status = 1;
 
+	}
+
+	public ReviewUpdateDTO(Rating rating, List<MultipartFile> listImageFiles, String name, int status,
+			List<FileMetadata> listFileMetadatas) {
+		super();
+		this.rating = rating;
+		this.listImageFiles = listImageFiles;
+		this.name = name;
+		this.status = status;
+		this.listFileMetadatas = listFileMetadatas;
 	}
 
 	public Rating getRating() {
@@ -61,6 +67,14 @@ public class ReviewUpdateDTO {
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+
+	public List<FileMetadata> getListFileMetadatas() {
+		return listFileMetadatas;
+	}
+
+	public void setListFileMetadatas(List<FileMetadata> listFileMetadatas) {
+		this.listFileMetadatas = listFileMetadatas;
 	}
 
 }

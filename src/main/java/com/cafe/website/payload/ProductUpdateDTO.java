@@ -5,29 +5,29 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 public class ProductUpdateDTO {
-	private int id;
-
-	// @NotNull
+	@NotNull
 	private List<Integer> area_id = new ArrayList<>();
 
-	// @NotNull
+	@NotNull
 	private List<Integer> kind_id = new ArrayList<>();
 
-	// @NotNull
+	@NotNull
 	private List<Integer> convenience_id = new ArrayList<>();
 
-	// @NotNull
+	@NotNull
 	private List<Integer> purpose_id = new ArrayList<>();
 
-	// @NotNull
+	@NotNull
 	private String name;
 
-	// @NotNull
+	@NotNull
 	private String slug;
 
 	private String phone;
@@ -49,13 +49,13 @@ public class ProductUpdateDTO {
 	private List<MultipartFile> listMenuFile = new ArrayList<>();
 	private List<MultipartFile> listImageFile = new ArrayList<>();
 
-	// @NotNull
+	@NotNull
 	private String coordinates;
 
-	// @NotNull
+	@NotNull
 	private String description;
 
-	// @NotNull
+	@NotNull
 	private String location;
 
 	private String email;
@@ -63,17 +63,20 @@ public class ProductUpdateDTO {
 
 	private String listScheduleDto;
 	private Integer userId;
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	private List<FileMetadata> listFileMetadatas = new ArrayList<>();
 
-	public ProductUpdateDTO(int id, List<Integer> area_id, List<Integer> kind_id, List<Integer> convenience_id,
-			List<Integer> purpose_id, String name, String slug, String phone,
+	public ProductUpdateDTO(@NotNull List<Integer> area_id, @NotNull List<Integer> kind_id,
+			@NotNull List<Integer> convenience_id, @NotNull List<Integer> purpose_id, @NotNull String name,
+			@NotNull String slug, String phone,
 			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") Integer status,
 			@Min(value = 0, message = "priceMin should not be less than 0") int priceMin,
 			@Min(value = 0, message = "priceMax should not be less than 0") int priceMax,
 			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") int outstanding,
-			List<MultipartFile> listMenuFile, List<MultipartFile> listImageFile, String coordinates, String description,
-			String location, String email, String facebook, String listScheduleDto, Integer userId) {
+			List<MultipartFile> listMenuFile, List<MultipartFile> listImageFile, @NotNull String coordinates,
+			@NotNull String description, @NotNull String location, String email, String facebook,
+			String listScheduleDto, Integer userId, List<FileMetadata> listFileMetadatas) {
 		super();
-		this.id = id;
 		this.area_id = area_id;
 		this.kind_id = kind_id;
 		this.convenience_id = convenience_id;
@@ -94,36 +97,7 @@ public class ProductUpdateDTO {
 		this.facebook = facebook;
 		this.listScheduleDto = listScheduleDto;
 		this.userId = userId;
-	}
-
-	public ProductUpdateDTO() {
-		// TODO Auto-generated constructor stub
-		this.status = 1;
-
-	}
-
-	public Integer getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
-
-	public String getListScheduleDto() {
-		return listScheduleDto;
-	}
-
-	public void setListScheduleDto(String listScheduleDto) {
-		this.listScheduleDto = listScheduleDto;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
+		this.listFileMetadatas = listFileMetadatas;
 	}
 
 	public List<Integer> getArea_id() {
@@ -268,6 +242,30 @@ public class ProductUpdateDTO {
 
 	public void setFacebook(String facebook) {
 		this.facebook = facebook;
+	}
+
+	public String getListScheduleDto() {
+		return listScheduleDto;
+	}
+
+	public void setListScheduleDto(String listScheduleDto) {
+		this.listScheduleDto = listScheduleDto;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public List<FileMetadata> getListFileMetadatas() {
+		return listFileMetadatas;
+	}
+
+	public void setListFileMetadatas(List<FileMetadata> listFileMetadatas) {
+		this.listFileMetadatas = listFileMetadatas;
 	}
 
 }

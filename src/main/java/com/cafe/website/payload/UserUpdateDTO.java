@@ -9,31 +9,14 @@ import com.cafe.website.entity.Product;
 import com.cafe.website.entity.Role;
 
 public class UserUpdateDTO {
-	private String email;
 	private String password;
 	private String name;
 	private String address;
-	private MultipartFile avartar;
 	private String phone;
 	private int status;
 	private String slug;
 	private List<Product> listProductSaved = new ArrayList<>();
 	private List<Role> roles;
-
-	public UserUpdateDTO(String email, String password, String name, String address, MultipartFile avartar,
-			String phone, int status, List<Product> listProductSaved, List<Role> roles, String slug) {
-		super();
-		this.email = email;
-		this.password = password;
-		this.name = name;
-		this.address = address;
-		this.avartar = avartar;
-		this.phone = phone;
-		this.status = status;
-		this.listProductSaved = listProductSaved;
-		this.roles = roles;
-		this.slug = slug;
-	}
 
 	public UserUpdateDTO() {
 		// TODO Auto-generated constructor stub
@@ -41,20 +24,17 @@ public class UserUpdateDTO {
 
 	}
 
-	public String getSlug() {
-		return slug;
-	}
-
-	public void setSlug(String slug) {
+	public UserUpdateDTO(String password, String name, String address, String phone, int status, String slug,
+			List<Product> listProductSaved, List<Role> roles) {
+		super();
+		this.password = password;
+		this.name = name;
+		this.address = address;
+		this.phone = phone;
+		this.status = status;
 		this.slug = slug;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
+		this.listProductSaved = listProductSaved;
+		this.roles = roles;
 	}
 
 	public String getPassword() {
@@ -81,14 +61,6 @@ public class UserUpdateDTO {
 		this.address = address;
 	}
 
-	public MultipartFile getAvartar() {
-		return avartar;
-	}
-
-	public void setAvartar(MultipartFile avartar) {
-		this.avartar = avartar;
-	}
-
 	public String getPhone() {
 		return phone;
 	}
@@ -105,6 +77,14 @@ public class UserUpdateDTO {
 		this.status = status;
 	}
 
+	public String getSlug() {
+		return slug;
+	}
+
+	public void setSlug(String slug) {
+		this.slug = slug;
+	}
+
 	public List<Product> getListProductSaved() {
 		return listProductSaved;
 	}
@@ -119,13 +99,6 @@ public class UserUpdateDTO {
 
 	public void setRoles(List<Role> roles) {
 		this.roles = roles;
-	}
-
-	@Override
-	public String toString() {
-		return "UserUpdateDTO [email=" + email + ", password=" + password + ", name=" + name + ", address=" + address
-				+ ", avartar=" + avartar + ", phone=" + phone + ", status=" + status + ", listProductSaved="
-				+ listProductSaved + ", roles=" + roles + "]";
 	}
 
 }

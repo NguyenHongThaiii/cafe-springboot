@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -15,13 +17,13 @@ public class ProductCreateDTO {
 	@NotNull
 	private List<Integer> area_id = new ArrayList<>();
 
-//	@NotNull
+	@NotNull
 	private List<Integer> kind_id = new ArrayList<>();
 
-//	@NotNull
+	@NotNull
 	private List<Integer> convenience_id = new ArrayList<>();
 
-//	@NotNull
+	@NotNull
 	private List<Integer> purpose_id = new ArrayList<>();
 
 	@NotNull
@@ -47,22 +49,22 @@ public class ProductCreateDTO {
 	@Max(value = 1, message = "status should not be greater than 1")
 	private int outstanding;
 
-//	@NotEmpty(message = "listMenuFile list cannot be empty")
+	@NotEmpty(message = "listMenuFile list cannot be empty")
 	private List<MultipartFile> listMenuFile = new ArrayList<>();
 
-//	@NotNull
+	@NotNull
 	private String coordinates;
 
-//	@NotNull
+	@NotNull
 	private String description;
 
-//	@NotNull
+	@NotNull
 	private String location;
 
 	private String email;
 	private String facebook;
 
-//	@NotEmpty(message = "listImageFile list cannot be empty")
+	@NotEmpty(message = "listImageFile list cannot be empty")
 	private List<MultipartFile> listImageFile = new ArrayList<>();
 
 	@NotNull
@@ -70,19 +72,25 @@ public class ProductCreateDTO {
 	@NotNull
 	private Integer userId;
 
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	private List<FileMetadata> listFileMetadatas = new ArrayList<>();
+
 	public ProductCreateDTO() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ProductCreateDTO(@NotNull List<Integer> area_id, List<Integer> kind_id, List<Integer> convenience_id,
-			List<Integer> purpose_id, @NotNull String name, @NotNull String slug, @NotNull String phone,
+	public ProductCreateDTO(@NotNull List<Integer> area_id, @NotNull List<Integer> kind_id,
+			@NotNull List<Integer> convenience_id, @NotNull List<Integer> purpose_id, @NotNull String name,
+			@NotNull String slug, @NotNull String phone,
 			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") int status,
 			@Min(value = 0, message = "priceMin should not be less than 0") int priceMin,
 			@Min(value = 0, message = "priceMax should not be less than 0") int priceMax,
 			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") int outstanding,
-			List<MultipartFile> listMenuFile, String coordinates, String description, String location, String email,
-			String facebook, List<MultipartFile> listImageFile, @NotNull String listScheduleDto,
-			@NotNull Integer userId) {
+			@NotEmpty(message = "listMenuFile list cannot be empty") List<MultipartFile> listMenuFile,
+			@NotNull String coordinates, @NotNull String description, @NotNull String location, String email,
+			String facebook,
+			@NotEmpty(message = "listImageFile list cannot be empty") List<MultipartFile> listImageFile,
+			@NotNull String listScheduleDto, @NotNull Integer userId, List<FileMetadata> listFileMetadatas) {
 		super();
 		this.area_id = area_id;
 		this.kind_id = kind_id;
@@ -104,22 +112,7 @@ public class ProductCreateDTO {
 		this.listImageFile = listImageFile;
 		this.listScheduleDto = listScheduleDto;
 		this.userId = userId;
-	}
-
-	public Integer getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
-
-	public String getListScheduleDto() {
-		return listScheduleDto;
-	}
-
-	public void setListScheduleDto(String listScheduleDto) {
-		this.listScheduleDto = listScheduleDto;
+		this.listFileMetadatas = listFileMetadatas;
 	}
 
 	public List<Integer> getArea_id() {
@@ -264,6 +257,30 @@ public class ProductCreateDTO {
 
 	public void setListImageFile(List<MultipartFile> listImageFile) {
 		this.listImageFile = listImageFile;
+	}
+
+	public String getListScheduleDto() {
+		return listScheduleDto;
+	}
+
+	public void setListScheduleDto(String listScheduleDto) {
+		this.listScheduleDto = listScheduleDto;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public List<FileMetadata> getListFileMetadatas() {
+		return listFileMetadatas;
+	}
+
+	public void setListFileMetadatas(List<FileMetadata> listFileMetadatas) {
+		this.listFileMetadatas = listFileMetadatas;
 	}
 
 }

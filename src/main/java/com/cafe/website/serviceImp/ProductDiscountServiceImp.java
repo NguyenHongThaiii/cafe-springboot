@@ -90,13 +90,14 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 			logService.createLog(request, authService.getUserFromHeader(request), "Create Product Discount SUCCESSFULY",
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(productDiscountCreateDto),
 					"Create Product Discount");
+			return productDiscountDto;
 		} catch (IOException e) {
 			logService.createLog(request, authService.getUserFromHeader(request),
 					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
 					"Create Product Discount");
-			e.printStackTrace();
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
-		return productDiscountDto;
 	}
 
 	@Override
@@ -106,14 +107,14 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 		productDiscountRepository.delete(productDiscount);
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Delete Product Discount SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(),
-					JsonConverter.convertToJSON("id", id) + " " + objectMapper.writeValueAsString(id),
+					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("id", id),
 					"Delete Product Discount");
 		} catch (IOException e) {
 			logService.createLog(request, authService.getUserFromHeader(request),
 					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
 					"Delete Product Discount");
-			e.printStackTrace();
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
 	}
 
@@ -194,13 +195,15 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("productId", productId) + " "
 							+ objectMapper.writeValueAsString(productDiscountUpdateDto),
 					"Update Product Discount");
+			return res;
 		} catch (IOException e) {
 			logService.createLog(request, authService.getUserFromHeader(request),
 					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
 					"Update Product Discount");
-			e.printStackTrace();
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
-		return res;
+
 	}
 
 }

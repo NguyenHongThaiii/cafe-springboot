@@ -12,7 +12,12 @@
 - add statistic 
 - need to finish all services impl of all services (For Admin)
 - fix catch by user to by token 
+- Add notification feature for other features (Urgently)
+- handle issue when user interact but its just locked
+- fix response data of login method
+
 #Done
+- Fix log multiple part file (Create new class in dto and convert file to it) (done)
 - fix image all service (done)
 - fix menu product (done)
 - fix created - updated null when created (done)
@@ -27,5 +32,7 @@
 - add logging (done)
 - fix error logger error details when get body json (done)
 - add filter by createdAt and updatedAt all get all entities (done)
+
+
 
 

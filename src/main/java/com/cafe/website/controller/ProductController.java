@@ -92,9 +92,9 @@ public class ProductController {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("")
-	public ResponseEntity<String> deleteProduct(@Valid @RequestBody ProductDeleteDTO productDeleteDto)
-			throws IOException {
-		productService.deleteProduct(productDeleteDto);
+	public ResponseEntity<String> deleteProduct(@Valid @RequestBody ProductDeleteDTO productDeleteDto,
+			HttpServletRequest request) throws IOException {
+		productService.deleteProduct(productDeleteDto, request);
 		return new ResponseEntity<String>("Delete successfully", HttpStatus.OK);
 	}
 
