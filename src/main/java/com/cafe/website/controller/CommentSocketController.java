@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import com.cafe.website.payload.CommentCreateDTO;
 import com.cafe.website.payload.CommentDTO;
 import com.cafe.website.payload.CommentDeleteDTO;
+import com.cafe.website.payload.AttributeIdDTO;
 import com.cafe.website.payload.CommentListDTO;
 import com.cafe.website.payload.CommentUpdateDTO;
 import com.cafe.website.service.CommentService;
@@ -50,9 +51,11 @@ public class CommentSocketController {
 		return list;
 	}
 
-	@GetMapping("/api/v1/comments/id/{id}")
-	public ResponseEntity<CommentDTO> getCommentById(@PathVariable(name = "id") Integer id) {
-		CommentDTO comment = commentService.getCommentById(id);
+//	@GetMapping("/api/v1/comments/id/{id}")
+	@MessageMapping("/getCommentById")
+	public ResponseEntity<CommentDTO> getCommentById(@Payload AttributeIdDTO commentIdDTO) {
+		CommentDTO comment = commentService.getCommentById(commentIdDTO.getId());
+		messagingTemplate.convertAndSend("/api/v1/getCommentById", comment);
 		return new ResponseEntity<CommentDTO>(comment, HttpStatus.OK);
 	}
 
@@ -104,7 +107,7 @@ public class CommentSocketController {
 	}
 
 	@MessageMapping("/admin/deleteComment")
-	public String delteCommentByIdAdmin(@Payload CommentDeleteDTO deleteDTO, SimpMessageHeaderAccessor headerAccessor) {
+	public String delteCommentByIdAdmin(@Payload AttributeIdDTO deleteDTO, SimpMessageHeaderAccessor headerAccessor) {
 		commentService.deleteComment(deleteDTO.getId(), headerAccessor);
 		CommentListDTO commentlist = new CommentListDTO();
 		this.getListComment(commentlist);

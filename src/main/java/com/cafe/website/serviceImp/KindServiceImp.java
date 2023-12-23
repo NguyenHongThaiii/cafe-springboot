@@ -44,8 +44,10 @@ import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 
 @Service
+@Transactional(rollbackOn = Exception.class)
 public class KindServiceImp implements KindService {
 	@PersistenceContext
 	private EntityManager entityManager;

@@ -38,6 +38,7 @@ import com.cafe.website.exception.ResourceNotFoundException;
 import com.cafe.website.payload.ChangePasswordDTO;
 import com.cafe.website.payload.ImageDTO;
 import com.cafe.website.payload.LoginDTO;
+import com.cafe.website.payload.LoginResponseDTO;
 import com.cafe.website.payload.RegisterDTO;
 import com.cafe.website.payload.RegisterResponse;
 import com.cafe.website.payload.ResetPasswordDTO;
@@ -70,8 +71,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 
 @Service
+@Transactional(rollbackOn = Exception.class)
 public class AuthServiceImp implements AuthService {
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -123,23 +126,28 @@ public class AuthServiceImp implements AuthService {
 	}
 
 	@Override
-	public String login(LoginDTO loginDto, HttpServletRequest request) {
+	public LoginResponseDTO login(LoginDTO loginDto, HttpServletRequest request) {
 		User user = userRepository.findByEmail(loginDto.getEmail())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "email", loginDto.getEmail()));
 		if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword()))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Email or password is not correct.");
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
-
+		LoginResponseDTO lg = MapperUtils.mapToDTO(user, LoginResponseDTO.class);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String token = jwtTokenProvider.generateToken(authentication);
 		revokeAllUserTokens(user);
 		saveUserToken(user, token);
+		if (user.getAvatar() != null) {
+			lg.setImage(ImageDTO.generateImageDTO(user.getAvatar()));
+		}
 		try {
 			loginDto.setPassword("");
 			logService.createLog(request, user, "Login SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(loginDto), "Login");
-			return token;
+			lg.setToken(token);
+
+			return lg;
 		} catch (IOException e) {
 			logService.createLog(request, user, MethodUtil.handleSubstringMessage(e.getMessage()),
 					StatusLog.FAILED.toString(), "Login");

@@ -22,6 +22,7 @@ import com.cafe.website.payload.ChangePasswordDTO;
 import com.cafe.website.payload.ForgotPasswordDTO;
 import com.cafe.website.payload.JWTAuthResponse;
 import com.cafe.website.payload.LoginDTO;
+import com.cafe.website.payload.LoginResponseDTO;
 import com.cafe.website.payload.RegisterDTO;
 import com.cafe.website.payload.RegisterResponse;
 import com.cafe.website.payload.ResetPasswordDTO;
@@ -64,12 +65,12 @@ public class AuthController {
 	}
 
 	@PostMapping(value = { "/login", "/signin" })
-	public ResponseEntity<JWTAuthResponse> login(@Valid @RequestBody LoginDTO loginDto, HttpServletRequest request) {
-		String token = authService.login(loginDto, request);
+	public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginDTO loginDto, HttpServletRequest request) {
+		LoginResponseDTO lg = authService.login(loginDto, request);
 
-		JWTAuthResponse jwtAuthResponse = new JWTAuthResponse();
-		jwtAuthResponse.setAccessToken(token);
-		return ResponseEntity.ok(jwtAuthResponse);
+//		JWTAuthResponse jwtAuthResponse = new JWTAuthResponse();
+//		jwtAuthResponse.setAccessToken(token.getToken());
+		return ResponseEntity.ok(lg);
 	}
 
 	@PostMapping(value = { "/register", "/signup" })

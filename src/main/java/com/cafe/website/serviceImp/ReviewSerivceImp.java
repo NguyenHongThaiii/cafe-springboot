@@ -52,8 +52,10 @@ import io.swagger.v3.core.util.Json;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 
 @Service
+@Transactional(rollbackOn = Exception.class)
 public class ReviewSerivceImp implements ReviewService {
 	@PersistenceContext
 	private EntityManager entityManager;

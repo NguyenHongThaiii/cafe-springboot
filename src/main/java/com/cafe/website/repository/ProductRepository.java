@@ -48,7 +48,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
 	Boolean existsByName(String name);
 
-	@Transactional
 	@Query
 	default List<Product> findWithFilters(String name, Integer status, String slugArea, String slugConvenience,
 			String slugKind, String slugPurpose, Boolean isWatingDelete, Double latitude, Double longitude,

@@ -1,12 +1,17 @@
 package com.cafe.website.service;
 
-import com.cafe.website.payload.FavoriteCreateDTO;
+import com.cafe.website.payload.FavoriteCommentCreateDTO;
+import com.cafe.website.payload.FavoriteReviewCreateDTO;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 public interface FavoriteService {
-	void toggleFavoriteReview(FavoriteCreateDTO favoriteCreate, HttpServletRequest request);
+	void toggleFavoriteReview(FavoriteReviewCreateDTO favoriteCreate, HttpServletRequest request);
 
-	Integer getAmountFavorite(Integer reviewId);
+	void toggleFavoriteComment(FavoriteCommentCreateDTO favoriteCreate, HttpServletRequest request);
+
+	Integer getAmountFavoriteReview(Integer reviewId);
+
+	Integer getAmountFavoriteComment(Integer commentId);
 
 }

@@ -2,18 +2,18 @@ package com.cafe.website.payload;
 
 import jakarta.validation.constraints.NotNull;
 
-public class FavoriteCreateDTO {
+public class FavoriteReviewCreateDTO {
 	@NotNull
 	private Integer userId;
 
 	@NotNull
 	private Integer reviewId;
 
-	public FavoriteCreateDTO() {
+	public FavoriteReviewCreateDTO() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public FavoriteCreateDTO(@NotNull Integer userId, @NotNull Integer reviewId) {
+	public FavoriteReviewCreateDTO(@NotNull Integer userId, @NotNull Integer reviewId) {
 		super();
 		this.userId = userId;
 		this.reviewId = reviewId;

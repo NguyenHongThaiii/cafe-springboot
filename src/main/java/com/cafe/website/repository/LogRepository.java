@@ -19,7 +19,6 @@ import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 
 public interface LogRepository extends JpaRepository<Log, Integer> {
-	@Transactional
 	@Query
 	default List<Log> findWithFilters(Integer status, String method, Integer userId, String message, String agent,
 			String result, String params, String body, String endpoint, String action, String createdAt,

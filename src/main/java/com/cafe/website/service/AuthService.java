@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import com.cafe.website.entity.User;
 import com.cafe.website.payload.ChangePasswordDTO;
 import com.cafe.website.payload.LoginDTO;
+import com.cafe.website.payload.LoginResponseDTO;
 import com.cafe.website.payload.RegisterDTO;
 import com.cafe.website.payload.RegisterResponse;
 import com.cafe.website.payload.ResetPasswordDTO;
@@ -25,7 +26,7 @@ public interface AuthService {
 	List<UserDTO> getListUser(Integer status, int limit, int page, String name, String email, String createdAt,
 			String updatedAt, String sortBy);
 
-	String login(LoginDTO loginDto, HttpServletRequest request);
+	LoginResponseDTO login(LoginDTO loginDto, HttpServletRequest request);
 
 	String refreshToken(HttpServletRequest request, HttpServletResponse response);
 

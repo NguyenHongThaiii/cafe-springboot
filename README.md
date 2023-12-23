@@ -5,18 +5,19 @@
 - refactor all code (doing)
 - print structure database to db.diagram (doing)
 - need to refactor code \id to \ when update or delete (WARNING-doing)
-- Convert favourite and review to websocket
 
 
 #Todo
 - add statistic 
 - need to finish all services impl of all services (For Admin)
-- fix catch by user to by token 
 - Add notification feature for other features (Urgently)
 - handle issue when user interact but its just locked
-- fix response data of login method
+- need to find what all of methods need @Transactional(rollbackOn = Exception.class)
 
 #Done
+- fix catch by user to by token (done)
+- Convert favourite to websocket (done)
+- fix response data of login method (done)
 - Fix log multiple part file (Create new class in dto and convert file to it) (done)
 - fix image all service (done)
 - fix menu product (done)

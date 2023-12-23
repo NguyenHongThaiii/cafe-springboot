@@ -30,8 +30,10 @@ import com.cafe.website.util.MethodUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 
 @Service
+@Transactional(rollbackOn = Exception.class)
 public class ProductSavedServiceImp implements ProductSavedService {
 	private ProductSavedRepository productSavedRepository;
 	private UserRepository userRepository;
