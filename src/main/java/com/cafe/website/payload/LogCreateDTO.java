@@ -2,7 +2,7 @@ package com.cafe.website.payload;
 
 public class LogCreateDTO {
 	private String method;
-	private Integer userId;
+	private Long userId;
 	private String message;
 	private String agent;
 	private String result;
@@ -15,7 +15,7 @@ public class LogCreateDTO {
 		// TODO Auto-generated constructor stub
 	}
 
-	public LogCreateDTO(String method, Integer userId, String message, String agent, String result, String params,
+	public LogCreateDTO(String method, Long userId, String message, String agent, String result, String params,
 			String body, String endpoint, String action) {
 		super();
 		this.method = method;
@@ -37,11 +37,11 @@ public class LogCreateDTO {
 		this.method = method;
 	}
 
-	public Integer getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Integer userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 

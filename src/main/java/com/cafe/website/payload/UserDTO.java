@@ -8,7 +8,6 @@ import com.cafe.website.entity.Review;
 import com.cafe.website.entity.Role;
 
 public class UserDTO extends BaseEntityDTO {
-	private int id;
 	private String email;
 	private String name;
 	private String address;
@@ -18,10 +17,13 @@ public class UserDTO extends BaseEntityDTO {
 	private ImageDTO image;
 	private Boolean isWaitingDelete;
 
-	public UserDTO(int id, Integer status, String createdAt, String updatedAt, int id2, String email, String name,
-			String address, String phone, String slug, List<Role> roles, ImageDTO image, Boolean isWaitingDelete) {
-		super(id, status, createdAt, updatedAt);
-		id = id2;
+	public UserDTO() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public UserDTO(String email, String name, String address, String phone, String slug, List<Role> roles,
+			ImageDTO image, Boolean isWaitingDelete) {
+		super();
 		this.email = email;
 		this.name = name;
 		this.address = address;
@@ -30,34 +32,6 @@ public class UserDTO extends BaseEntityDTO {
 		this.roles = roles;
 		this.image = image;
 		this.isWaitingDelete = isWaitingDelete;
-	}
-
-	public UserDTO() {
-		// TODO Auto-generated constructor stub
-	}
-
-	public Boolean getIsWaitingDelete() {
-		return isWaitingDelete;
-	}
-
-	public void setIsWaitingDelete(Boolean isWaitingDelete) {
-		this.isWaitingDelete = isWaitingDelete;
-	}
-
-	public ImageDTO getImage() {
-		return image;
-	}
-
-	public void setImage(ImageDTO image) {
-		this.image = image;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public String getEmail() {
@@ -106,6 +80,22 @@ public class UserDTO extends BaseEntityDTO {
 
 	public void setRoles(List<Role> roles) {
 		this.roles = roles;
+	}
+
+	public ImageDTO getImage() {
+		return image;
+	}
+
+	public void setImage(ImageDTO image) {
+		this.image = image;
+	}
+
+	public Boolean getIsWaitingDelete() {
+		return isWaitingDelete;
+	}
+
+	public void setIsWaitingDelete(Boolean isWaitingDelete) {
+		this.isWaitingDelete = isWaitingDelete;
 	}
 
 }

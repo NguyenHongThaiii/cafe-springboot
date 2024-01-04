@@ -6,7 +6,7 @@ import java.util.List;
 import com.cafe.website.entity.Role;
 
 public class LoginResponseDTO {
-	private int id;
+	private Long id;
 	private String email;
 	private String name;
 	private String address;
@@ -21,7 +21,7 @@ public class LoginResponseDTO {
 		// TODO Auto-generated constructor stub
 	}
 
-	public LoginResponseDTO(int id, String email, String name, String address, String phone, String slug,
+	public LoginResponseDTO(Long id, String email, String name, String address, String phone, String slug,
 			List<Role> roles, ImageDTO image, Boolean isWaitingDelete, String token) {
 		super();
 		this.id = id;
@@ -36,11 +36,11 @@ public class LoginResponseDTO {
 		this.token = token;
 	}
 
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

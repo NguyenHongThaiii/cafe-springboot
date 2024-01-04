@@ -10,14 +10,14 @@ public class CommentCreateDTO {
 	@Size(max = 255)
 	private String name;
 	@NotNull
-	private Integer reviewId;
+	private Long reviewId;
 	@NotNull
-	private Integer userId;
+	private Long userId;
 	@NotNull
 	@CheckStatus(allowedValues = { 0, 1 })
 	private Integer status;
 
-	public CommentCreateDTO(String name, Integer reviewId, Integer userId, Integer status) {
+	public CommentCreateDTO(String name, Long reviewId, Long userId, Integer status) {
 		super();
 		this.name = name;
 		this.reviewId = reviewId;
@@ -44,19 +44,19 @@ public class CommentCreateDTO {
 		this.name = name;
 	}
 
-	public Integer getReviewId() {
+	public Long getReviewId() {
 		return reviewId;
 	}
 
-	public void setReviewId(Integer reviewId) {
+	public void setReviewId(Long reviewId) {
 		this.reviewId = reviewId;
 	}
 
-	public Integer getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Integer userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 

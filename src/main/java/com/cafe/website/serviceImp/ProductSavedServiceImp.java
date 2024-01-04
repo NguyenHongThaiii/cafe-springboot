@@ -57,8 +57,8 @@ public class ProductSavedServiceImp implements ProductSavedService {
 
 	@Override
 	public void toggleProductSaved(ProductSavedCreateDTO productSavedCreate, HttpServletRequest request) {
-		Integer productId = productSavedCreate.getProductId();
-		Integer userId = productSavedCreate.getUserId();
+		Long productId = productSavedCreate.getProductId();
+		Long userId = productSavedCreate.getUserId();
 		Product product = productRepository.findById(productId)
 				.orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
 
@@ -86,7 +86,7 @@ public class ProductSavedServiceImp implements ProductSavedService {
 	}
 
 	@Override
-	public List<ProductDTO> getListProductSavedByUser(Integer userId) {
+	public List<ProductDTO> getListProductSavedByUser(Long userId) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 		List<ProductSaved> list = productSavedRepository.findAllByUserId(user.getId());

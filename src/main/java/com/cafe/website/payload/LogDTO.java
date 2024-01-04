@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public class LogDTO {
 	@Schema(description = "Id Logger")
-	private Integer id;
+	private Long id;
 	@Schema(description = "Status Logger")
 	private Integer status;
 	@Schema(description = "CreatedAt Logger")
@@ -14,7 +14,7 @@ public class LogDTO {
 	@Schema(description = "Method Logger")
 	private String method;
 	@Schema(description = "User Id ")
-	private String userId;
+	private Long userId;
 	@Schema(description = "Message Logger")
 	private String message;
 	@Schema(description = "Agent Logger")
@@ -27,13 +27,14 @@ public class LogDTO {
 	private String body;
 	@Schema(description = "Endpoint Logger")
 	private String endpoint;
+	@Schema(description = "Action Logger")
 	private String action;
 
 	public LogDTO() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public LogDTO(Integer id, Integer status, String createdAt, String updatedAt, String method, String userId,
+	public LogDTO(Long id, Integer status, String createdAt, String updatedAt, String method, Long userId,
 			String message, String agent, String result, String params, String body, String endpoint, String action) {
 		super();
 		this.id = id;
@@ -51,11 +52,11 @@ public class LogDTO {
 		this.action = action;
 	}
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -91,11 +92,11 @@ public class LogDTO {
 		this.method = method;
 	}
 
-	public String getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(String userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 

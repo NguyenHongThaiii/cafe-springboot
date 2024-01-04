@@ -18,7 +18,7 @@ import jakarta.persistence.PreUpdate;
 public class BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Long id;
 
 	@Column(nullable = false, columnDefinition = "int default 1")
 	private int status;
@@ -32,7 +32,7 @@ public class BaseEntity {
 		this.status = 1;
 	}
 
-	public BaseEntity(int id, int status, String createdAt, String updatedAt) {
+	public BaseEntity(Long id, int status, String createdAt, String updatedAt) {
 		super();
 		this.id = id;
 		this.status = status;
@@ -53,11 +53,11 @@ public class BaseEntity {
 		this.updatedAt = LocalDateTime.now().format(formatter);
 	}
 
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

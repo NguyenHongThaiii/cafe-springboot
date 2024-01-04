@@ -9,18 +9,18 @@ import com.cafe.website.entity.Favorite;
 import com.cafe.website.entity.Review;
 import com.cafe.website.payload.FavoriteReviewCreateDTO;
 
-public interface FavoriterRepository extends JpaRepository<Favorite, Integer> {
+public interface FavoriterRepository extends JpaRepository<Favorite, Long> {
 
-	Optional<Favorite> findFavoriteByUserIdAndReviewId(Integer userId, Integer reviewId);
+	Optional<Favorite> findFavoriteByUserIdAndReviewId(Long userId, Long reviewId);
 
-	Optional<Favorite> findFavoriteByUserIdAndCommentId(Integer userId, Integer commentId);
+	Optional<Favorite> findFavoriteByUserIdAndCommentId(Long userId, Long commentId);
 
-	List<Favorite> findFavoriteByReviewId(Integer reviewId);
+	List<Favorite> findFavoriteByReviewId(Long reviewId);
 
-	List<Favorite> findFavoriteByCommentId(Integer reviewId);
+	List<Favorite> findFavoriteByCommentId(Long reviewId);
 
-	Boolean existsByReviewIdAndUserId(Integer reviewId, Integer userId);
+	Boolean existsByReviewIdAndUserId(Long reviewId, Long userId);
 
-	Boolean existsByCommentIdAndUserId(Integer commentId, Integer userId);
+	Boolean existsByCommentIdAndUserId(Long commentId, Long userId);
 
 }

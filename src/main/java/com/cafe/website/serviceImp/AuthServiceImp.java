@@ -428,7 +428,7 @@ public class AuthServiceImp implements AuthService {
 	}
 
 	@Override
-	public UserDTO getUserById(int id) {
+	public UserDTO getUserById(Long id) {
 		User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
 		UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
 		if (user.getAvatar() != null)
@@ -448,7 +448,7 @@ public class AuthServiceImp implements AuthService {
 	}
 
 	@Override
-	public void deleteUserById(Integer id) throws IOException {
+	public void deleteUserById(Long id) throws IOException {
 		this.getUserById(id);
 		Image image = imageRepository.findImageByUserId(id).orElse(null);
 		if (image != null)
@@ -514,7 +514,7 @@ public class AuthServiceImp implements AuthService {
 	}
 
 	@Override
-	public String setIsWaitingDeleteUser(Integer userId, HttpServletRequest request) {
+	public String setIsWaitingDeleteUser(Long userId, HttpServletRequest request) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
@@ -537,7 +537,7 @@ public class AuthServiceImp implements AuthService {
 	}
 
 	@Async
-	public void excuteDeleteUser(Integer userId) {
+	public void excuteDeleteUser(Long userId) {
 		scheduler.schedule(() -> {
 			try {
 				this.deleteUserById(userId);

@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public interface LogService {
 
-	List<LogDTO> getAllLogs(Integer limit, Integer page, Integer status, String method, Integer userId, String message,
+	List<LogDTO> getAllLogs(Integer limit, Integer page, Integer status, String method, Long userId, String message,
 			String agent, String result, String params, String body, String endpoint, String action, String createdAt,
 			String updatedAt, String sortBy);
 

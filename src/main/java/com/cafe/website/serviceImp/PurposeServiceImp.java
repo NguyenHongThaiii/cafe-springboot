@@ -124,7 +124,7 @@ public class PurposeServiceImp implements PurposeService {
 	}
 
 	@Override
-	public PurposeDTO getPurposeById(int id) {
+	public PurposeDTO getPurposeById(Long id) {
 		Purpose purpose = purposeRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Purpose", "id", id + ""));
 		PurposeDTO purposeDto = MapperUtils.mapToDTO(purpose, PurposeDTO.class);
@@ -180,7 +180,7 @@ public class PurposeServiceImp implements PurposeService {
 	}
 
 	@Override
-	public PurposeDTO updatePurpose(int id, PurposeUpdateDTO purposeUpdateDto, HttpServletRequest request)
+	public PurposeDTO updatePurpose(Long id, PurposeUpdateDTO purposeUpdateDto, HttpServletRequest request)
 			throws IOException {
 		PurposeDTO newDto = this.getPurposeById(id);
 
@@ -228,7 +228,7 @@ public class PurposeServiceImp implements PurposeService {
 	}
 
 	@Override
-	public void deletePurpose(int id, HttpServletRequest request) throws IOException {
+	public void deletePurpose(Long id, HttpServletRequest request) throws IOException {
 		purposeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Purpose", "id", id + ""));
 		Image image = imageRepository.findImageByKindId(id).orElse(null);
 		if (image != null)

@@ -1,11 +1,11 @@
 package com.cafe.website.payload;
 
 public class CommentListDTO {
-	private Integer limit;
-	private Integer page;
+	private Integer limit = 10;
+	private Integer page = 1;
 	private String name;
-	private Integer reviewId;
-	private Integer userId;
+	private Long reviewId;
+	private Long userId;
 	private String createdAt;
 	private String updatedAt;
 	private String sortBy;
@@ -15,7 +15,7 @@ public class CommentListDTO {
 		this.page = 1;
 	}
 
-	public CommentListDTO(Integer limit, Integer page, String name, Integer reviewId, Integer userId, String createdAt,
+	public CommentListDTO(Integer limit, Integer page, String name, Long reviewId, Long userId, String createdAt,
 			String updatedAt, String sortBy) {
 		super();
 		this.limit = limit;
@@ -52,19 +52,19 @@ public class CommentListDTO {
 		this.name = name;
 	}
 
-	public Integer getReviewId() {
+	public Long getReviewId() {
 		return reviewId;
 	}
 
-	public void setReviewId(Integer reviewId) {
+	public void setReviewId(Long reviewId) {
 		this.reviewId = reviewId;
 	}
 
-	public Integer getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Integer userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 

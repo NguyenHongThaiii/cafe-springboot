@@ -4,33 +4,33 @@ import jakarta.validation.constraints.NotNull;
 
 public class CommentDeleteDTO {
 	@NotNull
-	private Integer id;
+	private Long id;
 	@NotNull
-	private Integer reviewId;
+	private Long reviewId;
 
 	public CommentDeleteDTO() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public CommentDeleteDTO(@NotNull Integer id, @NotNull Integer reviewId) {
+	public CommentDeleteDTO(@NotNull Long id, @NotNull Long reviewId) {
 		super();
 		this.id = id;
 		this.reviewId = reviewId;
 	}
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public Integer getReviewId() {
+	public Long getReviewId() {
 		return reviewId;
 	}
 
-	public void setReviewId(Integer reviewId) {
+	public void setReviewId(Long reviewId) {
 		this.reviewId = reviewId;
 	}
 

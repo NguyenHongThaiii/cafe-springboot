@@ -71,7 +71,7 @@ public class CommentServiceImp implements CommentService {
 	}
 
 	@Override
-	public List<CommentDTO> getListComments(int limit, int page, String name, Integer userId, Integer reviewId,
+	public List<CommentDTO> getListComments(int limit, int page, String name, Long userId, Long reviewId,
 			String createdAt, String updatedAt, String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
@@ -114,7 +114,7 @@ public class CommentServiceImp implements CommentService {
 	}
 
 	@Override
-	public CommentDTO getCommentById(int id) {
+	public CommentDTO getCommentById(Long id) {
 		Comment comment = commentRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Comment", "id", id));
 
@@ -158,7 +158,7 @@ public class CommentServiceImp implements CommentService {
 	}
 
 	@Override
-	public CommentDTO updateComment(Integer id, CommentUpdateDTO commentUpdateDto,
+	public CommentDTO updateComment(Long id, CommentUpdateDTO commentUpdateDto,
 			SimpMessageHeaderAccessor headerAccessor) {
 		reviewRepository.findById(commentUpdateDto.getReviewId())
 				.orElseThrow(() -> new ResourceNotFoundException("Review", "id", commentUpdateDto.getReviewId()));
@@ -199,7 +199,7 @@ public class CommentServiceImp implements CommentService {
 	}
 
 	@Override
-	public void deleteComment(int id, SimpMessageHeaderAccessor headerAccessor) {
+	public void deleteComment(Long id, SimpMessageHeaderAccessor headerAccessor) {
 		Comment comment = commentRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Comment", "id", id));
 		commentRepository.delete(comment);
@@ -226,7 +226,7 @@ public class CommentServiceImp implements CommentService {
 	}
 
 	@Override
-	public List<CommentDTO> getListCommentsByReviewId(int limit, int page, Integer reviewId, String sortBy) {
+	public List<CommentDTO> getListCommentsByReviewId(int limit, int page, Long reviewId, String sortBy) {
 //		List<CommentDTO> list = this.getListComments(limit, page, sortBy, null, reviewId, sortBy);
 		return null;
 //		return list;

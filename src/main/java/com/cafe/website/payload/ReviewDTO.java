@@ -14,10 +14,10 @@ public class ReviewDTO extends BaseEntityDTO {
 	private List<ImageDTO> listImages = new ArrayList<>();
 
 	private int favorite;
-	private Integer productId;
+	private Long productId;
 
-	public ReviewDTO(int id, Integer status, String createdAt, String updatedAt, Rating rating, String name,
-			List<ImageDTO> listImages, int favorite, Integer productId) {
+	public ReviewDTO(Long id, Integer status, String createdAt, String updatedAt, Rating rating, String name,
+			List<ImageDTO> listImages, int favorite, Long productId) {
 		super(id, status, createdAt, updatedAt);
 		this.rating = rating;
 		this.name = name;
@@ -26,11 +26,11 @@ public class ReviewDTO extends BaseEntityDTO {
 		this.productId = productId;
 	}
 
-	public Integer getProductId() {
+	public Long getProductId() {
 		return productId;
 	}
 
-	public void setProductId(Integer productId) {
+	public void setProductId(Long productId) {
 		this.productId = productId;
 	}
 

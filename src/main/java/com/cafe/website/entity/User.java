@@ -29,7 +29,6 @@ public class User extends BaseEntity {
 	private String name;
 	private String address;
 	private String phone;
-
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
 	private Image avatar;
 
@@ -46,7 +45,7 @@ public class User extends BaseEntity {
 	@Column(nullable = false, columnDefinition = "int default 0")
 	private Boolean isWaitingDelete;
 
-	public User(int id, int status, String createdAt, String updatedAt, String email, String slug, String password,
+	public User(Long id, int status, String createdAt, String updatedAt, String email, String slug, String password,
 			String name, String address, String phone, Image avatar, List<Role> roles, List<Review> reviews,
 			List<Token> tokens, Boolean isWaitingDelete) {
 		super(id, status, createdAt, updatedAt);

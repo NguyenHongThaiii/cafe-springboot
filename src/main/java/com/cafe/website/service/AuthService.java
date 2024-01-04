@@ -44,19 +44,19 @@ public interface AuthService {
 
 	UserDTO getProfile(String slug);
 
-	UserDTO getUserById(int id);
+	UserDTO getUserById(Long id);
 
 	void updateProfileImage(String slug, UpdateAvatarDTO profileDto, HttpServletRequest request);
 
 	void handleResePassword(ResetPasswordDTO reset, HttpServletRequest request);
 
-	void deleteUserById(Integer id) throws IOException;
+	void deleteUserById(Long id) throws IOException;
 
 	void deleteUserBySlug(String slug) throws IOException;
 
 	UserDTO getUserBySlug(String slug);
 
-	String setIsWaitingDeleteUser(Integer user, HttpServletRequest request);
+	String setIsWaitingDeleteUser(Long user, HttpServletRequest request);
 
 	User getUserFromHeader(HttpServletRequest request);
 

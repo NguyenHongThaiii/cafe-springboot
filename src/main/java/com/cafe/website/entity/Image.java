@@ -33,15 +33,15 @@ public class Image extends BaseEntity {
 	@JoinColumn(name = "area_id")
 	private Area area;
 
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "kind_id")
 	private Kind kind;
 
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "convenience_id")
 	private Convenience convenience;
 
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "purpose_id")
 	private Purpose purpose;
 
@@ -49,7 +49,7 @@ public class Image extends BaseEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Image(int id, int status, String createdAt, String updatedAt, String image, User user, Menu menu,
+	public Image(Long id, int status, String createdAt, String updatedAt, String image, User user, Menu menu,
 			Product product, Review review, Area area, Kind kind, Convenience convenience, Purpose purpose) {
 		super(id, status, createdAt, updatedAt);
 		this.image = image;

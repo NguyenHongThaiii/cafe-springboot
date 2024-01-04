@@ -19,10 +19,10 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-public interface CommentRepository extends JpaRepository<Comment, Integer> {
+public interface CommentRepository extends JpaRepository<Comment, Long> {
 
 	@Query
-	default List<Comment> findWithFilters(String name, Integer reviewId, Integer userId, String createdAt,
+	default List<Comment> findWithFilters(String name, Long reviewId, Long userId, String createdAt,
 			String updatedAt, Pageable pageable, EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();

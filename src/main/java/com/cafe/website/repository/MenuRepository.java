@@ -11,14 +11,14 @@ import com.cafe.website.entity.Menu;
 
 import jakarta.transaction.Transactional;
 
-public interface MenuRepository extends JpaRepository<Menu, Integer> {
-	Optional<Menu> findMenuByProductId(Integer productId);
+public interface MenuRepository extends JpaRepository<Menu, Long> {
+	Optional<Menu> findMenuByProductId(Long productId);
 
 	@Transactional
 	@Modifying
 	@Query("DELETE FROM Menu i WHERE i.product.id = :productId")
-	void deleteAllMenuByProductId(Integer productId);
+	void deleteAllMenuByProductId(Long productId);
 
-	List<Menu> findAllMenuByProductId(Integer productId);
+	List<Menu> findAllMenuByProductId(Long productId);
 
 }

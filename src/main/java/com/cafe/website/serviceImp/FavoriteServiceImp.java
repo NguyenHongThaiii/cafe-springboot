@@ -128,7 +128,7 @@ public class FavoriteServiceImp implements FavoriteService {
 	}
 
 	@Override
-	public Integer getAmountFavoriteReview(Integer reviewId) {
+	public Integer getAmountFavoriteReview(Long reviewId) {
 		List<Favorite> favor = favoriteRepository.findFavoriteByReviewId(reviewId);
 		if (favor == null)
 			return 0;
@@ -136,7 +136,7 @@ public class FavoriteServiceImp implements FavoriteService {
 	}
 
 	@Override
-	public Integer getAmountFavoriteComment(Integer commentId) {
+	public Integer getAmountFavoriteComment(Long commentId) {
 		List<Favorite> favor = favoriteRepository.findFavoriteByCommentId(commentId);
 		if (favor == null)
 			return 0;

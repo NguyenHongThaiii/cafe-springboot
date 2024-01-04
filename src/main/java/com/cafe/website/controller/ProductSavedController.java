@@ -37,7 +37,7 @@ public class ProductSavedController {
 	}
 
 	@GetMapping("/id/{id}")
-	public ResponseEntity<List<ProductDTO>> getListProductSavedByUserId(@PathVariable(name = "id") Integer id) {
+	public ResponseEntity<List<ProductDTO>> getListProductSavedByUserId(@PathVariable(name = "id") Long id) {
 		List<ProductDTO> list = productSavedService.getListProductSavedByUser(id);
 		return ResponseEntity.ok(list);
 	}

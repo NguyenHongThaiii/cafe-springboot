@@ -23,11 +23,11 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-public interface ReviewRepository extends JpaRepository<Review, Integer> {
+public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-	List<Review> findReviewByProductId(Integer productId);
+	List<Review> findReviewByProductId(Long productId);
 
-	default List<Review> findWithFilters(String name, Integer productId, Integer userId, Integer ratingId,
+	default List<Review> findWithFilters(String name, Long productId, Long userId, Long ratingId,
 			String createdAt, String updatedAt, Float ratingAverage, Pageable pageable, EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();

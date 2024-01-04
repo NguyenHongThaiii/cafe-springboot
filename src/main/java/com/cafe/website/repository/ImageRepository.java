@@ -11,43 +11,40 @@ import com.cafe.website.entity.Image;
 
 import jakarta.transaction.Transactional;
 
-public interface ImageRepository extends JpaRepository<Image, Integer> {
-	Optional<Image> findImageByProductId(Integer productId);
+public interface ImageRepository extends JpaRepository<Image, Long> {
+	Optional<Image> findImageByProductId(Long productId);
 
-	Optional<Image> findImageByUserId(Integer userId);
+	Optional<Image> findImageByUserId(Long userId);
 
+	Optional<Image> findImageByReviewId(Long reviewId);
 
-	Optional<Image> findImageByReviewId(Integer reviewId);
+	Optional<Image> findImageByAreaId(Long areaId);
 
-	Optional<Image> findImageByAreaId(Integer areaId);
+	Optional<Image> findImageByKindId(Long kindId);
 
-	Optional<Image> findImageByKindId(Integer kindId);
+	Optional<Image> findImageByPurposeId(Long purposeId);
 
-	Optional<Image> findImageByPurposeId(Integer purposeId);
-
-	Optional<Image> findImageByConvenienceId(Integer conId);
+	Optional<Image> findImageByConvenienceId(Long conId);
 
 	@Transactional
 	@Modifying
 	@Query("DELETE FROM Image i WHERE i.product.id = :productId")
-	void deleteAllImageByProductId(Integer productId);
+	void deleteAllImageByProductId(Long productId);
 
 	@Transactional
 	@Modifying
 	@Query("DELETE FROM Image i WHERE i.review.id = :reviewId")
-	void deleteAllImageByReviewId(Integer reviewId);
+	void deleteAllImageByReviewId(Long reviewId);
 
 	@Transactional
 	@Modifying
 	@Query("DELETE FROM Image i WHERE i.user.id = :userId")
-	void deleteAllImageByUserId(Integer userId);
+	void deleteAllImageByUserId(Long userId);
 
-	List<Image> findAllImageByProductId(Integer productId);
+	List<Image> findAllImageByProductId(Long productId);
 
-	List<Image> findAllImageByReviewId(Integer productId);
+	List<Image> findAllImageByReviewId(Long productId);
 
-	List<Image> findAllImageByUserId(Integer productId);
+	List<Image> findAllImageByUserId(Long productId);
 
-
-	
 }

@@ -145,8 +145,8 @@ public class ProductServiceImp implements ProductService {
 	@Override
 	public List<ProductDTO> getListProducts(int limit, int page, Integer status, String rating, Boolean isWatingDelete,
 			String name, String slugArea, String slugConvenience, String slugKind, String slugPurpose, Double latitude,
-			Double longitude, Integer userId, Float ratingsAverage, String createdAt, String updatedAt,
-			String timeStatus, String sortBy) {
+			Double longitude, Long userId, Float ratingsAverage, String createdAt, String updatedAt, String timeStatus,
+			String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.PRICEMIN,
 				SortField.PRICEMAX, SortField.UPDATEDAT, SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC,
 				SortField.PRICEMINDESC, SortField.PRICEMAXDESC, SortField.UPDATEDATDESC, SortField.CREATEDATDESC);
@@ -258,7 +258,7 @@ public class ProductServiceImp implements ProductService {
 		product.setConveniences(listCon);
 		product.setKinds(listKinds);
 		product.setPurposes(listPurposes);
-		product.setId(0);
+		product.setId(0L);
 
 		productRepository.save(product);
 //		move to their service
@@ -327,7 +327,7 @@ public class ProductServiceImp implements ProductService {
 	}
 
 	@Override
-	public ProductDTO updateProduct(int id, ProductUpdateDTO productUpdateDto, HttpServletRequest request)
+	public ProductDTO updateProduct(Long id, ProductUpdateDTO productUpdateDto, HttpServletRequest request)
 			throws IOException {
 		User user = userRepository.findById(productUpdateDto.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", productUpdateDto.getUserId()));
@@ -485,7 +485,7 @@ public class ProductServiceImp implements ProductService {
 	}
 
 	@Override
-	public ProductDTO getProductById(int id) {
+	public ProductDTO getProductById(Long id) {
 		Product product = productRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Product", "id", id + ""));
 		ProductDTO productDto = MapperUtils.mapToDTO(product, ProductDTO.class);
@@ -544,7 +544,7 @@ public class ProductServiceImp implements ProductService {
 		}
 	}
 
-	private <T, U> List<T> getListFromIds(List<Integer> ids, JpaRepository<T, Integer> repository, String entityName,
+	private <T, U> List<T> getListFromIds(List<Long> ids, JpaRepository<T, Long> repository, String entityName,
 			Class<U> entityClass) {
 		List<T> resultList = new ArrayList<>();
 		if (ids != null)
@@ -571,7 +571,7 @@ public class ProductServiceImp implements ProductService {
 	}
 
 	@Override
-	public Float getRateReviewByProduct(Integer productId) {
+	public Float getRateReviewByProduct(Long productId) {
 		productRepository.findById(productId)
 				.orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
 		List<Review> listReviews = reviewRepository.findReviewByProductId(productId);

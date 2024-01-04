@@ -18,15 +18,15 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-public interface ConvenienceRepository extends JpaRepository<Convenience, Integer> {
+public interface ConvenienceRepository extends JpaRepository<Convenience, Long> {
 
-	Boolean existsBySlugAndIdNot(String slug, Integer id);
+	Boolean existsBySlugAndIdNot(String slug, Long id);
 
 	Boolean existsBySlug(String slug);
 
 	Boolean existsByName(String name);
 
-	Boolean existsByNameAndIdNot(String name, Integer id);
+	Boolean existsByNameAndIdNot(String name, Long id);
 
 	Optional<Convenience> findByName(String name);
 

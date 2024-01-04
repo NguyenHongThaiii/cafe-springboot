@@ -11,7 +11,7 @@ public class PurposeDTO extends BaseEntityDTO implements HasImageDTO {
 		// TODO Auto-generated constructor stub
 	}
 
-	public PurposeDTO(int id, Integer status, String createdAt, String updatedAt, String name, String slug,
+	public PurposeDTO(Long id, Integer status, String createdAt, String updatedAt, String name, String slug,
 			ImageDTO image) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;

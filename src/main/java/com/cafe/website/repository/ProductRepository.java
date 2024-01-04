@@ -31,18 +31,18 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 
-public interface ProductRepository extends JpaRepository<Product, Integer> {
+public interface ProductRepository extends JpaRepository<Product, Long> {
 	static final Logger logger = LoggerFactory.getLogger(ProductRepository.class);
 
 	Optional<Product> findBySlugOrName(String slug, String name);
 
-	Optional<Product> findByIdAndUserId(Integer productId, Integer userId);
+	Optional<Product> findByIdAndUserId(Long productId, Long userId);
 
-	Boolean existsBySlugAndIdNot(String slug, Integer id);
+	Boolean existsBySlugAndIdNot(String slug, Long id);
 
-	Boolean existsByNameAndIdNot(String name, Integer id);
+	Boolean existsByNameAndIdNot(String name, Long id);
 
-	Boolean existsByIdAndUserId(Integer productId, Integer userId);
+	Boolean existsByIdAndUserId(Long productId, Long userId);
 
 	Boolean existsBySlug(String slug);
 
@@ -51,7 +51,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 	@Query
 	default List<Product> findWithFilters(String name, Integer status, String slugArea, String slugConvenience,
 			String slugKind, String slugPurpose, Boolean isWatingDelete, Double latitude, Double longitude,
-			Integer userId, Float ratingsAverage, String createdAt, String updatedAt, String timeStatus,
+			Long userId, Float ratingsAverage, String createdAt, String updatedAt, String timeStatus,
 			Pageable pageable, EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();

@@ -18,9 +18,9 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 
-public interface LogRepository extends JpaRepository<Log, Integer> {
+public interface LogRepository extends JpaRepository<Log, Long> {
 	@Query
-	default List<Log> findWithFilters(Integer status, String method, Integer userId, String message, String agent,
+	default List<Log> findWithFilters(Integer status, String method, Long userId, String message, String agent,
 			String result, String params, String body, String endpoint, String action, String createdAt,
 			String updatedAt, Pageable pageable, EntityManager entityManager) {
 

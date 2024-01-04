@@ -8,10 +8,10 @@ import com.cafe.website.entity.ProductSchedule;
 
 import jakarta.transaction.Transactional;
 
-public interface ProductScheduleRepository extends JpaRepository<ProductSchedule, Integer> {
+public interface ProductScheduleRepository extends JpaRepository<ProductSchedule, Long> {
 	@Transactional
 	@Modifying
 	@Query("DELETE FROM ProductSchedule i WHERE i.product.id = :productId")
-	void deleteAllScheduleByProductId(Integer productId);
+	void deleteAllScheduleByProductId(Long productId);
 
 }

@@ -10,8 +10,8 @@ public interface FavoriteService {
 
 	void toggleFavoriteComment(FavoriteCommentCreateDTO favoriteCreate, HttpServletRequest request);
 
-	Integer getAmountFavoriteReview(Integer reviewId);
+	Integer getAmountFavoriteReview(Long reviewId);
 
-	Integer getAmountFavoriteComment(Integer commentId);
+	Integer getAmountFavoriteComment(Long commentId);
 
 }

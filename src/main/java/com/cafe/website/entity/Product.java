@@ -62,20 +62,24 @@ public class Product extends BaseEntity {
 
 	private String email;
 	private String facebook;
-	private Integer latitude;
-	private Integer longitude;
+	private Long latitude;
+	private Long longitude;
 	private String description;
 	private String location;
 
 	@Column(nullable = false, columnDefinition = "int default 0")
 	private Boolean isWaitingDelete;
 
-	public Product(int id, int status, String createdAt, String updatedAt, String name, String slug, String phone,
-			List<Purpose> purposes, List<Area> areas, List<Kind> kinds, List<Convenience> conveniences,
-			List<Review> reviews, List<ProductSchedule> schedules, List<Menu> listMenus, List<Image> listImages,
-			User user, int priceMin, int priceMax, int outstanding, String email, String facebook, Integer latitude,
-			Integer longitude, String description, String location, Boolean isWaitingDelete) {
-		super(id, status, createdAt, updatedAt);
+	public Product() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public Product(String name, String slug, String phone, List<Purpose> purposes, List<Area> areas, List<Kind> kinds,
+			List<Convenience> conveniences, List<Review> reviews, List<ProductSchedule> schedules, List<Menu> listMenus,
+			List<Image> listImages, User user, int priceMin, int priceMax, int outstanding, String email,
+			String facebook, Long latitude, Long longitude, String description, String location,
+			Boolean isWaitingDelete) {
+		super();
 		this.name = name;
 		this.slug = slug;
 		this.phone = phone;
@@ -98,10 +102,6 @@ public class Product extends BaseEntity {
 		this.description = description;
 		this.location = location;
 		this.isWaitingDelete = isWaitingDelete;
-	}
-
-	public Product() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getName() {
@@ -240,19 +240,19 @@ public class Product extends BaseEntity {
 		this.facebook = facebook;
 	}
 
-	public Integer getLatitude() {
+	public Long getLatitude() {
 		return latitude;
 	}
 
-	public void setLatitude(Integer latitude) {
+	public void setLatitude(Long latitude) {
 		this.latitude = latitude;
 	}
 
-	public Integer getLongitude() {
+	public Long getLongitude() {
 		return longitude;
 	}
 
-	public void setLongitude(Integer longitude) {
+	public void setLongitude(Long longitude) {
 		this.longitude = longitude;
 	}
 

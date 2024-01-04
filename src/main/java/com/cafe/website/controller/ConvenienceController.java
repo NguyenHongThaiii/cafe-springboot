@@ -46,7 +46,7 @@ public class ConvenienceController {
 	}
 
 	@GetMapping("/id/{id}")
-	public ResponseEntity<ConvenienceDTO> getConvenienceById(@PathVariable(name = "id") int id) {
+	public ResponseEntity<ConvenienceDTO> getConvenienceById(@PathVariable(name = "id") Long id) {
 		ConvenienceDTO convenienceDto = convenienceService.getConvenienceById(id);
 		return new ResponseEntity<>(convenienceDto, HttpStatus.OK);
 	}
@@ -70,7 +70,7 @@ public class ConvenienceController {
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PatchMapping("/id/{id}")
 	public ResponseEntity<ConvenienceDTO> updateConvenience(
-			@Valid @ModelAttribute ConvenienceUpdateDTO convenienceUpdateDto, @PathVariable(name = "id") int id,
+			@Valid @ModelAttribute ConvenienceUpdateDTO convenienceUpdateDto, @PathVariable(name = "id") Long id,
 			HttpServletRequest request) throws IOException {
 		ConvenienceDTO convenienceDto = convenienceService.updateConvenience(id, convenienceUpdateDto, request);
 		return new ResponseEntity<>(convenienceDto, HttpStatus.OK);
@@ -78,7 +78,7 @@ public class ConvenienceController {
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@DeleteMapping("/id/{id}")
-	public ResponseEntity<String> deleteConvenience(@PathVariable(name = "id") int id, HttpServletRequest request)
+	public ResponseEntity<String> deleteConvenience(@PathVariable(name = "id") Long id, HttpServletRequest request)
 			throws IOException {
 		convenienceService.deleteConvenience(id, request);
 		return new ResponseEntity<>("Delete successfully", HttpStatus.OK);

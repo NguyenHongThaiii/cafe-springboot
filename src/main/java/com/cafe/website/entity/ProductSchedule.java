@@ -22,7 +22,7 @@ public class ProductSchedule extends BaseEntity {
 
 	}
 
-	public ProductSchedule(int id, int status, String createdAt, String updatedAt, Product product, Integer dayOfWeek,
+	public ProductSchedule(Long id, int status, String createdAt, String updatedAt, Product product, Integer dayOfWeek,
 			Long startTime, Long endTime) {
 		super(id, status, createdAt, updatedAt);
 		this.product = product;

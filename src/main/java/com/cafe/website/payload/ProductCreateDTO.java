@@ -15,16 +15,16 @@ import jakarta.validation.constraints.NotNull;
 public class ProductCreateDTO {
 
 	@NotNull
-	private List<Integer> area_id = new ArrayList<>();
+	private List<Long> area_id = new ArrayList<>();
 
 	@NotNull
-	private List<Integer> kind_id = new ArrayList<>();
+	private List<Long> kind_id = new ArrayList<>();
 
 	@NotNull
-	private List<Integer> convenience_id = new ArrayList<>();
+	private List<Long> convenience_id = new ArrayList<>();
 
 	@NotNull
-	private List<Integer> purpose_id = new ArrayList<>();
+	private List<Long> purpose_id = new ArrayList<>();
 
 	@NotNull
 	private String name;
@@ -70,7 +70,7 @@ public class ProductCreateDTO {
 	@NotNull
 	private String listScheduleDto;
 	@NotNull
-	private Integer userId;
+	private Long userId;
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	private List<FileMetadata> listFileMetadatas = new ArrayList<>();
@@ -79,8 +79,8 @@ public class ProductCreateDTO {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ProductCreateDTO(@NotNull List<Integer> area_id, @NotNull List<Integer> kind_id,
-			@NotNull List<Integer> convenience_id, @NotNull List<Integer> purpose_id, @NotNull String name,
+	public ProductCreateDTO(@NotNull List<Long> area_id, @NotNull List<Long> kind_id,
+			@NotNull List<Long> convenience_id, @NotNull List<Long> purpose_id, @NotNull String name,
 			@NotNull String slug, @NotNull String phone,
 			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") int status,
 			@Min(value = 0, message = "priceMin should not be less than 0") int priceMin,
@@ -90,7 +90,7 @@ public class ProductCreateDTO {
 			@NotNull String coordinates, @NotNull String description, @NotNull String location, String email,
 			String facebook,
 			@NotEmpty(message = "listImageFile list cannot be empty") List<MultipartFile> listImageFile,
-			@NotNull String listScheduleDto, @NotNull Integer userId, List<FileMetadata> listFileMetadatas) {
+			@NotNull String listScheduleDto, @NotNull Long userId, List<FileMetadata> listFileMetadatas) {
 		super();
 		this.area_id = area_id;
 		this.kind_id = kind_id;
@@ -115,35 +115,35 @@ public class ProductCreateDTO {
 		this.listFileMetadatas = listFileMetadatas;
 	}
 
-	public List<Integer> getArea_id() {
+	public List<Long> getArea_id() {
 		return area_id;
 	}
 
-	public void setArea_id(List<Integer> area_id) {
+	public void setArea_id(List<Long> area_id) {
 		this.area_id = area_id;
 	}
 
-	public List<Integer> getKind_id() {
+	public List<Long> getKind_id() {
 		return kind_id;
 	}
 
-	public void setKind_id(List<Integer> kind_id) {
+	public void setKind_id(List<Long> kind_id) {
 		this.kind_id = kind_id;
 	}
 
-	public List<Integer> getConvenience_id() {
+	public List<Long> getConvenience_id() {
 		return convenience_id;
 	}
 
-	public void setConvenience_id(List<Integer> convenience_id) {
+	public void setConvenience_id(List<Long> convenience_id) {
 		this.convenience_id = convenience_id;
 	}
 
-	public List<Integer> getPurpose_id() {
+	public List<Long> getPurpose_id() {
 		return purpose_id;
 	}
 
-	public void setPurpose_id(List<Integer> purpose_id) {
+	public void setPurpose_id(List<Long> purpose_id) {
 		this.purpose_id = purpose_id;
 	}
 
@@ -267,11 +267,11 @@ public class ProductCreateDTO {
 		this.listScheduleDto = listScheduleDto;
 	}
 
-	public Integer getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Integer userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 

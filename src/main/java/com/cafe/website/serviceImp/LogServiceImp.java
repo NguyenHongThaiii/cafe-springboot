@@ -47,7 +47,7 @@ public class LogServiceImp implements LogService {
 	}
 
 	@Override
-	public List<LogDTO> getAllLogs(Integer limit, Integer page, Integer status, String method, Integer userId,
+	public List<LogDTO> getAllLogs(Integer limit, Integer page, Integer status, String method, Long userId,
 			String message, String agent, String result, String params, String body, String endpoint, String action,
 			String createdAt, String updatedAt, String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,

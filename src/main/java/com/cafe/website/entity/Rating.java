@@ -12,7 +12,7 @@ public class Rating extends BaseEntity {
 	private int service;
 	private int price;
 
-	public Rating(int id, int status, String createdAt, String updatedAt, int location, int space, int food,
+	public Rating(Long id, int status, String createdAt, String updatedAt, int location, int space, int food,
 			int service, int price) {
 		super(id, status, createdAt, updatedAt);
 		this.location = location;

@@ -21,11 +21,11 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-public interface PurposeRepository extends JpaRepository<Purpose, Integer> {
+public interface PurposeRepository extends JpaRepository<Purpose, Long> {
 
-	Boolean existsBySlugAndIdNot(String slug, Integer id);
+	Boolean existsBySlugAndIdNot(String slug, Long id);
 
-	Boolean existsByNameAndIdNot(String name, Integer id);
+	Boolean existsByNameAndIdNot(String name, Long id);
 
 	Boolean existsBySlug(String slug);
 

@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 
 public class ProductDiscountCreateDTO {
 	@NotNull
-	private Integer productId;
+	private Long productId;
 	@NotNull
 	private Integer percent;
 	@NotNull
@@ -12,7 +12,7 @@ public class ProductDiscountCreateDTO {
 	@NotNull
 	private Long expiryDate;
 
-	public ProductDiscountCreateDTO(@NotNull Integer productId, @NotNull Integer percent, @NotNull String name,
+	public ProductDiscountCreateDTO(@NotNull Long productId, @NotNull Integer percent, @NotNull String name,
 			@NotNull Long expiryDate) {
 		super();
 		this.productId = productId;
@@ -33,11 +33,11 @@ public class ProductDiscountCreateDTO {
 		this.expiryDate = expiryDate;
 	}
 
-	public Integer getProductId() {
+	public Long getProductId() {
 		return productId;
 	}
 
-	public void setProductId(Integer productId) {
+	public void setProductId(Long productId) {
 		this.productId = productId;
 	}
 

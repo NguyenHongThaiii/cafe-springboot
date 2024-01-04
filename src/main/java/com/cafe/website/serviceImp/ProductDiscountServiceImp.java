@@ -103,7 +103,7 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 	}
 
 	@Override
-	public void deleteProductDiscountById(Integer id, HttpServletRequest request) {
+	public void deleteProductDiscountById(Long id, HttpServletRequest request) {
 		ProductDiscount productDiscount = productDiscountRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("ProductDiscount", "id", id));
 		productDiscountRepository.delete(productDiscount);
@@ -121,7 +121,7 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 	}
 
 	@Override
-	public ProductDiscountDTO getProductDiscountByProductId(Integer productId) {
+	public ProductDiscountDTO getProductDiscountByProductId(Long productId) {
 		Product product = productRepository.findById(productId)
 				.orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
 		ProductDiscount productDiscount = productDiscountRepository.findByProductId(productId)
@@ -179,7 +179,7 @@ public class ProductDiscountServiceImp implements ProductDiscountService {
 	}
 
 	@Override
-	public ProductDiscountDTO updateProductDiscount(Integer productId,
+	public ProductDiscountDTO updateProductDiscount(Long productId,
 			ProductDiscountUpdateDTO productDiscountUpdateDto, HttpServletRequest request) {
 		ProductDiscount productDiscount = productDiscountRepository.findByProductId(productId)
 				.orElseThrow(() -> new ResourceNotFoundException("ProductDiscount", "id_product", productId));

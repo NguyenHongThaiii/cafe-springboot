@@ -4,22 +4,22 @@ import jakarta.validation.constraints.NotNull;
 
 public class AttributeIdDTO {
 	@NotNull
-	private Integer id;
+	private Long id;
 
 	public AttributeIdDTO() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public AttributeIdDTO(@NotNull Integer id) {
+	public AttributeIdDTO(@NotNull Long id) {
 		super();
 		this.id = id;
 	}
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

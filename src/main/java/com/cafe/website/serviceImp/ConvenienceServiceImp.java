@@ -123,7 +123,7 @@ public class ConvenienceServiceImp implements ConvenienceService {
 	}
 
 	@Override
-	public ConvenienceDTO getConvenienceById(int id) {
+	public ConvenienceDTO getConvenienceById(Long id) {
 		Convenience convenience = convenienceRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Convenience", "id", id));
 		ConvenienceDTO ConvenienceDto = MapperUtils.mapToDTO(convenience, ConvenienceDTO.class);
@@ -180,7 +180,7 @@ public class ConvenienceServiceImp implements ConvenienceService {
 	}
 
 	@Override
-	public ConvenienceDTO updateConvenience(int id, ConvenienceUpdateDTO convenienceUpdateDto,
+	public ConvenienceDTO updateConvenience(Long id, ConvenienceUpdateDTO convenienceUpdateDto,
 			HttpServletRequest request) throws IOException {
 		ConvenienceDTO newDto = this.getConvenienceById(id);
 		Image image = new Image();
@@ -232,7 +232,7 @@ public class ConvenienceServiceImp implements ConvenienceService {
 	}
 
 	@Override
-	public void deleteConvenience(int id, HttpServletRequest request) throws IOException {
+	public void deleteConvenience(Long id, HttpServletRequest request) throws IOException {
 		convenienceRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Convenience", "id", id + ""));
 		Image image = imageRepository.findImageByKindId(id).orElse(null);

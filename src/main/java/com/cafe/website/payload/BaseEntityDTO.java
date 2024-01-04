@@ -1,7 +1,7 @@
 package com.cafe.website.payload;
 
 public class BaseEntityDTO {
-	private int id;
+	private Long id;
 
 	private Integer status;
 
@@ -14,7 +14,7 @@ public class BaseEntityDTO {
 		this.setStatus(1);
 	}
 
-	public BaseEntityDTO(int id, Integer status, String createdAt, String updatedAt) {
+	public BaseEntityDTO(Long id, Integer status, String createdAt, String updatedAt) {
 		super();
 		this.id = id;
 		this.status = status;
@@ -22,11 +22,11 @@ public class BaseEntityDTO {
 		this.updatedAt = updatedAt;
 	}
 
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

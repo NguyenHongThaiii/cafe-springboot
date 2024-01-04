@@ -13,15 +13,15 @@ public interface ConvenienceService {
 	List<ConvenienceDTO> getListConveniences(int limit, int page, String name, String slug, String createdAt,
 			String updatedAt, String sortBy);
 
-	ConvenienceDTO getConvenienceById(int id);
+	ConvenienceDTO getConvenienceById(Long id);
 
 	ConvenienceDTO getConvenienceBySlug(String slug);
 
 	ConvenienceDTO createConvenience(ConvenienceCreateDTO convenienceCreateDto, HttpServletRequest request)
 			throws IOException;
 
-	ConvenienceDTO updateConvenience(int id, ConvenienceUpdateDTO convenienceDto, HttpServletRequest request)
+	ConvenienceDTO updateConvenience(Long id, ConvenienceUpdateDTO convenienceDto, HttpServletRequest request)
 			throws IOException;
 
-	void deleteConvenience(int id, HttpServletRequest request) throws IOException;
+	void deleteConvenience(Long id, HttpServletRequest request) throws IOException;
 }

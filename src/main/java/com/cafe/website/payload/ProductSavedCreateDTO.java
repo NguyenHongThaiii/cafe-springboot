@@ -4,12 +4,12 @@ import jakarta.validation.constraints.NotNull;
 
 public class ProductSavedCreateDTO {
 	@NotNull
-	private Integer userId;
+	private Long userId;
 
 	@NotNull
-	private Integer productId;
+	private Long productId;
 
-	public ProductSavedCreateDTO(Integer userId, Integer productId) {
+	public ProductSavedCreateDTO(Long userId, Long productId) {
 		super();
 		this.userId = userId;
 		this.productId = productId;
@@ -19,19 +19,19 @@ public class ProductSavedCreateDTO {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Integer getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Integer userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 
-	public Integer getProductId() {
+	public Long getProductId() {
 		return productId;
 	}
 
-	public void setProductId(Integer productId) {
+	public void setProductId(Long productId) {
 		this.productId = productId;
 	}
 

@@ -13,13 +13,13 @@ import com.cafe.website.payload.ProductScheduleUpdateDTO;
 public interface ProductScheduleService {
 	List<ProductScheduleDTO> getListSchedules(int limit, int page, String sortBy);
 
-	ProductScheduleDTO getAreaById(int id);
+	ProductScheduleDTO getAreaById(Long id);
 
 	ProductScheduleDTO getScheduleBySlug(String slug);
 
 	ProductScheduleDTO createSchedule(ProductScheduleCreateDTO scheduleCreateDto) throws IOException;
 
-	ProductScheduleDTO updateSchedule(int id, ProductScheduleUpdateDTO scheduleUpdateDto) throws IOException;
+	ProductScheduleDTO updateSchedule(Long id, ProductScheduleUpdateDTO scheduleUpdateDto) throws IOException;
 
-	void deleteScheduleById(int id) throws IOException;
+	void deleteScheduleById(Long id) throws IOException;
 }

@@ -12,17 +12,17 @@ import com.cafe.website.payload.CommentUpdateDTO;
 import jakarta.servlet.http.HttpServletRequest;
 
 public interface CommentService {
-	List<CommentDTO> getListComments(int limit, int page, String name, Integer userId, Integer reviewId,
+	List<CommentDTO> getListComments(int limit, int page, String name, Long userId, Long reviewId,
 			String createdAt, String updatedAt, String sortBy);
 
-	List<CommentDTO> getListCommentsByReviewId(int limit, int page, Integer reviewId, String sortBy);
+	List<CommentDTO> getListCommentsByReviewId(int limit, int page, Long reviewId, String sortBy);
 
-	CommentDTO getCommentById(int id);
+	CommentDTO getCommentById(Long id);
 
 	CommentDTO createComment(CommentCreateDTO commentCreateDto, SimpMessageHeaderAccessor headerAccessor);
 
-	CommentDTO updateComment(Integer id, CommentUpdateDTO commentUpdateDto, SimpMessageHeaderAccessor headerAccessor);
+	CommentDTO updateComment(Long id, CommentUpdateDTO commentUpdateDto, SimpMessageHeaderAccessor headerAccessor);
 
-	void deleteComment(int id, SimpMessageHeaderAccessor headerAccessor);
+	void deleteComment(Long id, SimpMessageHeaderAccessor headerAccessor);
 
 }

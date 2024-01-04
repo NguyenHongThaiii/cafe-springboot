@@ -13,13 +13,13 @@ public interface AreaService {
 	List<AreaDTO> getListAreas(int limit, int page, Integer status, String name, String slug, String createdAt,
 			String updatedAt, String sortBy);
 
-	AreaDTO getAreaById(int id);
+	AreaDTO getAreaById(Long id);
 
 	AreaDTO getAreaBySlug(String slug);
 
 	AreaDTO createArea(AreaCreateDTO areaCreateDto, HttpServletRequest request) throws IOException;
 
-	AreaDTO updateArea(Integer id, AreaUpdateDTO areaDto, HttpServletRequest request) throws IOException;
+	AreaDTO updateArea(Long id, AreaUpdateDTO areaDto, HttpServletRequest request) throws IOException;
 
-	void deleteArea(int id, HttpServletRequest request) throws IOException;
+	void deleteArea(Long id, HttpServletRequest request) throws IOException;
 }

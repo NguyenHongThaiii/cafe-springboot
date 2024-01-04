@@ -11,15 +11,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import com.cafe.website.payload.PurposeDTO;
 
 public interface PurposeService {
-	PurposeDTO getPurposeById(int id);
+	PurposeDTO getPurposeById(Long id);
 
 	PurposeDTO getPurposeBySlug(String slug);
 
 	PurposeDTO createPurpose(PurposeCreateDTO purposeCreateDto, HttpServletRequest request) throws IOException;
 
-	PurposeDTO updatePurpose(int id, PurposeUpdateDTO purposeUpdateDto, HttpServletRequest request) throws IOException;
+	PurposeDTO updatePurpose(Long id, PurposeUpdateDTO purposeUpdateDto, HttpServletRequest request) throws IOException;
 
-	void deletePurpose(int id, HttpServletRequest request) throws IOException;
+	void deletePurpose(Long id, HttpServletRequest request) throws IOException;
 
 	List<PurposeDTO> getListPurposes(int limit, int page, String name, String slug, String createdAt, String updatedAt,
 			String sortBy);

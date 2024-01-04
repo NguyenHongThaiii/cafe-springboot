@@ -45,7 +45,7 @@ public class ProductDiscountController {
 	}
 
 	@GetMapping("/products/{id}")
-	public ResponseEntity<ProductDiscountDTO> getProductDiscountByProductId(@PathVariable(name = "id") Integer id) {
+	public ResponseEntity<ProductDiscountDTO> getProductDiscountByProductId(@PathVariable(name = "id") Long id) {
 		ProductDiscountDTO product = productDiscountService.getProductDiscountByProductId(id);
 		return ResponseEntity.ok(product);
 	}
@@ -61,7 +61,7 @@ public class ProductDiscountController {
 	@PatchMapping("/products/{productId}")
 	public ResponseEntity<ProductDiscountDTO> updateProductDiscount(
 			@Valid @RequestBody ProductDiscountUpdateDTO productDiscountUpdateDto,
-			@PathVariable(name = "productId") Integer productId, HttpServletRequest request) {
+			@PathVariable(name = "productId") Long productId, HttpServletRequest request) {
 		ProductDiscountDTO product = productDiscountService.updateProductDiscount(productId, productDiscountUpdateDto,
 				request);
 
@@ -69,7 +69,7 @@ public class ProductDiscountController {
 	}
 
 	@DeleteMapping("/id/{id}")
-	public ResponseEntity<String> deleteProductDiscountById(@PathVariable(name = "id") Integer id,
+	public ResponseEntity<String> deleteProductDiscountById(@PathVariable(name = "id") Long id,
 			HttpServletRequest request) {
 		productDiscountService.deleteProductDiscountById(id, request);
 

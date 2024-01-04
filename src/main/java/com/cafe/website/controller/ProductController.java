@@ -43,7 +43,7 @@ public class ProductController {
 	@GetMapping("")
 	public ResponseEntity<List<ProductDTO>> getListProducts(@RequestParam(defaultValue = "5") Integer limit,
 			@RequestParam(defaultValue = "1") Integer page, @RequestParam(required = false) Integer status,
-			@RequestParam(required = false) Integer userId, @RequestParam(required = false) String rating,
+			@RequestParam(required = false) Long userId, @RequestParam(required = false) String rating,
 			@RequestParam(required = false) Boolean isWaitingDelete, @RequestParam(required = false) Double latitude,
 			@RequestParam(required = false) Double longitude, @RequestParam(required = false) String name,
 			@RequestParam(required = false) String slugArea, @RequestParam(required = false) String slugKind,
@@ -59,7 +59,7 @@ public class ProductController {
 	}
 
 	@GetMapping("/id/{id}")
-	public ResponseEntity<ProductDTO> getProductById(@PathVariable(name = "id") int id) {
+	public ResponseEntity<ProductDTO> getProductById(@PathVariable(name = "id") Long id) {
 		ProductDTO product = productService.getProductById(id);
 
 		return new ResponseEntity<>(product, HttpStatus.OK);
@@ -84,7 +84,7 @@ public class ProductController {
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@PatchMapping("/id/{id}")
-	public ResponseEntity<ProductDTO> updateProduct(@PathVariable(name = "id") int id,
+	public ResponseEntity<ProductDTO> updateProduct(@PathVariable(name = "id") Long id,
 			@Valid @ModelAttribute ProductUpdateDTO productUpdateDto, HttpServletRequest request) throws IOException {
 		ProductDTO productDto = productService.updateProduct(id, productUpdateDto, request);
 		return new ResponseEntity<ProductDTO>(productDto, HttpStatus.OK);
@@ -99,7 +99,7 @@ public class ProductController {
 	}
 
 	@GetMapping("/{id}/ratings")
-	public ResponseEntity<Float> getRatingByReviewId(@PathVariable(name = "id") int id) throws IOException {
+	public ResponseEntity<Float> getRatingByReviewId(@PathVariable(name = "id") Long id) throws IOException {
 		Float number = productService.getRateReviewByProduct(id);
 		return new ResponseEntity<>(number, HttpStatus.OK);
 	}

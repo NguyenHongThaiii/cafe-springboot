@@ -1,5 +1,5 @@
 package com.cafe.website.service;
 
 public interface ProductOwnerService {
-	Boolean isOwnerByProductIdAndUserId(Integer productId, Integer userId);
+	Boolean isOwnerByProductIdAndUserId(Long productId, Long userId);
 }

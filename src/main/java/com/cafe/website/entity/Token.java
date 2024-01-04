@@ -36,7 +36,7 @@ public class Token extends BaseEntity {
 		this.user = user;
 	}
 
-	public Token(int id, int status, String createdAt, String updatedAt, String name, TokenType tokenType,
+	public Token(Long id, int status, String createdAt, String updatedAt, String name, TokenType tokenType,
 			boolean revoked, boolean expired, User user) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;

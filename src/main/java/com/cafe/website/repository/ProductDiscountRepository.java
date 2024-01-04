@@ -20,10 +20,10 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-public interface ProductDiscountRepository extends JpaRepository<ProductDiscount, Integer> {
-	Boolean existsByProductId(Integer productId);
+public interface ProductDiscountRepository extends JpaRepository<ProductDiscount, Long> {
+	Boolean existsByProductId(Long productId);
 
-	Optional<ProductDiscount> findByProductId(Integer productId);
+	Optional<ProductDiscount> findByProductId(Long productId);
 
 	@Query
 	default List<ProductDiscount> findWithFilters(String name, Boolean isExpired, Integer percent, String createdAt,

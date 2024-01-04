@@ -40,9 +40,9 @@ public class ReviewController {
 	@GetMapping("")
 	public ResponseEntity<List<ReviewDTO>> getListReviews(@RequestParam(defaultValue = "5") Integer limit,
 			@RequestParam(defaultValue = "1") Integer page, @RequestParam(required = false) String name,
-			@RequestParam(required = false) Integer ratingId, @RequestParam(required = false) Integer productId,
+			@RequestParam(required = false) Long ratingId, @RequestParam(required = false) Long productId,
 			@RequestParam(required = false) String createdAt, @RequestParam(required = false) String updatedAt,
-			@RequestParam(required = false) Integer userId, @RequestParam(required = false) Float ratingAverage,
+			@RequestParam(required = false) Long userId, @RequestParam(required = false) Float ratingAverage,
 			@RequestParam(required = false, defaultValue = "null") String sortBy) {
 		List<ReviewDTO> listAreasDto = reviewService.getListReviews(limit, page, name, productId, userId, ratingId,
 				createdAt, updatedAt, ratingAverage, sortBy);
@@ -50,7 +50,7 @@ public class ReviewController {
 	}
 
 	@GetMapping("/id/{id}")
-	public ResponseEntity<ReviewDTO> getReviewById(@PathVariable(name = "id") int id) throws IOException {
+	public ResponseEntity<ReviewDTO> getReviewById(@PathVariable(name = "id") Long id) throws IOException {
 		ReviewDTO reviewDto = reviewService.getReviewById(id);
 		return new ResponseEntity<>(reviewDto, HttpStatus.OK);
 	}
@@ -62,18 +62,18 @@ public class ReviewController {
 		ReviewDTO reviewDto = reviewService.createReview(review, request);
 		return new ResponseEntity<>(reviewDto, HttpStatus.OK);
 	}
-
 	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@PatchMapping("/id/{id}")
-	public ResponseEntity<ReviewDTO> updateReviewById(@PathVariable(name = "id") int id,
+	public ResponseEntity<ReviewDTO> updateReviewById(@PathVariable(name = "id") Long id,
 			@Valid @ModelAttribute ReviewUpdateDTO review, HttpServletRequest request) throws IOException {
 		ReviewDTO reviewDto = reviewService.updateReview(id, review, request);
 		return new ResponseEntity<>(reviewDto, HttpStatus.OK);
 	}
 
+	
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/id/{id}")
-	public ResponseEntity<String> delelteReviewById(@PathVariable(name = "id") int id, HttpServletRequest request)
+	public ResponseEntity<String> delelteReviewById(@PathVariable(name = "id") Long id, HttpServletRequest request)
 			throws IOException {
 		reviewService.deleteReview(id, request);
 		return new ResponseEntity<>("Delete successfully", HttpStatus.OK);
@@ -81,7 +81,7 @@ public class ReviewController {
 
 	@GetMapping("/products")
 	public ResponseEntity<List<ReviewDTO>> getListReviewsByProductId(@RequestParam(defaultValue = "5") int limit,
-			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false) Integer productId,
+			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false) Long productId,
 			@RequestParam(required = false, defaultValue = "null") String sortBy) {
 
 		List<ReviewDTO> listAreasDto = reviewService.getListReviewsByProductId(limit, page, productId, sortBy);

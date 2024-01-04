@@ -123,7 +123,7 @@ public class AreaServiceImp implements AreaService {
 	}
 
 	@Override
-	public AreaDTO getAreaById(int id) {
+	public AreaDTO getAreaById(Long id) {
 		Area area = areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area", "id", id + ""));
 		AreaDTO areaDto = MapperUtils.mapToDTO(area, AreaDTO.class);
 		areaDto.setImage(ImageDTO.generateImageDTO(area.getImage()));
@@ -179,7 +179,7 @@ public class AreaServiceImp implements AreaService {
 	}
 
 	@Override
-	public AreaDTO updateArea(Integer id, AreaUpdateDTO areaUpdateDto, HttpServletRequest request) throws IOException {
+	public AreaDTO updateArea(Long id, AreaUpdateDTO areaUpdateDto, HttpServletRequest request) throws IOException {
 		AreaDTO newdto = this.getAreaById(id);
 
 		if (areaRepository.existsBySlugAndIdNot(slugify.slugify(areaUpdateDto.getSlug()), newdto.getId()))
@@ -225,7 +225,7 @@ public class AreaServiceImp implements AreaService {
 	}
 
 	@Override
-	public void deleteArea(int id, HttpServletRequest request) throws IOException {
+	public void deleteArea(Long id, HttpServletRequest request) throws IOException {
 		areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area", "id", id + ""));
 
 		Image image = imageRepository.findImageByAreaId(id).orElse(null);

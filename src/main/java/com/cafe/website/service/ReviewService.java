@@ -12,21 +12,21 @@ import com.cafe.website.payload.ReviewUpdateDTO;
 import jakarta.servlet.http.HttpServletRequest;
 
 public interface ReviewService {
-	List<ReviewDTO> getListReviews(int limit, int page, String name, Integer productId, Integer userId,
-			Integer ratingId, String createdAt, String updatedAt, Float ratingAverage, String sortBy);
+	List<ReviewDTO> getListReviews(int limit, int page, String name, Long productId, Long userId, Long ratingId,
+			String createdAt, String updatedAt, Float ratingAverage, String sortBy);
 
-	List<ReviewDTO> getListReviewsByProductId(int limit, int page, Integer productId, String sortBy);
+	List<ReviewDTO> getListReviewsByProductId(int limit, int page, Long productId, String sortBy);
 
 	List<ReviewDTO> findAllByOrderByRatingAverageRating(Float ratingAverage);
 
-	ReviewDTO getReviewById(int id);
+	ReviewDTO getReviewById(Long id);
 
 	ReviewDTO createReview(ReviewCreateDTO areaCreateDto, HttpServletRequest request) throws IOException;
 
-	ReviewDTO updateReview(int id, ReviewUpdateDTO areaUpdateDto, HttpServletRequest request) throws IOException;
+	ReviewDTO updateReview(Long id, ReviewUpdateDTO areaUpdateDto, HttpServletRequest request) throws IOException;
 
-	void deleteReview(int id, HttpServletRequest request) throws IOException;
+	void deleteReview(Long id, HttpServletRequest request) throws IOException;
 
-	Float getRatingByReviewId(int id);
+	Float getRatingByReviewId(Long id);
 
 }

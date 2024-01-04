@@ -5,7 +5,7 @@ public class BaseCatDTO extends BaseEntityDTO {
 	private String slug;
 	private String image;
 
-	public BaseCatDTO(int id, Integer status, String createdAt, String updatedAt, String name, String slug,
+	public BaseCatDTO(Long id, Integer status, String createdAt, String updatedAt, String name, String slug,
 			String image) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;

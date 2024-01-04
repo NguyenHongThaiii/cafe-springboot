@@ -8,7 +8,7 @@ import jakarta.persistence.Table;
 public class Role extends BaseEntity {
 	private String name;
 
-	public Role(int id, int status, String createdAt, String updatedAt, String name) {
+	public Role(Long id, int status, String createdAt, String updatedAt, String name) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;
 	}

@@ -8,11 +8,11 @@
 
 
 #Todo
-- add statistic 
-- need to finish all services impl of all services (For Admin)
+- add statistic (later)
+- need to finish all services impl of all services (later)
 - Add notification feature for other features (Urgently)
-- handle issue when user interact but its just locked
-- need to find what all of methods need @Transactional(rollbackOn = Exception.class)
+- handle issue when user interact but its just locked (later)
+- need to find what all of methods need @Transactional(rollbackOn = Exception.class) (later)
 
 #Done
 - fix catch by user to by token (done)

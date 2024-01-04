@@ -38,7 +38,7 @@ public class ProductDTO extends BaseEntityDTO {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ProductDTO(int id, Integer status, String createdAt, String updatedAt, List<PurposeDTO> purposes,
+	public ProductDTO(Long id, Integer status, String createdAt, String updatedAt, List<PurposeDTO> purposes,
 			List<AreaDTO> areas, List<KindDTO> kinds, List<ConvenienceDTO> conveniences,
 			List<ProductScheduleDTO> schedules, String name, String slug, String phone, int priceMin, int priceMax,
 			int outstanding, Integer latitude, Integer longitude, String email, String facebook, String description,

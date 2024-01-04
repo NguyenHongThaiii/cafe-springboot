@@ -7,7 +7,7 @@ public class ConvenienceDTO extends BaseEntityDTO implements HasImageDTO {
 
 	private ImageDTO image;
 
-	public ConvenienceDTO(int id, Integer status, String createdAt, String updatedAt, String name, String slug,
+	public ConvenienceDTO(Long id, Integer status, String createdAt, String updatedAt, String name, String slug,
 			ImageDTO image) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;

@@ -45,7 +45,7 @@ public class AreaController {
 	}
 
 	@GetMapping("/id/{id}")
-	public ResponseEntity<AreaDTO> getAreaById(@PathVariable(name = "id") int id) {
+	public ResponseEntity<AreaDTO> getAreaById(@PathVariable(name = "id") Long id) {
 		AreaDTO areaDto = areaService.getAreaById(id);
 		return new ResponseEntity<>(areaDto, HttpStatus.OK);
 	}
@@ -67,7 +67,7 @@ public class AreaController {
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PatchMapping("/id/{id}")
-	public ResponseEntity<AreaDTO> updateArea(@PathVariable(name = "id") Integer id,
+	public ResponseEntity<AreaDTO> updateArea(@PathVariable(name = "id") Long id,
 			@Valid @ModelAttribute AreaUpdateDTO areaDto, HttpServletRequest request) throws IOException {
 		AreaDTO newAreaDto = areaService.updateArea(id, areaDto, request);
 		return new ResponseEntity<>(newAreaDto, HttpStatus.OK);
@@ -75,7 +75,7 @@ public class AreaController {
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@DeleteMapping("/id/{id}")
-	public ResponseEntity<String> deleteArea(@PathVariable(name = "id") int id, HttpServletRequest request)
+	public ResponseEntity<String> deleteArea(@PathVariable(name = "id") Long id, HttpServletRequest request)
 			throws IOException {
 		areaService.deleteArea(id, request);
 		return new ResponseEntity<>("Delete successfully", HttpStatus.OK);

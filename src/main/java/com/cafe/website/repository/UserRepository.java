@@ -21,7 +21,7 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserRepository extends JpaRepository<User, Long> {
 	@Query
 	default List<User> findWithFilters(Integer status, String name, String email, String createdAt, String updatedAt,
 			Pageable pageable, EntityManager entityManager) {
@@ -76,9 +76,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 	Boolean existsByName(String email);
 
-	Boolean existsBySlugAndIdNot(String slug, Integer id);
+	Boolean existsBySlugAndIdNot(String slug, Long id);
 
-	Boolean existsByNameAndIdNot(String name, Integer id);
+	Boolean existsByNameAndIdNot(String name, Long id);
 
 	void deleteUserBySlug(String slug);
 

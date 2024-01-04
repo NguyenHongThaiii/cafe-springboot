@@ -44,7 +44,7 @@ public class KindController {
 	}
 
 	@GetMapping("/id/{id}")
-	public ResponseEntity<KindDTO> getKindById(@PathVariable(name = "id") int id) {
+	public ResponseEntity<KindDTO> getKindById(@PathVariable(name = "id") Long id) {
 		KindDTO kindDto = kindService.getKindById(id);
 		return new ResponseEntity<>(kindDto, HttpStatus.OK);
 	}
@@ -67,14 +67,14 @@ public class KindController {
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PatchMapping("/id/{id}")
 	public ResponseEntity<KindDTO> updateKind(@Valid @ModelAttribute KindUpdateDTO kindDto,
-			@PathVariable(name = "id") int id, HttpServletRequest request) throws IOException {
+			@PathVariable(name = "id") Long id, HttpServletRequest request) throws IOException {
 		KindDTO newKindDto = kindService.updateKind(id, kindDto, request);
 		return new ResponseEntity<>(newKindDto, HttpStatus.OK);
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@DeleteMapping("/id/{id}")
-	public ResponseEntity<String> deleteKind(@PathVariable(name = "id") int id, HttpServletRequest request)
+	public ResponseEntity<String> deleteKind(@PathVariable(name = "id") Long id, HttpServletRequest request)
 			throws IOException {
 		kindService.deleteKind(id, request);
 		return new ResponseEntity<>("Delete successfully", HttpStatus.OK);

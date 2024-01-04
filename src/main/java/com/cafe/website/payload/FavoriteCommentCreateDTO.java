@@ -4,34 +4,34 @@ import jakarta.validation.constraints.NotNull;
 
 public class FavoriteCommentCreateDTO {
 	@NotNull
-	private Integer userId;
+	private Long userId;
 
 	@NotNull
-	private Integer commentId;
+	private Long commentId;
 
 	public FavoriteCommentCreateDTO() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public FavoriteCommentCreateDTO(@NotNull Integer userId, @NotNull Integer commentId) {
+	public FavoriteCommentCreateDTO(@NotNull Long userId, @NotNull Long commentId) {
 		super();
 		this.userId = userId;
 		this.commentId = commentId;
 	}
 
-	public Integer getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Integer userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 
-	public Integer getCommentId() {
+	public Long getCommentId() {
 		return commentId;
 	}
 
-	public void setCommentId(Integer commentId) {
+	public void setCommentId(Long commentId) {
 		this.commentId = commentId;
 	}
 

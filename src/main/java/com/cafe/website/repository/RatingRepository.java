@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.cafe.website.entity.Rating;
 
-public interface RatingRepository extends JpaRepository<Rating, Integer> {
+public interface RatingRepository extends JpaRepository<Rating, Long> {
 
 }

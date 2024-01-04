@@ -20,7 +20,7 @@ public class ProductScheduleServiceImp implements ProductScheduleService {
 	}
 
 	@Override
-	public ProductScheduleDTO getAreaById(int id) {
+	public ProductScheduleDTO getAreaById(Long id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -38,13 +38,13 @@ public class ProductScheduleServiceImp implements ProductScheduleService {
 	}
 
 	@Override
-	public ProductScheduleDTO updateSchedule(int id, ProductScheduleUpdateDTO scheduleUpdateDto) throws IOException {
+	public ProductScheduleDTO updateSchedule(Long id, ProductScheduleUpdateDTO scheduleUpdateDto) throws IOException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void deleteScheduleById(int id) throws IOException {
+	public void deleteScheduleById(Long id) throws IOException {
 		// TODO Auto-generated method stub
 
 	}

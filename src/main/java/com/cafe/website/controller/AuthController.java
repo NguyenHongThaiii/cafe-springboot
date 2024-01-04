@@ -91,7 +91,7 @@ public class AuthController {
 	}
 
 	@GetMapping("/users/id/{id}")
-	public ResponseEntity<UserDTO> getUserById(@Valid @PathVariable(name = "id") int id) {
+	public ResponseEntity<UserDTO> getUserById(@Valid @PathVariable(name = "id") Long id) {
 		UserDTO userDto = authService.getUserById(id);
 		return ResponseEntity.ok(userDto);
 	}
@@ -104,7 +104,7 @@ public class AuthController {
 
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	@DeleteMapping("/users/id/{id}")
-	public ResponseEntity<String> deleteUserById(@PathVariable(name = "id") int id) throws java.io.IOException {
+	public ResponseEntity<String> deleteUserById(@PathVariable(name = "id") Long id) throws java.io.IOException {
 		authService.deleteUserById(id);
 		return ResponseEntity.ok("Delete Successfully");
 	}

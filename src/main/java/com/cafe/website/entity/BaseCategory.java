@@ -8,7 +8,7 @@ public class BaseCategory extends BaseEntity {
 	private String name;
 	private String slug;
 
-	public BaseCategory(int id, int status, String createdAt, String updatedAt, String name, String slug) {
+	public BaseCategory(Long id, int status, String createdAt, String updatedAt, String name, String slug) {
 		super(id, status, createdAt, updatedAt);
 		this.name = name;
 		this.slug = slug;

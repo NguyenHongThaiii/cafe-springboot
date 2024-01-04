@@ -14,20 +14,20 @@ public interface ProductService {
 
 	ProductDTO createProduct(ProductCreateDTO productCreateDto, HttpServletRequest request) throws IOException;
 
-	ProductDTO updateProduct(int id, ProductUpdateDTO productUpdateDto, HttpServletRequest request) throws IOException;
+	ProductDTO updateProduct(Long id, ProductUpdateDTO productUpdateDto, HttpServletRequest request) throws IOException;
 
-	ProductDTO getProductById(int id);
+	ProductDTO getProductById(Long id);
 
 	ProductDTO getProductBySlug(String slug);
 
 	String setIsWaitingDeleteProduct(ProductDeleteDTO productDeleteDto, HttpServletRequest request) throws IOException;
 
-	Float getRateReviewByProduct(Integer productId);
+	Float getRateReviewByProduct(Long productId);
 
 	List<ProductDTO> getListProducts(int limit, int page, Integer status, String rating, Boolean isWatingDelete,
 			String name, String slugArea, String slugConvenience, String slugKind, String slugPurpose, Double latitude,
-			Double longitude, Integer userId, Float ratingsAverage, String createdAt, String updatedAt,
-			String timeStatus, String sortBy);
+			Double longitude, Long userId, Float ratingsAverage, String createdAt, String updatedAt, String timeStatus,
+			String sortBy);
 
 	void deleteProduct(ProductDeleteDTO productDeleteDto, HttpServletRequest request) throws IOException;
 }

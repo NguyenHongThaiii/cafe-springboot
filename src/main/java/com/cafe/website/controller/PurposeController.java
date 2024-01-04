@@ -45,7 +45,7 @@ public class PurposeController {
 	}
 
 	@GetMapping("/id/{id}")
-	public ResponseEntity<PurposeDTO> getPurposeById(@PathVariable(name = "id") int id) {
+	public ResponseEntity<PurposeDTO> getPurposeById(@PathVariable(name = "id") Long id) {
 		PurposeDTO PurposeDto = purposeService.getPurposeById(id);
 		return new ResponseEntity<>(PurposeDto, HttpStatus.OK);
 	}
@@ -68,14 +68,14 @@ public class PurposeController {
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PatchMapping("/id/{id}")
 	public ResponseEntity<PurposeDTO> updatePurpose(@Valid @ModelAttribute PurposeUpdateDTO purposeDto,
-			@PathVariable(name = "id") int id, HttpServletRequest request) throws IOException {
+			@PathVariable(name = "id") Long id, HttpServletRequest request) throws IOException {
 		PurposeDTO newPurposeDto = purposeService.updatePurpose(id, purposeDto, request);
 		return new ResponseEntity<>(newPurposeDto, HttpStatus.OK);
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@DeleteMapping("/id/{id}")
-	public ResponseEntity<String> deletePurpose(@PathVariable(name = "id") int id, HttpServletRequest request)
+	public ResponseEntity<String> deletePurpose(@PathVariable(name = "id") Long id, HttpServletRequest request)
 			throws IOException {
 		purposeService.deletePurpose(id, request);
 		return new ResponseEntity<>("Delete successfully", HttpStatus.OK);

@@ -96,8 +96,8 @@ public class ReviewSerivceImp implements ReviewService {
 	}
 
 	@Override
-	public List<ReviewDTO> getListReviews(int limit, int page, String name, Integer productId, Integer userId,
-			Integer ratingId, String createdAt, String updatedAt, Float ratingAverage, String sortBy) {
+	public List<ReviewDTO> getListReviews(int limit, int page, String name, Long productId, Long userId,
+			Long ratingId, String createdAt, String updatedAt, Float ratingAverage, String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
 				SortField.CREATEDATDESC);
@@ -141,7 +141,7 @@ public class ReviewSerivceImp implements ReviewService {
 	}
 
 	@Override
-	public ReviewDTO getReviewById(int id) {
+	public ReviewDTO getReviewById(Long id) {
 		Review review = reviewRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Review", "id", id));
 		ReviewDTO reviewDto = MapperUtils.mapToDTO(review, ReviewDTO.class);
@@ -208,7 +208,7 @@ public class ReviewSerivceImp implements ReviewService {
 	}
 
 	@Override
-	public ReviewDTO updateReview(int id, ReviewUpdateDTO reviewUpdateDto, HttpServletRequest request)
+	public ReviewDTO updateReview(Long id, ReviewUpdateDTO reviewUpdateDto, HttpServletRequest request)
 			throws IOException {
 		Review review = reviewRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Review", "id", id));
@@ -260,7 +260,7 @@ public class ReviewSerivceImp implements ReviewService {
 	}
 
 	@Override
-	public void deleteReview(int id, HttpServletRequest request) throws IOException {
+	public void deleteReview(Long id, HttpServletRequest request) throws IOException {
 		this.getReviewById(id);
 		String path_reviews = "cafe-springboot/reviews";
 		List<Image> listEntityImages = imageRepository.findAllImageByReviewId(id);
@@ -283,7 +283,7 @@ public class ReviewSerivceImp implements ReviewService {
 	}
 
 	@Override
-	public Float getRatingByReviewId(int productId) {
+	public Float getRatingByReviewId(Long productId) {
 		Product product = productRepository.findById(productId).orElse(null);
 
 		List<Review> listReviews = reviewRepository.findReviewByProductId(productId);
@@ -298,7 +298,7 @@ public class ReviewSerivceImp implements ReviewService {
 	}
 
 	@Override
-	public List<ReviewDTO> getListReviewsByProductId(int limit, int page, Integer productId, String sortBy) {
+	public List<ReviewDTO> getListReviewsByProductId(int limit, int page, Long productId, String sortBy) {
 		Product product = productRepository.findById(productId).orElse(null);
 		if (product == null)
 			return null;

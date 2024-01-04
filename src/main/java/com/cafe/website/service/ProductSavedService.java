@@ -13,5 +13,5 @@ public interface ProductSavedService {
 
 	void toggleProductSaved(ProductSavedCreateDTO productSavedCreate, HttpServletRequest request);
 
-	List<ProductDTO> getListProductSavedByUser(Integer userId);
+	List<ProductDTO> getListProductSavedByUser(Long userId);
 }

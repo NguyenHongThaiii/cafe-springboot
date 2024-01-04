@@ -10,12 +10,13 @@ import com.cafe.website.entity.ProductSaved;
 
 import jakarta.transaction.Transactional;
 
-public interface ProductSavedRepository extends JpaRepository<ProductSaved, Integer> {
-	Boolean existsByUserIdAndProductId(Integer userId, Integer productId);
+public interface ProductSavedRepository extends JpaRepository<ProductSaved, Long> {
+	Boolean existsByUserIdAndProductId(Long userId, Long productId);
+
 	@Transactional
 	@Modifying
-	@Query("DELETE FROM ProductSaved p WHERE p.product.id = :productId AND p.user.id = :userId" )
-	void deleteByUserIdAndProductId(Integer userId, Integer productId);
+	@Query("DELETE FROM ProductSaved p WHERE p.product.id = :productId AND p.user.id = :userId")
+	void deleteByUserIdAndProductId(Long userId, Long productId);
 
-	List<ProductSaved> findAllByUserId(Integer userId);
+	List<ProductSaved> findAllByUserId(Long userId);
 }

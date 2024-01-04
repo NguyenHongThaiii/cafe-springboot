@@ -122,7 +122,7 @@ public class KindServiceImp implements KindService {
 	}
 
 	@Override
-	public KindDTO getKindById(int id) {
+	public KindDTO getKindById(Long id) {
 		Kind kind = kindRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("kind", "id", id + ""));
 		KindDTO kindDto = MapperUtils.mapToDTO(kind, KindDTO.class);
 		kindDto.setImage(ImageDTO.generateImageDTO(kind.getImage()));
@@ -175,7 +175,7 @@ public class KindServiceImp implements KindService {
 	}
 
 	@Override
-	public KindDTO updateKind(int id, KindUpdateDTO kindUpdateDto, HttpServletRequest request) throws IOException {
+	public KindDTO updateKind(Long id, KindUpdateDTO kindUpdateDto, HttpServletRequest request) throws IOException {
 		KindDTO newDto = this.getKindById(id);
 
 		if (kindRepository.existsBySlugAndIdNot(slugify.slugify(kindUpdateDto.getSlug()), newDto.getId()))
@@ -222,7 +222,7 @@ public class KindServiceImp implements KindService {
 	}
 
 	@Override
-	public void deleteKind(int id, HttpServletRequest request) throws IOException {
+	public void deleteKind(Long id, HttpServletRequest request) throws IOException {
 		kindRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("kind", "id", id + ""));
 		Image image = imageRepository.findImageByKindId(id).orElse(null);
 		if (image != null)
