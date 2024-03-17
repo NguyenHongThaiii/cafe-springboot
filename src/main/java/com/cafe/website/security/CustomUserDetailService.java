@@ -13,29 +13,30 @@ import org.springframework.stereotype.Service;
 import com.cafe.website.entity.User;
 import com.cafe.website.repository.UserRepository;
 
-
 @Service
 public class CustomUserDetailService implements UserDetailsService {
+	
+	private UserRepository userRepository;
 
-    private UserRepository userRepository;
+	public CustomUserDetailService(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
 
-    public CustomUserDetailService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+	@Override
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-    @Override
-    public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-          User user = userRepository.findByEmail( usernameOrEmail)
-                 .orElseThrow(() ->
-                         new UsernameNotFoundException("User not found with username or email: "+ usernameOrEmail));
+		User user;
+		if (email.contains("@")) { // Nếu truyền vào là email
+			user = userRepository.findByEmail(email)
+					.orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+		} else { // Nếu truyền vào là email
 
-        Set<GrantedAuthority> authorities = user
-                .getRoles()
-                .stream()
-                .map((role) -> new SimpleGrantedAuthority(role.getRole())).collect(Collectors.toSet());
+			throw new UsernameNotFoundException("User not found with email: " + email);
+		}
 
-        return new org.springframework.security.core.userdetails.User(user.getEmail(),
-                user.getPassword(),
-                authorities);
-    }
+		Set<GrantedAuthority> authorities = user.getRoles().stream()
+				.map((role) -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toSet());
+
+		return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
+	}
 }

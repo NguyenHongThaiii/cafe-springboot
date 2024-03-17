@@ -1,16 +1,34 @@
 package com.cafe.website.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.cafe.website.payload.HasImage;
 
-@Setter
-@Getter
-@NoArgsConstructor
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+
 @Table(name = "kinds")
 @Entity
-public class Kind extends BaseCategory {
+public class Kind extends BaseCategory implements HasImage {
+	@OneToOne(cascade = CascadeType.ALL, mappedBy = "kind")
+	private Image image;
+
+	public Kind() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public Kind(Long id, int status, String createdAt, String updatedAt, String name, String slug, Image image) {
+		super(id, status, createdAt, updatedAt, name, slug);
+		this.image = image;
+	}
+
+	@Override
+	public Image getImage() {
+		return image;
+	}
+
+	public void setImage(Image image) {
+		this.image = image;
+	}
 
 }
