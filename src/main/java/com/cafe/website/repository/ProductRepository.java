@@ -50,8 +50,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 	@Query
 	default List<Product> findWithFilters(String name, Integer status, String slugArea, String slugConvenience,
-			String slugKind, String slugPurpose, Boolean isWatingDelete, Double latitude, Double longitude,
-			Long userId, Float ratingsAverage, String createdAt, String updatedAt, String timeStatus,
+			String slugKind, String slugPurpose, Boolean isWatingDelete, Double latitude, Double longitude, Long userId,
+			Float ratingsAverage, Integer outstanding, String createdAt, String updatedAt, String timeStatus,
 			Pageable pageable, EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -96,6 +96,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 		}
 		if (status != null) {
 			predicates.add(cb.equal(product.get("status"), status));
+
+		}
+		if (outstanding != null) {
+			predicates.add(cb.equal(product.get("outstanding"), outstanding));
 
 		}
 		if (ratingsAverage != null) {

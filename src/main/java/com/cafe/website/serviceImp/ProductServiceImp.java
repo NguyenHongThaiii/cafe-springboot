@@ -145,8 +145,8 @@ public class ProductServiceImp implements ProductService {
 	@Override
 	public List<ProductDTO> getListProducts(int limit, int page, Integer status, String rating, Boolean isWatingDelete,
 			String name, String slugArea, String slugConvenience, String slugKind, String slugPurpose, Double latitude,
-			Double longitude, Long userId, Float ratingsAverage, String createdAt, String updatedAt, String timeStatus,
-			String sortBy) {
+			Double longitude, Long userId, Float ratingsAverage, Integer outstanding, String createdAt, String updatedAt,
+			String timeStatus, String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.PRICEMIN,
 				SortField.PRICEMAX, SortField.UPDATEDAT, SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC,
 				SortField.PRICEMINDESC, SortField.PRICEMAXDESC, SortField.UPDATEDATDESC, SortField.CREATEDATDESC);
@@ -177,8 +177,8 @@ public class ProductServiceImp implements ProductService {
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
 		productList = productRepository.findWithFilters(name, status, slugArea, slugConvenience, slugKind, slugPurpose,
-				isWatingDelete, latitude, longitude, userId, ratingsAverage, createdAt, updatedAt, timeStatus, pageable,
-				entityManager);
+				isWatingDelete, latitude, longitude, userId, ratingsAverage, outstanding, createdAt, updatedAt,
+				timeStatus, pageable, entityManager);
 		listProductDto = productList.stream().map(product -> {
 			ProductDTO pdto = MapperUtils.mapToDTO(product, ProductDTO.class);
 			List<AreaDTO> listArea = MapperUtils.loppMapToDTO(product.getAreas(), AreaDTO.class);
@@ -452,7 +452,6 @@ public class ProductServiceImp implements ProductService {
 		List<ProductScheduleDTO> listSchedulesDto = new ArrayList<>();
 
 		for (ProductSchedule schedule : product.getSchedules()) {
-			logger.info(schedule.getCreatedAt() + "");
 			ProductScheduleDTO scheduleDto = MapperUtils.mapToDTO(schedule, ProductScheduleDTO.class);
 			listSchedulesDto.add(scheduleDto);
 		}

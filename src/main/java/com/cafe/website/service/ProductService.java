@@ -26,7 +26,7 @@ public interface ProductService {
 
 	List<ProductDTO> getListProducts(int limit, int page, Integer status, String rating, Boolean isWatingDelete,
 			String name, String slugArea, String slugConvenience, String slugKind, String slugPurpose, Double latitude,
-			Double longitude, Long userId, Float ratingsAverage, String createdAt, String updatedAt, String timeStatus,
+			Double longitude, Long userId, Float ratingsAverage, Integer outstanding ,String createdAt, String updatedAt, String timeStatus, 
 			String sortBy);
 
 	void deleteProduct(ProductDeleteDTO productDeleteDto, HttpServletRequest request) throws IOException;

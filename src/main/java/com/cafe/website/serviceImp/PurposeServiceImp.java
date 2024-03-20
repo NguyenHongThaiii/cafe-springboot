@@ -69,7 +69,7 @@ public class PurposeServiceImp implements PurposeService {
 
 	public PurposeServiceImp(EntityManager entityManager, PurposeMapper purposeMapper,
 			CloudinaryService cloudinaryService, PurposeRepository purposeRepository, ImageRepository imageRepository,
-			LogService logService, AuthService authService) {
+			LogService logService, AuthService authService, ObjectMapper objectMapper) {
 		super();
 		this.entityManager = entityManager;
 		this.purposeMapper = purposeMapper;
@@ -78,6 +78,7 @@ public class PurposeServiceImp implements PurposeService {
 		this.imageRepository = imageRepository;
 		this.logService = logService;
 		this.authService = authService;
+		this.objectMapper = objectMapper;
 	}
 
 	@Override

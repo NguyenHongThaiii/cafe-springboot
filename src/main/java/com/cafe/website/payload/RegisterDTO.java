@@ -12,19 +12,15 @@ public class RegisterDTO {
 	@NotNull
 	private String password;
 
-	@NotNull
-	private String phone;
+	public RegisterDTO() {
+		// TODO Auto-generated constructor stub
+	}
 
-	public RegisterDTO(@NotNull String name, @NotNull String email, @NotNull String password, @NotNull String phone) {
+	public RegisterDTO(@NotNull String name, @NotNull String email, @NotNull String password) {
 		super();
 		this.name = name;
 		this.email = email;
 		this.password = password;
-		this.phone = phone;
-	}
-
-	public RegisterDTO() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getName() {
@@ -49,19 +45,6 @@ public class RegisterDTO {
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	@Override
-	public String toString() {
-		return "RegisterDTO [name=" + name + ", email=" + email + ", password=" + password + ", phone=" + phone + "]";
 	}
 
 }

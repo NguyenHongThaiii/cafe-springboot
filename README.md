@@ -13,6 +13,7 @@
 - Add notification feature for other features (Urgently)
 - handle issue when user interact but its just locked (later)
 - need to find what all of methods need @Transactional(rollbackOn = Exception.class) (later)
+- the result after updating image area purpose... are wrong 
 
 #Done
 - fix catch by user to by token (done)

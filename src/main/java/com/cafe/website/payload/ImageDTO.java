@@ -25,6 +25,10 @@ public class ImageDTO extends BaseImage {
 		for (Image image : listEntityImages) {
 			ImageDTO i = MapperUtils.mapToDTO(image, ImageDTO.class);
 			i.setUrl(image.getImage());
+			i.setCreatedAt(image.getCreatedAt());
+			i.setId(image.getId());
+			i.setUpdatedAt(image.getUpdatedAt());
+			i.setStatus(image.getStatus());
 			imageString.add(i);
 		}
 		return imageString;
@@ -33,8 +37,14 @@ public class ImageDTO extends BaseImage {
 	public static ImageDTO generateImageDTO(Image image) {
 		if (image == null)
 			return null;
+		
+		logger.info("ID: " +image.getId() );
 		ImageDTO i = MapperUtils.mapToDTO(image, ImageDTO.class);
 		i.setUrl(image.getImage());
+		i.setCreatedAt(image.getCreatedAt());
+		i.setId(image.getId());
+		i.setUpdatedAt(image.getUpdatedAt());
+		i.setStatus(image.getStatus());
 		return i;
 	}
 
