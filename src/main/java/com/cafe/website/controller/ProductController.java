@@ -66,6 +66,13 @@ public class ProductController {
 		return new ResponseEntity<>(product, HttpStatus.OK);
 
 	}
+	@GetMapping("/count/{status}")
+	public ResponseEntity<Long> getCountProductByStatus(@PathVariable(name = "status") Integer status) {
+		Long count = productService.getCountProduct(status);
+		
+		return new ResponseEntity<Long>(count, HttpStatus.OK);
+		
+	}
 
 	@GetMapping("/{slug}")
 	public ResponseEntity<ProductDTO> getProductBySlug(@PathVariable(name = "slug") String slug) {
