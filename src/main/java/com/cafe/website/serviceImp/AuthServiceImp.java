@@ -129,8 +129,9 @@ public class AuthServiceImp implements AuthService {
 	public LoginResponseDTO login(LoginDTO loginDto, HttpServletRequest request) {
 		User user = userRepository.findByEmail(loginDto.getEmail())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "email", loginDto.getEmail()));
-		if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword()))
+		if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword()) || user.getStatus()!=1)
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Email or password is not correct.");
+
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
 		LoginResponseDTO lg = MapperUtils.mapToDTO(user, LoginResponseDTO.class);
@@ -146,7 +147,7 @@ public class AuthServiceImp implements AuthService {
 			logService.createLog(request, user, "Login SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(loginDto), "Login");
 			lg.setToken(token);
-
+			
 			return lg;
 		} catch (IOException e) {
 			logService.createLog(request, user, MethodUtil.handleSubstringMessage(e.getMessage()),
@@ -177,9 +178,9 @@ public class AuthServiceImp implements AuthService {
 		user.setRoles(roles);
 		String newSlug = this.generateSlug(slugify.slugify(registerDto.getName()));
 		user.setSlug(newSlug);
-		String otp = otpService.generateAndStoreOtp(user.getEmail());
+		user.setStatus(1);
+		user.setIsWaitingDelete(false);
 
-		emailService.sendSimpleEmail(user.getEmail(), "Otp register user", otp);
 		userRepository.save(user);
 
 		RegisterResponse reg = MapperUtils.mapToEntity(user, RegisterResponse.class);
@@ -208,7 +209,9 @@ public class AuthServiceImp implements AuthService {
 
 	@Override
 	public RegisterResponse validateRegister(ValidateOtpDTO validateDto, HttpServletRequest request) {
-		String otpCache = otpService.getOtpByEmail(validateDto.getEmail());
+		String otpCache = otpService.getOtpByEmail(validateDto.getEmail().trim());
+		logger.info("otpCache: "+otpCache);
+		logger.info("otpCache: "+validateDto.getEmail());
 		this.validateOtp(validateDto.getOtp(), otpCache);
 
 		User user = userRepository.findByEmail(validateDto.getEmail())
@@ -311,6 +314,8 @@ public class AuthServiceImp implements AuthService {
 		if (email.contains("@")) {
 			String otp = otpService.generateAndStoreOtp(email);
 			emailService.sendSimpleEmail(email, "resetPassword", otp);
+			String otpEmail = otpService.getOtpByEmail(email);
+
 		}
 		try {
 			logService.createLog(request, null, "Send Email SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
@@ -326,9 +331,10 @@ public class AuthServiceImp implements AuthService {
 	@Override
 	public void handleValidateResetPassword(ValidateOtpDTO validateOtpDto, HttpServletRequest request) {
 		String otpEmail = otpService.getOtpByEmail(validateOtpDto.getEmail());
+
 		this.validateOtp(otpEmail, validateOtpDto.getOtp());
-		otpService.clearCache("otpCache", validateOtpDto.getEmail());
-		otpService.generateAndStoreAnotherData(validateOtpDto.getEmail());
+		otpService.clearCache("otpCache", validateOtpDto.getEmail().toLowerCase());
+		otpService.generateAndStoreAnotherData(validateOtpDto.getEmail().toLowerCase());
 		try {
 			logService.createLog(request, null, "Handle Validate Reset Password SUCCESSFULY",
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(validateOtpDto),
@@ -353,8 +359,9 @@ public class AuthServiceImp implements AuthService {
 
 		otpService.clearCache("session", reset.getEmail());
 		String passwordEncryt = passwordEncoder.encode(reset.getPassword());
+		
 		user.setPassword(passwordEncryt);
-
+		user.setStatus(1);
 		userRepository.save(user);
 		try {
 			logService.createLog(request, null, "Handle Reset Password SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),

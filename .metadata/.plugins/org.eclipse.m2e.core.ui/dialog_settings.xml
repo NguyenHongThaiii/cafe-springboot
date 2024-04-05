@@ -2,7 +2,7 @@
 <section name="Workbench">
 	<section name="MavenProjectImportWizardPage">
 		<list key="rootDirectory">
-			<item value="F:\cafe-project\cafe"/>
+			<item value="D:\chuyendeweb\cafe-springboot"/>
 		</list>
 		<list key="projectNameTemplate">
 			<item value="[artifactId]"/>

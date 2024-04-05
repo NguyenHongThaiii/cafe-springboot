@@ -31,4 +31,6 @@ public class Purpose extends BaseCategory implements HasImage {
 		this.image = image;
 	}
 
+
+
 }

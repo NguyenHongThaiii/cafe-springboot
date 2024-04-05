@@ -1,6 +1,8 @@
 package com.cafe.website.serviceImp;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
@@ -11,6 +13,7 @@ import com.cafe.website.service.OTPService;
 @Service
 public class OTPSerivceImp implements OTPService {
 	private CacheManager cacheManager;
+	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 
 	public OTPSerivceImp(CacheManager cacheManager) {
 		this.cacheManager = cacheManager;
@@ -20,6 +23,7 @@ public class OTPSerivceImp implements OTPService {
 	@Override
 	public String generateAndStoreOtp(String email) {
 		String otp = generateUniqueOtp(email.toLowerCase(), "otpCache");
+		
 		return otp;
 	}
 
@@ -34,7 +38,6 @@ public class OTPSerivceImp implements OTPService {
 	@Override
 	public String getOtpByEmail(String email) {
 		Cache otpCache = cacheManager.getCache("otpCache");
-
 		if (otpCache != null) {
 			Cache.ValueWrapper valueWrapper = otpCache.get(email.toLowerCase());
 			if (valueWrapper != null) {
@@ -58,12 +61,13 @@ public class OTPSerivceImp implements OTPService {
 	}
 
 	private String generateUniqueOtp(String email, String nameCache) {
-		Cache otpCache = cacheManager.getCache(nameCache.toLowerCase());
+		Cache otpCache = cacheManager.getCache(nameCache);
 		String otp;
 		do {
 			otp = RandomStringUtils.randomAlphanumeric(6);
 		} while (isOtpExists(otpCache, otp));
 		otpCache.put(email.toLowerCase(), otp);
+
 		return otp;
 	}
 

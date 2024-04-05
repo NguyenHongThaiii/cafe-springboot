@@ -7,11 +7,16 @@ public class RegisterResponse {
 
 	private String phone;
 	private int status;
-	private Long createdAt;
-	private Long updatedAt;
+	private String createdAt;
+	private String updatedAt;
 	private String token;
 
-	public RegisterResponse(String name, String email, String phone, int status, Long createdAt, Long updatedAt) {
+	public RegisterResponse() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public RegisterResponse(String name, String email, String phone, int status, String createdAt, String updatedAt,
+			String token) {
 		super();
 		this.name = name;
 		this.email = email;
@@ -19,17 +24,6 @@ public class RegisterResponse {
 		this.status = status;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
-	}
-
-	public RegisterResponse() {
-		// TODO Auto-generated constructor stub
-	}
-
-	public String getToken() {
-		return token;
-	}
-
-	public void setToken(String token) {
 		this.token = token;
 	}
 
@@ -65,20 +59,28 @@ public class RegisterResponse {
 		this.status = status;
 	}
 
-	public Long getCreatedAt() {
+	public String getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(Long createdAt) {
+	public void setCreatedAt(String createdAt) {
 		this.createdAt = createdAt;
 	}
 
-	public Long getUpdatedAt() {
+	public String getUpdatedAt() {
 		return updatedAt;
 	}
 
-	public void setUpdatedAt(Long updatedAt) {
+	public void setUpdatedAt(String updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 
 }

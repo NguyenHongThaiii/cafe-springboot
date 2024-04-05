@@ -48,10 +48,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 	Boolean existsByName(String name);
 
+	Long countByStatus(Integer status);
+
 	@Query
 	default List<Product> findWithFilters(String name, Integer status, String slugArea, String slugConvenience,
-			String slugKind, String slugPurpose, Boolean isWatingDelete, Double latitude, Double longitude,
-			Long userId, Float ratingsAverage, String createdAt, String updatedAt, String timeStatus,
+			String slugKind, String slugPurpose, Boolean isWatingDelete, Double latitude, Double longitude, Long userId,
+			Float ratingsAverage, Integer outstanding, String createdAt, String updatedAt, String timeStatus,
 			Pageable pageable, EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -98,6 +100,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 			predicates.add(cb.equal(product.get("status"), status));
 
 		}
+		if (outstanding != null) {
+			predicates.add(cb.equal(product.get("outstanding"), outstanding));
+
+		}
 		if (ratingsAverage != null) {
 			Join<Product, Review> review = product.join("reviews");
 			Join<Review, Rating> rating = review.join("rating");
@@ -129,7 +135,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 				logger.info("timeStatus Day: " + currentDayOfWeek);
 			}
 		}
-		if (pageable.getSort() != null) {
+		if (pageable != null && pageable.getSort() != null) {
 			for (Sort.Order order : pageable.getSort()) {
 
 				orders.add(order.isAscending() ? cb.asc(product.get(order.getProperty()))
@@ -138,8 +144,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 			cq.orderBy(orders);
 		}
 		cq.where(predicates.toArray(new Predicate[0]));
+		if (pageable != null)
 
-		return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
-				.setMaxResults(pageable.getPageSize()).getResultList();
+			return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
+					.setMaxResults(pageable.getPageSize()).getResultList();
+		else
+			return entityManager.createQuery(cq).setFirstResult(0).getResultList();
 	}
 }

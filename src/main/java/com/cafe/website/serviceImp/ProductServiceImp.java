@@ -145,40 +145,44 @@ public class ProductServiceImp implements ProductService {
 	@Override
 	public List<ProductDTO> getListProducts(int limit, int page, Integer status, String rating, Boolean isWatingDelete,
 			String name, String slugArea, String slugConvenience, String slugKind, String slugPurpose, Double latitude,
-			Double longitude, Long userId, Float ratingsAverage, String createdAt, String updatedAt, String timeStatus,
-			String sortBy) {
+			Double longitude, Long userId, Float ratingsAverage, Integer outstanding, String createdAt,
+			String updatedAt, String timeStatus, String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.PRICEMIN,
 				SortField.PRICEMAX, SortField.UPDATEDAT, SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC,
 				SortField.PRICEMINDESC, SortField.PRICEMAXDESC, SortField.UPDATEDATDESC, SortField.CREATEDATDESC);
-		Pageable pageable = PageRequest.of(page - 1, limit);
+
 		List<String> sortByList = new ArrayList<String>();
 		List<Product> productList = null;
 		List<Sort.Order> sortOrders = new ArrayList<>();
 		List<ProductDTO> listProductDto;
+		Pageable pageable = null;
 
-		if (!StringUtils.isEmpty(sortBy))
-			sortByList = Arrays.asList(sortBy.split(","));
+		if (page != 0) {
+			pageable = PageRequest.of(page - 1, limit);
+			if (!StringUtils.isEmpty(sortBy))
+				sortByList = Arrays.asList(sortBy.split(","));
 
-		for (String sb : sortByList) {
-			boolean isDescending = sb.endsWith("Desc");
+			for (String sb : sortByList) {
+				boolean isDescending = sb.endsWith("Desc");
 
-			if (isDescending && !StringUtils.isEmpty(sortBy))
-				sb = sb.substring(0, sb.length() - 4).trim();
+				if (isDescending && !StringUtils.isEmpty(sortBy))
+					sb = sb.substring(0, sb.length() - 4).trim();
 
-			for (SortField sortField : validSortFields) {
-				if (sortField.toString().equals(sb.trim())) {
-					sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
-					break;
+				for (SortField sortField : validSortFields) {
+					if (sortField.toString().equals(sb.trim())) {
+						sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
+						break;
+					}
 				}
 			}
+
+			if (!sortOrders.isEmpty())
+				pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 		}
 
-		if (!sortOrders.isEmpty())
-			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
-
 		productList = productRepository.findWithFilters(name, status, slugArea, slugConvenience, slugKind, slugPurpose,
-				isWatingDelete, latitude, longitude, userId, ratingsAverage, createdAt, updatedAt, timeStatus, pageable,
-				entityManager);
+				isWatingDelete, latitude, longitude, userId, ratingsAverage, outstanding, createdAt, updatedAt,
+				timeStatus, pageable, entityManager);
 		listProductDto = productList.stream().map(product -> {
 			ProductDTO pdto = MapperUtils.mapToDTO(product, ProductDTO.class);
 			List<AreaDTO> listArea = MapperUtils.loppMapToDTO(product.getAreas(), AreaDTO.class);
@@ -452,7 +456,6 @@ public class ProductServiceImp implements ProductService {
 		List<ProductScheduleDTO> listSchedulesDto = new ArrayList<>();
 
 		for (ProductSchedule schedule : product.getSchedules()) {
-			logger.info(schedule.getCreatedAt() + "");
 			ProductScheduleDTO scheduleDto = MapperUtils.mapToDTO(schedule, ProductScheduleDTO.class);
 			listSchedulesDto.add(scheduleDto);
 		}
@@ -618,6 +621,14 @@ public class ProductServiceImp implements ProductService {
 			} catch (IOException e) {
 			}
 		}, Integer.parseInt(timeout), TimeUnit.SECONDS);
+	}
+
+	@Override
+	public Long getCountProduct(Integer status) {
+		if (status == null)
+			return 0L;
+		productRepository.countByStatus(status);
+		return productRepository.countByStatus(status);
 	}
 
 }
