@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cafe.website.payload.ProductDTO;
@@ -36,9 +37,23 @@ public class ProductSavedController {
 
 	}
 
-	@GetMapping("/id/{id}")
-	public ResponseEntity<List<ProductDTO>> getListProductSavedByUserId(@PathVariable(name = "id") Long id) {
-		List<ProductDTO> list = productSavedService.getListProductSavedByUser(id);
+	@GetMapping("")
+	public ResponseEntity<List<ProductDTO>> getListProductSavedByUserId(@RequestParam(defaultValue = "5") Integer limit,
+			@RequestParam(defaultValue = "1") Integer page, @RequestParam(required = false) Integer status,
+			@RequestParam(required = false) String slugArea, @RequestParam(required = false) String slugKind,
+			@RequestParam(required = false) String slugConvenience, @RequestParam(required = false) String slugPurpose,
+			@RequestParam(required = false) Long userId, @RequestParam(required = false) String createdAt,
+			@RequestParam(required = false) String updatedAt,
+			@RequestParam(required = false, defaultValue = "") String sortBy) {
+		List<ProductDTO> list = productSavedService.getListProductSavedByUser(limit, page, status, slugArea,
+				slugConvenience, slugKind, slugPurpose, userId, createdAt, updatedAt, sortBy);
 		return ResponseEntity.ok(list);
+	}
+
+	@GetMapping("/userId/{userId}/productId/{productId}")
+	public ResponseEntity<Boolean> getListProductSavedByUserId(@PathVariable(name = "userId") Long userId,
+			@PathVariable(name = "productId") Long productId) {
+		Boolean isSaved = productSavedService.checkIsSavedByUserId(userId, productId);
+		return ResponseEntity.ok(isSaved);
 	}
 }
