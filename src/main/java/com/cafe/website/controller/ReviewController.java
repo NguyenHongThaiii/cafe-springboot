@@ -55,7 +55,7 @@ public class ReviewController {
 		return new ResponseEntity<>(reviewDto, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
+//	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@PostMapping("")
 	public ResponseEntity<ReviewDTO> createReview(@Valid @ModelAttribute ReviewCreateDTO review,
 			HttpServletRequest request) throws IOException {

@@ -8,8 +8,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cafe.website.entity.Rating;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-public class ReviewUpdateDTO {
+import jakarta.validation.constraints.NotNull;
 
+public class ReviewUpdateDTO {
+	@NotNull
+	private Long userId;
 	private Rating rating;
 
 	private List<MultipartFile> listImageFiles = new ArrayList<>();
@@ -27,14 +30,23 @@ public class ReviewUpdateDTO {
 
 	}
 
-	public ReviewUpdateDTO(Rating rating, List<MultipartFile> listImageFiles, String name, int status,
-			List<FileMetadata> listFileMetadatas) {
+	public ReviewUpdateDTO(@NotNull Long userId, Rating rating, List<MultipartFile> listImageFiles, String name,
+			int status, List<FileMetadata> listFileMetadatas) {
 		super();
+		this.userId = userId;
 		this.rating = rating;
 		this.listImageFiles = listImageFiles;
 		this.name = name;
 		this.status = status;
 		this.listFileMetadatas = listFileMetadatas;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
 	public Rating getRating() {

@@ -42,14 +42,14 @@ public class BaseEntity {
 
 	@PrePersist
 	public void prePersist() {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy:HH:mm:ss");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-DD HH:mm:ss");
 		this.createdAt = LocalDateTime.now().format(formatter);
 		this.updatedAt = LocalDateTime.now().format(formatter);
 	}
 
 	@PreUpdate
 	public void preUpdate() {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy:HH:mm:ss");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-DD HH:mm:ss");
 		this.updatedAt = LocalDateTime.now().format(formatter);
 	}
 

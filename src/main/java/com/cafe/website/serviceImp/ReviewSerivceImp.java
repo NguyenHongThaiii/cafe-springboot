@@ -31,6 +31,7 @@ import com.cafe.website.payload.ImageDTO;
 import com.cafe.website.payload.ReviewCreateDTO;
 import com.cafe.website.payload.ReviewDTO;
 import com.cafe.website.payload.ReviewUpdateDTO;
+import com.cafe.website.payload.UserDTO;
 import com.cafe.website.repository.FavoriterRepository;
 import com.cafe.website.repository.ImageRepository;
 import com.cafe.website.repository.ProductRepository;
@@ -96,44 +97,56 @@ public class ReviewSerivceImp implements ReviewService {
 	}
 
 	@Override
-	public List<ReviewDTO> getListReviews(int limit, int page, String name, Long productId, Long userId,
-			Long ratingId, String createdAt, String updatedAt, Float ratingAverage, String sortBy) {
+	public List<ReviewDTO> getListReviews(int limit, int page, String name, Long productId, Long userId, Long ratingId,
+			String createdAt, String updatedAt, Float ratingAverage, String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
 				SortField.CREATEDATDESC);
-		Pageable pageable = PageRequest.of(page - 1, limit);
+		Pageable pageable = null;
+
 		List<String> sortByList = new ArrayList<String>();
 		List<ReviewDTO> listReviewDto;
 		List<Review> listReview;
 		List<Sort.Order> sortOrders = new ArrayList<>();
 
 		// sort
-		if (!StringUtils.isEmpty(sortBy))
-			sortByList = Arrays.asList(sortBy.split(","));
+		if (page != 0) {
+			pageable = PageRequest.of(page - 1, limit);
 
-		for (String sb : sortByList) {
-			boolean isDescending = sb.endsWith("Desc");
+			if (!StringUtils.isEmpty(sortBy))
+				sortByList = Arrays.asList(sortBy.split(","));
 
-			if (isDescending && !StringUtils.isEmpty(sortBy))
-				sb = sb.substring(0, sb.length() - 4).trim();
+			for (String sb : sortByList) {
+				boolean isDescending = sb.endsWith("Desc");
 
-			for (SortField sortField : validSortFields) {
-				if (sortField.toString().equals(sb.trim())) {
-					sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
-					break;
+				if (isDescending && !StringUtils.isEmpty(sortBy))
+					sb = sb.substring(0, sb.length() - 4).trim();
+
+				for (SortField sortField : validSortFields) {
+					if (sortField.toString().equals(sb.trim())) {
+						sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
+						break;
+					}
 				}
 			}
 		}
-
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
 		listReview = reviewRepository.findWithFilters(name, productId, userId, ratingId, createdAt, updatedAt,
 				ratingAverage, pageable, entityManager);
 		listReviewDto = listReview.stream().map(review -> {
+			User user = userRepository.findById(review.getUser().getId())
+					.orElseThrow(() -> new ResourceNotFoundException("User", "id", review.getUser().getId()));
+			UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
+			if (user.getAvatar() != null)
+				userDto.setImage(ImageDTO.generateImageDTO(user.getAvatar()));
+
 			ReviewDTO reviewDto = MapperUtils.mapToDTO(review, ReviewDTO.class);
 			reviewDto.setListImages(ImageDTO.generateListImageDTO(review.getListImages()));
 			reviewDto.setProductId(review.getProduct().getId());
+			reviewDto.setUserDto(userDto);
+
 			return reviewDto;
 		}).collect(Collectors.toList());
 
@@ -145,10 +158,15 @@ public class ReviewSerivceImp implements ReviewService {
 		Review review = reviewRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Review", "id", id));
 		ReviewDTO reviewDto = MapperUtils.mapToDTO(review, ReviewDTO.class);
+		User user = userRepository.findById(review.getUser().getId())
+				.orElseThrow(() -> new ResourceNotFoundException("User", "id", review.getUser().getId()));
+		UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
+		if (user.getAvatar() != null)
+			userDto.setImage(ImageDTO.generateImageDTO(user.getAvatar()));
 
 		reviewDto.setListImages(ImageDTO.generateListImageDTO(review.getListImages()));
 		reviewDto.setProductId(review.getProduct().getId());
-
+		reviewDto.setUserDto(userDto);
 		return reviewDto;
 	}
 
@@ -194,6 +212,8 @@ public class ReviewSerivceImp implements ReviewService {
 		MethodUtil.convertListFileImageToInfo(reviewCreateDto.getListFileMetadatas(),
 				reviewCreateDto.getListImageFiles());
 		reviewCreateDto.setListImageFiles(null);
+		UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
+		reviewDto.setUserDto(userDto);
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Create Review SUCCESSFULY",
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(reviewCreateDto),
@@ -204,6 +224,7 @@ public class ReviewSerivceImp implements ReviewService {
 					"Create Review SUCCESSFULY");
 			e.printStackTrace();
 		}
+
 		return reviewDto;
 	}
 
@@ -212,6 +233,8 @@ public class ReviewSerivceImp implements ReviewService {
 			throws IOException {
 		Review review = reviewRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Review", "id", id));
+		User user = userRepository.findById(reviewUpdateDto.getUserId())
+				.orElseThrow(() -> new ResourceNotFoundException("User", "id", reviewUpdateDto.getUserId()));
 		String path_reviews = "cafe-springboot/reviews";
 		ReviewDTO reviewDto = MapperUtils.mapToDTO(review, ReviewDTO.class);
 
@@ -246,6 +269,8 @@ public class ReviewSerivceImp implements ReviewService {
 		Map<String, Object> logData = new HashMap<>();
 		logData.put("id", id);
 		logData.put("reviewUpdateDto", reviewUpdateDto);
+		UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
+		reviewDto.setUserDto(userDto);
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Update Review SUCCESSFULY",
 					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(logData),

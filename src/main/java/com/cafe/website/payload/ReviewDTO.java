@@ -15,35 +15,21 @@ public class ReviewDTO extends BaseEntityDTO {
 
 	private int favorite;
 	private Long productId;
+	private UserDTO userDto;
 
-	public ReviewDTO(Long id, Integer status, String createdAt, String updatedAt, Rating rating, String name,
-			List<ImageDTO> listImages, int favorite, Long productId) {
-		super(id, status, createdAt, updatedAt);
+	public ReviewDTO() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public ReviewDTO(Rating rating, String name, List<ImageDTO> listImages, int favorite, Long productId,
+			UserDTO userDto) {
+		super();
 		this.rating = rating;
 		this.name = name;
 		this.listImages = listImages;
 		this.favorite = favorite;
 		this.productId = productId;
-	}
-
-	public Long getProductId() {
-		return productId;
-	}
-
-	public void setProductId(Long productId) {
-		this.productId = productId;
-	}
-
-	public int getFavorite() {
-		return favorite;
-	}
-
-	public void setFavorite(int favorite) {
-		this.favorite = favorite;
-	}
-
-	public ReviewDTO() {
-		// TODO Auto-generated constructor stub
+		this.userDto = userDto;
 	}
 
 	public Rating getRating() {
@@ -68,6 +54,30 @@ public class ReviewDTO extends BaseEntityDTO {
 
 	public void setListImages(List<ImageDTO> listImages) {
 		this.listImages = listImages;
+	}
+
+	public int getFavorite() {
+		return favorite;
+	}
+
+	public void setFavorite(int favorite) {
+		this.favorite = favorite;
+	}
+
+	public Long getProductId() {
+		return productId;
+	}
+
+	public void setProductId(Long productId) {
+		this.productId = productId;
+	}
+
+	public UserDTO getUserDto() {
+		return userDto;
+	}
+
+	public void setUserDto(UserDTO userDto) {
+		this.userDto = userDto;
 	}
 
 }

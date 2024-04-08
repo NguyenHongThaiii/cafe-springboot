@@ -22,7 +22,7 @@ import jakarta.persistence.criteria.Root;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
 	@Query
-	default List<Comment> findWithFilters(String name, Long reviewId, Long userId, String createdAt,
+	default List<Comment> findWithFilters(Integer status, String name, Long reviewId, Long userId, String createdAt,
 			String updatedAt, Pageable pageable, EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -30,7 +30,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
 		Root<Comment> comment = cq.from(Comment.class);
 		List<Predicate> predicates = new ArrayList<>();
-
+		if (status != null) {
+			predicates.add(cb.equal(comment.get(" status"), status));
+		}
 		if (name != null) {
 			predicates.add(cb.like(cb.lower(comment.get("name")), "%" + name.toLowerCase() + "%"));
 		}
@@ -46,7 +48,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 		if (userId != null) {
 			predicates.add(cb.equal(comment.get("user").get("id"), userId));
 		}
-		if (pageable.getSort() != null) {
+		if (pageable != null && pageable.getSort() != null) {
 			List<Order> orders = new ArrayList<>();
 			for (Sort.Order order : pageable.getSort()) {
 				orders.add(order.isAscending() ? cb.asc(comment.get(order.getProperty()))
@@ -56,7 +58,10 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 		}
 		cq.where(predicates.toArray(new Predicate[0]));
 
-		return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
-				.setMaxResults(pageable.getPageSize()).getResultList();
+		if (pageable != null)
+			return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
+					.setMaxResults(pageable.getPageSize()).getResultList();
+		else
+			return entityManager.createQuery(cq).setFirstResult(0).getResultList();
 	}
 }

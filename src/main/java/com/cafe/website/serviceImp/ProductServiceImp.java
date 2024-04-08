@@ -475,7 +475,7 @@ public class ProductServiceImp implements ProductService {
 		logData.put("productUpdateDto", productUpdateDto);
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Update Product SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(logData),
+					StatusLog.SUCCESSFULLY.toString(), MethodUtil.handleSubstringMessage(objectMapper.writeValueAsString(logData)),
 					"Update Product SUCCESSFULY");
 			return pdto;
 		} catch (IOException e) {
@@ -567,8 +567,27 @@ public class ProductServiceImp implements ProductService {
 
 		ProductDTO productDto = MapperUtils.mapToDTO(product, ProductDTO.class);
 		List<Image> listEntityImages = imageRepository.findAllImageByProductId(product.getId());
+		List<AreaDTO> listArea = MapperUtils.loppMapToDTO(product.getAreas(), AreaDTO.class);
+		List<PurposeDTO> listPurpose = MapperUtils.loppMapToDTO(product.getPurposes(), PurposeDTO.class);
+		List<KindDTO> listKind = MapperUtils.loppMapToDTO(product.getKinds(), KindDTO.class);
+		List<ConvenienceDTO> listCon = MapperUtils.loppMapToDTO(product.getConveniences(), ConvenienceDTO.class);
+		List<ProductScheduleDTO> listScheduleDto = new ArrayList<>();
 
 		productDto.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
+		productDto.setAvgRating(reviewService.getRatingByReviewId(product.getId()));
+		for (ProductSchedule schedule : product.getSchedules()) {
+			ProductScheduleDTO scheduleDto = MapperUtils.mapToDTO(schedule, ProductScheduleDTO.class);
+			listScheduleDto.add(scheduleDto);
+		}
+		// more
+		productDto.setAreas(listArea);
+		productDto.setConveniences(listCon);
+		productDto.setKinds(listKind);
+		productDto.setPurposes(listPurpose);
+		productDto.setSchedules(listScheduleDto);
+		productDto.setOwner(MapperUtils.mapToDTO(product.getUser(), UserDTO.class));
+		productDto.setAvgRating(reviewService.getRatingByReviewId(product.getId()));
+		productDto.setListMenu(MenuDTO.generateListMenuDTO(product.getListMenus()));
 
 		return productDto;
 	}

@@ -27,8 +27,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
 	List<Review> findReviewByProductId(Long productId);
 
-	default List<Review> findWithFilters(String name, Long productId, Long userId, Long ratingId,
-			String createdAt, String updatedAt, Float ratingAverage, Pageable pageable, EntityManager entityManager) {
+	default List<Review> findWithFilters(String name, Long productId, Long userId, Long ratingId, String createdAt,
+			String updatedAt, Float ratingAverage, Pageable pageable, EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Review> cq = cb.createQuery(Review.class);
@@ -63,7 +63,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 			Expression<Number> calculatedAverage = cb.quot(sumOfRatings, 5.0f);
 			predicates.add(cb.equal(calculatedAverage, ratingAverage));
 		}
-		if (pageable.getSort() != null) {
+		if (pageable != null && pageable.getSort() != null) {
 			List<Order> orders = new ArrayList<>();
 			for (Sort.Order order : pageable.getSort()) {
 				orders.add(order.isAscending() ? cb.asc(review.get(order.getProperty()))
@@ -73,8 +73,11 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 		}
 		cq.where(predicates.toArray(new Predicate[0]));
 
-		return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
-				.setMaxResults(pageable.getPageSize()).getResultList();
+		if (pageable != null)
+			return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
+					.setMaxResults(pageable.getPageSize()).getResultList();
+		else
+			return entityManager.createQuery(cq).setFirstResult(0).getResultList();
 	}
 
 	default List<Review> findAllByOrderByRatingAverageRating(Float ratingAverage, EntityManager entityManager) {
