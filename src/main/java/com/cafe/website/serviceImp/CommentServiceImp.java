@@ -27,6 +27,7 @@ import com.cafe.website.exception.ResourceNotFoundException;
 import com.cafe.website.payload.CommentCreateDTO;
 import com.cafe.website.payload.CommentDTO;
 import com.cafe.website.payload.CommentUpdateDTO;
+import com.cafe.website.payload.UserDTO;
 import com.cafe.website.repository.CommentRepository;
 import com.cafe.website.repository.ReviewRepository;
 import com.cafe.website.repository.UserRepository;
@@ -71,17 +72,20 @@ public class CommentServiceImp implements CommentService {
 	}
 
 	@Override
-	public List<CommentDTO> getListComments(int limit, int page, String name, Long userId, Long reviewId,
-			String createdAt, String updatedAt, String sortBy) {
+	public List<CommentDTO> getListComments(int limit, int page, Integer status, String name, Long userId,
+			Long reviewId, String createdAt, String updatedAt, String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
 				SortField.CREATEDATDESC);
-		Pageable pageable = PageRequest.of(page - 1, limit);
+		Pageable pageable = null;
+
 		List<String> sortByList = new ArrayList<String>();
 		List<CommentDTO> listCommentDto;
 		List<Comment> listComment;
 		List<Sort.Order> sortOrders = new ArrayList<>();
 
+		if(page!=0) {
+			pageable = PageRequest.of(page - 1, limit);
 		if (!StringUtils.isEmpty(sortBy))
 			sortByList = Arrays.asList(sortBy.split(","));
 
@@ -101,12 +105,18 @@ public class CommentServiceImp implements CommentService {
 
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
-		listComment = commentRepository.findWithFilters(name, reviewId, userId, createdAt, updatedAt, pageable,
+		}
+		listComment = commentRepository.findWithFilters(status,name, reviewId, userId, createdAt, updatedAt, pageable,
 				entityManager);
 
 		listCommentDto = listComment.stream().map(comment -> {
+			
+			
 			CommentDTO commentDto = MapperUtils.mapToDTO(comment, CommentDTO.class);
 			commentDto.setReivewId(comment.getReview().getId());
+			User user = userRepository.findById(comment.getUser().getId()).orElseThrow(() -> new ResourceNotFoundException("User", "id", comment.getUser().getId()));
+			UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
+			commentDto.setUser(userDto);
 			return commentDto;
 		}).collect(Collectors.toList());
 
@@ -117,20 +127,23 @@ public class CommentServiceImp implements CommentService {
 	public CommentDTO getCommentById(Long id) {
 		Comment comment = commentRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Comment", "id", id));
+		CommentDTO commentDto = MapperUtils.mapToDTO(comment, CommentDTO.class);
 
-		return MapperUtils.mapToDTO(comment, CommentDTO.class);
+		User user = userRepository.findById(comment.getUser().getId()).orElseThrow(() -> new ResourceNotFoundException("User", "id", comment.getUser().getId()));
+		UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
+		commentDto.setUser(userDto);
+		return commentDto;
 	}
 
 	@Override
-	public CommentDTO createComment(CommentCreateDTO commentCreateDto, SimpMessageHeaderAccessor headerAccessor) {
+	public CommentDTO createComment(CommentCreateDTO commentCreateDto,
+			HttpServletRequest request) {
 
 		Review review = reviewRepository.findById(commentCreateDto.getReviewId())
 				.orElseThrow(() -> new ResourceNotFoundException("Review", "id", commentCreateDto.getReviewId()));
 		User user = userRepository.findById(commentCreateDto.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", commentCreateDto.getUserId()));
-		String userAgent = (String) headerAccessor.getSessionAttributes().get("userAgent");
-		String endpoint = (String) headerAccessor.getSessionAttributes().get("endpoint");
-
+	
 		Comment comment = new Comment();
 		comment.setReview(review);
 		comment.setUser(user);
@@ -138,16 +151,19 @@ public class CommentServiceImp implements CommentService {
 		commentRepository.save(comment);
 		CommentDTO commentDto = MapperUtils.mapToDTO(comment, CommentDTO.class);
 		commentDto.setReivewId(comment.getReview().getId());
+		UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
+		commentDto.setUser(userDto);
 		try {
-			logService.createLog(user, "Create Comment SUCCESSFULLY", StatusLog.SUCCESSFULLY.toString(),
-					objectMapper.writeValueAsString(commentCreateDto), "Websocket", endpoint, "GET", userAgent);
+			logService.createLog(request, authService.getUserFromHeader(request), "Create Comment SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(commentCreateDto),
+					"Create Comment SUCCESSFULY");
 			return commentDto;
 		} catch (IOException e) {
 
 			try {
-				logService.createLog(user, MethodUtil.handleSubstringMessage(e.getMessage()),
-						StatusLog.FAILED.toString(), objectMapper.writeValueAsString(commentCreateDto), "Websocket",
-						endpoint, "GET", userAgent);
+				logService.createLog(request, authService.getUserFromHeader(request), "Create Comment FAILED",
+						StatusLog.FAILED.toString(), objectMapper.writeValueAsString(commentCreateDto),
+						"Create Comment FAILED");
 				throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
 						e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 			} catch (JsonProcessingException e1) {
@@ -159,15 +175,14 @@ public class CommentServiceImp implements CommentService {
 
 	@Override
 	public CommentDTO updateComment(Long id, CommentUpdateDTO commentUpdateDto,
-			SimpMessageHeaderAccessor headerAccessor) {
+			HttpServletRequest request) {
 		reviewRepository.findById(commentUpdateDto.getReviewId())
 				.orElseThrow(() -> new ResourceNotFoundException("Review", "id", commentUpdateDto.getReviewId()));
 		User user = userRepository.findById(commentUpdateDto.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", commentUpdateDto.getUserId()));
 		Comment comment = commentRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Comment", "id", id));
-		String userAgent = (String) headerAccessor.getSessionAttributes().get("userAgent");
-		String endpoint = (String) headerAccessor.getSessionAttributes().get("endpoint");
+	
 		if (commentUpdateDto.getStatus() != null)
 			comment.setStatus(commentUpdateDto.getStatus());
 
@@ -176,17 +191,18 @@ public class CommentServiceImp implements CommentService {
 
 		CommentDTO commentDto = MapperUtils.mapToDTO(comment, CommentDTO.class);
 		commentDto.setReivewId(comment.getReview().getId());
-
+		UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
+		commentDto.setUser(userDto);
 		try {
-			logService.createLog(user, "Update Comment SUCCESSFULLY", StatusLog.SUCCESSFULLY.toString(),
-					objectMapper.writeValueAsString(commentUpdateDto), "Websocket", endpoint, "POST", userAgent);
+			logService.createLog(request, authService.getUserFromHeader(request), "Create Comment SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(commentUpdateDto),
+					"Create Comment SUCCESSFULY");
 			return commentDto;
 		} catch (IOException e) {
-
 			try {
-				logService.createLog(user, MethodUtil.handleSubstringMessage(e.getMessage()),
-						StatusLog.FAILED.toString(), objectMapper.writeValueAsString(commentUpdateDto), "Websocket",
-						endpoint, "POST", userAgent);
+				logService.createLog(request, authService.getUserFromHeader(request), "Create Comment FAILED",
+						StatusLog.FAILED.toString(), objectMapper.writeValueAsString(commentUpdateDto),
+						"Create Comment FAILED");
 				throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
 						e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 			} catch (JsonProcessingException e1) {
@@ -199,21 +215,21 @@ public class CommentServiceImp implements CommentService {
 	}
 
 	@Override
-	public void deleteComment(Long id, SimpMessageHeaderAccessor headerAccessor) {
+	public void deleteComment(Long id,
+			HttpServletRequest request) {
 		Comment comment = commentRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Comment", "id", id));
 		commentRepository.delete(comment);
-		String userAgent = (String) headerAccessor.getSessionAttributes().get("userAgent");
-		String endpoint = (String) headerAccessor.getSessionAttributes().get("endpoint");
 		try {
-			logService.createLog(comment.getUser(), "Delete Comment SUCCESSFULLY", StatusLog.SUCCESSFULLY.toString(),
-					JsonConverter.convertToJSON("id", id), "Websocket", endpoint, "POST", userAgent);
+			logService.createLog(request, authService.getUserFromHeader(request), "Delete Comment SUCCESSFULY",
+					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(id),
+					"Create Comment SUCCESSFULY");
 		} catch (IOException e) {
 
 			try {
-				logService.createLog(comment.getUser(), MethodUtil.handleSubstringMessage(e.getMessage()),
-						StatusLog.FAILED.toString(), JsonConverter.convertToJSON("id", id), "Websocket", endpoint,
-						"POST", userAgent);
+				logService.createLog(request, authService.getUserFromHeader(request), "Delete Comment FAILED",
+						StatusLog.FAILED.toString(), objectMapper.writeValueAsString(id),
+						"Create Comment FAILED");
 				throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
 						e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 			} catch (JsonProcessingException e1) {

@@ -50,14 +50,12 @@ public class ProductUpdateDTO {
 	private List<MultipartFile> listImageFile = new ArrayList<>();
 
 	@NotNull
-	private String coordinates;
-
-	@NotNull
 	private String description;
 
 	@NotNull
 	private String location;
-
+	private Integer latitude;
+	private Integer longitude;
 	private String email;
 	private String facebook;
 
@@ -77,8 +75,8 @@ public class ProductUpdateDTO {
 			@Min(value = 0, message = "priceMin should not be less than 0") int priceMin,
 			@Min(value = 0, message = "priceMax should not be less than 0") int priceMax,
 			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") int outstanding,
-			List<MultipartFile> listMenuFile, List<MultipartFile> listImageFile, @NotNull String coordinates,
-			@NotNull String description, @NotNull String location, String email, String facebook,
+			List<MultipartFile> listMenuFile, List<MultipartFile> listImageFile, @NotNull String description,
+			@NotNull String location, Integer latitude, Integer longitude, String email, String facebook,
 			String listScheduleDto, Long userId, List<FileMetadata> listFileMetadatas) {
 		super();
 		this.area_id = area_id;
@@ -94,9 +92,10 @@ public class ProductUpdateDTO {
 		this.outstanding = outstanding;
 		this.listMenuFile = listMenuFile;
 		this.listImageFile = listImageFile;
-		this.coordinates = coordinates;
 		this.description = description;
 		this.location = location;
+		this.latitude = latitude;
+		this.longitude = longitude;
 		this.email = email;
 		this.facebook = facebook;
 		this.listScheduleDto = listScheduleDto;
@@ -208,14 +207,6 @@ public class ProductUpdateDTO {
 		this.listImageFile = listImageFile;
 	}
 
-	public String getCoordinates() {
-		return coordinates;
-	}
-
-	public void setCoordinates(String coordinates) {
-		this.coordinates = coordinates;
-	}
-
 	public String getDescription() {
 		return description;
 	}
@@ -230,6 +221,22 @@ public class ProductUpdateDTO {
 
 	public void setLocation(String location) {
 		this.location = location;
+	}
+
+	public Integer getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(Integer latitude) {
+		this.latitude = latitude;
+	}
+
+	public Integer getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(Integer longitude) {
+		this.longitude = longitude;
 	}
 
 	public String getEmail() {

@@ -78,16 +78,16 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 			predicates.add(cb.equal(product.get("areas").get("slug"), slugArea));
 		}
 		if (slugConvenience != null) {
-			predicates.add(cb.equal(product.get("conveniences").get("slug"), slugArea));
+			predicates.add(cb.equal(product.get("conveniences").get("slug"), slugConvenience));
 		}
 		if (slugKind != null) {
-			predicates.add(cb.equal(product.get("kinds").get("slug"), slugArea));
+			predicates.add(cb.equal(product.get("kinds").get("slug"), slugKind));
 		}
 		if (userId != null) {
 			predicates.add(cb.equal(product.get("user").get("id"), userId));
 		}
 		if (slugPurpose != null) {
-			predicates.add(cb.equal(product.get("purposes").get("slug"), slugArea));
+			predicates.add(cb.equal(product.get("purposes").get("slug"), slugPurpose));
 		}
 		if (latitude != null && longitude != null && latitude instanceof Double && longitude instanceof Double) {
 			Expression<Double> distanceSort = cb.sqrt(cb.sum(
@@ -145,7 +145,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 		}
 		cq.where(predicates.toArray(new Predicate[0]));
 		if (pageable != null)
-
 			return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
 					.setMaxResults(pageable.getPageSize()).getResultList();
 		else

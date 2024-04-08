@@ -24,6 +24,7 @@ import com.cafe.website.payload.LogDTO;
 import com.cafe.website.repository.LogRepository;
 import com.cafe.website.service.LogService;
 import com.cafe.website.util.MapperUtils;
+import com.cafe.website.util.MethodUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.micrometer.common.util.StringUtils;
@@ -115,7 +116,7 @@ public class LogServiceImp implements LogService {
 		log.setEndpoint(request.getRequestURI());
 		log.setMessage(message);
 		log.setMethod(request.getMethod());
-		log.setParams(this.getParamsAsJson(request));
+		log.setParams(MethodUtil.handleSubstringMessage(this.getParamsAsJson(request)));
 		log.setResult(result);
 		log.setUser(user);
 		log.setAction(action);

@@ -15,7 +15,6 @@ public class ReviewCreateDTO {
 	@NotNull
 	private Long productId;
 
-	@NotNull
 	private List<MultipartFile> listImageFiles = new ArrayList<>();
 	@NotNull
 	private String name;

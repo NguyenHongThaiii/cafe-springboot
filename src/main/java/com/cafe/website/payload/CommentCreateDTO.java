@@ -15,7 +15,7 @@ public class CommentCreateDTO {
 	private Long userId;
 	@NotNull
 	@CheckStatus(allowedValues = { 0, 1 })
-	private Integer status;
+	private Integer status;				
 
 	public CommentCreateDTO(String name, Long reviewId, Long userId, Integer status) {
 		super();
