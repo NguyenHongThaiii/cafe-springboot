@@ -251,8 +251,10 @@ public class ProductServiceImp implements ProductService {
 		List<Convenience> listCon = this.getListFromIds(productCreateDto.getConvenience_id(), conveRepository,
 				"convenience", Convenience.class);
 		List<ConvenienceDTO> listConDto = MapperUtils.loppMapToDTO(listCon, ConvenienceDTO.class);
-
-		pdto.setSlug(slugify.slugify(productCreateDto.getSlug()));
+		if (productCreateDto.getSlug() != null)
+			pdto.setSlug(slugify.slugify(productCreateDto.getSlug()));
+		else
+			pdto.setSlug(slugify.slugify(productCreateDto.getName()));
 		productMapper.updateProductFromDto(pdto, product);
 
 		product.setUser(user);
@@ -262,7 +264,7 @@ public class ProductServiceImp implements ProductService {
 		product.setConveniences(listCon);
 		product.setKinds(listKinds);
 		product.setPurposes(listPurposes);
-		product.setId(0L);
+		product.setId(null);
 
 		productRepository.save(product);
 //		move to their service
@@ -270,6 +272,7 @@ public class ProductServiceImp implements ProductService {
 		images.forEach(image -> {
 			Image imageItem = new Image();
 			imageItem.setImage(image);
+			logger.info("ProductID: " + product.getId());
 			imageItem.setProduct(product);
 			listImages.add(imageItem);
 		});
@@ -318,7 +321,8 @@ public class ProductServiceImp implements ProductService {
 		productCreateDto.setListImageFile(null);
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Create Product SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(), objectMapper.writeValueAsString(productCreateDto),
+					StatusLog.SUCCESSFULLY.toString(),
+					MethodUtil.handleSubstringMessage(objectMapper.writeValueAsString(productCreateDto)),
 					"Create Product SUCCESSFULY");
 			return res;
 		} catch (IOException e) {
@@ -475,7 +479,8 @@ public class ProductServiceImp implements ProductService {
 		logData.put("productUpdateDto", productUpdateDto);
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Update Product SUCCESSFULY",
-					StatusLog.SUCCESSFULLY.toString(), MethodUtil.handleSubstringMessage(objectMapper.writeValueAsString(logData)),
+					StatusLog.SUCCESSFULLY.toString(),
+					MethodUtil.handleSubstringMessage(objectMapper.writeValueAsString(logData)),
 					"Update Product SUCCESSFULY");
 			return pdto;
 		} catch (IOException e) {

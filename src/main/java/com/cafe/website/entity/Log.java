@@ -3,6 +3,7 @@ package com.cafe.website.entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
@@ -16,7 +17,9 @@ public class Log extends BaseEntity {
 	private String message;
 	private String agent;
 	private String result;
+	@Column(length = 1000)
 	private String params;
+	@Column(length = 1000)
 	private String body;
 	private String endpoint;
 	private String method;
