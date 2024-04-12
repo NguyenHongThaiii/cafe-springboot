@@ -23,8 +23,8 @@ import jakarta.persistence.criteria.Root;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 	@Query
-	default List<User> findWithFilters(Integer status, String name, String email, String createdAt, String updatedAt,
-			Pageable pageable, EntityManager entityManager) {
+	default List<User> findWithFilters(Integer status, String name, String email, String slug, String createdAt,
+			String updatedAt, Pageable pageable, EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(User.class);
@@ -44,6 +44,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 		if (email != null) {
 			predicates.add(cb.like(cb.lower(user.get("email")), "%" + email.toLowerCase() + "%"));
+		}
+		if (slug != null) {
+			predicates.add(cb.like(cb.lower(user.get("slug")), slug.toLowerCase()));
 		}
 		if (status != null) {
 			predicates.add(cb.equal(user.get("status"), status));

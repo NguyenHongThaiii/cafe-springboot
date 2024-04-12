@@ -27,6 +27,7 @@ import com.cafe.website.exception.ResourceNotFoundException;
 import com.cafe.website.payload.CommentCreateDTO;
 import com.cafe.website.payload.CommentDTO;
 import com.cafe.website.payload.CommentUpdateDTO;
+import com.cafe.website.payload.ImageDTO;
 import com.cafe.website.payload.UserDTO;
 import com.cafe.website.repository.CommentRepository;
 import com.cafe.website.repository.ReviewRepository;
@@ -116,6 +117,8 @@ public class CommentServiceImp implements CommentService {
 			commentDto.setReivewId(comment.getReview().getId());
 			User user = userRepository.findById(comment.getUser().getId()).orElseThrow(() -> new ResourceNotFoundException("User", "id", comment.getUser().getId()));
 			UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
+			if (user.getAvatar() != null)
+				userDto.setImage(ImageDTO.generateImageDTO(user.getAvatar()));
 			commentDto.setUser(userDto);
 			return commentDto;
 		}).collect(Collectors.toList());

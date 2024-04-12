@@ -62,7 +62,6 @@ public class ReviewController {
 		ReviewDTO reviewDto = reviewService.createReview(review, request);
 		return new ResponseEntity<>(reviewDto, HttpStatus.OK);
 	}
-	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@PatchMapping("/id/{id}")
 	public ResponseEntity<ReviewDTO> updateReviewById(@PathVariable(name = "id") Long id,
 			@Valid @ModelAttribute ReviewUpdateDTO review, HttpServletRequest request) throws IOException {
@@ -71,7 +70,6 @@ public class ReviewController {
 	}
 
 	
-	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/id/{id}")
 	public ResponseEntity<String> delelteReviewById(@PathVariable(name = "id") Long id, HttpServletRequest request)
 			throws IOException {

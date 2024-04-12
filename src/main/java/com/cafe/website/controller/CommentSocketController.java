@@ -66,16 +66,14 @@ public class CommentSocketController {
 		return new ResponseEntity<CommentDTO>(comment, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
-
+//	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@PostMapping("")
 	public CommentDTO createComment(@Valid @RequestBody CommentCreateDTO commentCreateDto, HttpServletRequest request) {
 		CommentDTO comment = commentService.createComment(commentCreateDto, request);
 		return comment;
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
-
+//	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@PatchMapping("")
 	public CommentDTO createCommentAdmin(@Valid @RequestBody CommentCreateDTO commentCreateDto,
 			HttpServletRequest request) {
@@ -83,7 +81,7 @@ public class CommentSocketController {
 		return comment;
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
+//	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 
 	@PatchMapping("/updateComment")
 	public CommentDTO updateComment(@Valid @RequestBody CommentUpdateDTO commentUpdateDTO, HttpServletRequest request) {
@@ -91,8 +89,7 @@ public class CommentSocketController {
 		return comment;
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
-
+//	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@PatchMapping("/admin/updateComment")
 	public CommentDTO updateCommentAdmin(@Valid @RequestBody CommentUpdateDTO commentUpdateDTO,
 			HttpServletRequest request) {
@@ -100,7 +97,7 @@ public class CommentSocketController {
 		return comment;
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
+//	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 
 	@DeleteMapping("")
 	public String delteCommentById(@RequestBody CommentDeleteDTO deleteDTO, HttpServletRequest request) {
@@ -108,7 +105,7 @@ public class CommentSocketController {
 		return "Delete successfuly";
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
+//	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 
 	@DeleteMapping("/admin/deleteComment")
 	public String delteCommentByIdAdmin(@RequestBody AttributeIdDTO deleteDTO, HttpServletRequest request) {
