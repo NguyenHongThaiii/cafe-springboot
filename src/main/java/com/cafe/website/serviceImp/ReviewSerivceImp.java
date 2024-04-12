@@ -98,7 +98,7 @@ public class ReviewSerivceImp implements ReviewService {
 
 	@Override
 	public List<ReviewDTO> getListReviews(int limit, int page, String name, Long productId, Long userId, Long ratingId,
-			String createdAt, String updatedAt, Float ratingAverage, String sortBy) {
+			Integer outstanding, String createdAt, String updatedAt, Float ratingAverage, String sortBy) {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
 				SortField.CREATEDATDESC);
@@ -133,8 +133,8 @@ public class ReviewSerivceImp implements ReviewService {
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
-		listReview = reviewRepository.findWithFilters(name, productId, userId, ratingId, createdAt, updatedAt,
-				ratingAverage, pageable, entityManager);
+		listReview = reviewRepository.findWithFilters(name, productId, userId, ratingId, outstanding, createdAt,
+				updatedAt, ratingAverage, pageable, entityManager);
 		listReviewDto = listReview.stream().map(review -> {
 			User user = userRepository.findById(review.getUser().getId())
 					.orElseThrow(() -> new ResourceNotFoundException("User", "id", review.getUser().getId()));
@@ -201,7 +201,8 @@ public class ReviewSerivceImp implements ReviewService {
 		review.setProduct(product);
 		review.setUser(user);
 		review.setRating(rating);
-
+		if (reviewCreateDto.getOutstanding() == null)
+			review.setOutstanding(0);
 		reviewRepository.save(review);
 		imageRepository.saveAll(listImages);
 

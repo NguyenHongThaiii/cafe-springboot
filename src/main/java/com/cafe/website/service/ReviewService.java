@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public interface ReviewService {
 	List<ReviewDTO> getListReviews(int limit, int page, String name, Long productId, Long userId, Long ratingId,
-			String createdAt, String updatedAt, Float ratingAverage, String sortBy);
+			Integer outstanding, String createdAt, String updatedAt, Float ratingAverage, String sortBy);
 
 	List<ReviewDTO> getListReviewsByProductId(int limit, int page, Long productId, String sortBy);
 

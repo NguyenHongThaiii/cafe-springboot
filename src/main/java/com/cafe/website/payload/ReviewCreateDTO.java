@@ -7,6 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 public class ReviewCreateDTO {
@@ -28,14 +30,15 @@ public class ReviewCreateDTO {
 	private int service;
 	@NotNull
 	private int price;
-
+	@Min(value = 0, message = "status should not be less than 0")
+	@Max(value = 1, message = "status should not be greater than 1")
+	private Integer outstanding;
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	private List<FileMetadata> listFileMetadatas = new ArrayList<>();
 
-	public ReviewCreateDTO(@NotNull Long userId, @NotNull Long productId,
-			@NotNull List<MultipartFile> listImageFiles, @NotNull String name, @NotNull int location,
-			@NotNull int space, @NotNull int food, @NotNull int service, @NotNull int price,
-			List<FileMetadata> listFileMetadatas) {
+	public ReviewCreateDTO(@NotNull Long userId, @NotNull Long productId, List<MultipartFile> listImageFiles,
+			@NotNull String name, @NotNull int location, @NotNull int space, @NotNull int food, @NotNull int service,
+			@NotNull int price, Integer outstanding, List<FileMetadata> listFileMetadatas) {
 		super();
 		this.userId = userId;
 		this.productId = productId;
@@ -46,6 +49,7 @@ public class ReviewCreateDTO {
 		this.food = food;
 		this.service = service;
 		this.price = price;
+		this.outstanding = outstanding;
 		this.listFileMetadatas = listFileMetadatas;
 	}
 
@@ -119,6 +123,14 @@ public class ReviewCreateDTO {
 
 	public void setPrice(int price) {
 		this.price = price;
+	}
+
+	public Integer getOutstanding() {
+		return outstanding;
+	}
+
+	public void setOutstanding(Integer outstanding) {
+		this.outstanding = outstanding;
 	}
 
 	public List<FileMetadata> getListFileMetadatas() {

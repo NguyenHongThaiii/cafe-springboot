@@ -37,26 +37,29 @@ public class Review extends BaseEntity {
 
 	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Image> listImages = new ArrayList<>();
+	@Column(length = 1000)
 	private String name;
+	private Integer outstanding;
 
 	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@Column(unique = true)
 	private List<Favorite> favorites = new ArrayList<>();
 
-	public Review(Long id, int status, String createdAt, String updatedAt, User user, Product product, Rating rating,
-			List<Comment> comments, List<Image> listImages, String name, List<Favorite> favorites) {
-		super(id, status, createdAt, updatedAt);
+	public Review() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public Review(User user, Product product, Rating rating, List<Comment> comments, List<Image> listImages,
+			String name, Integer outstanding, List<Favorite> favorites) {
+		super();
 		this.user = user;
 		this.product = product;
 		this.rating = rating;
 		this.comments = comments;
 		this.listImages = listImages;
 		this.name = name;
+		this.outstanding = outstanding;
 		this.favorites = favorites;
-	}
-
-	public Review() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public User getUser() {
@@ -119,10 +122,12 @@ public class Review extends BaseEntity {
 		return this.rating.getAverageRating();
 	}
 
-	@Override
-	public String toString() {
-		return "Review [user=" + user + ", product=" + product + ", rating=" + rating + ", comments=" + comments
-				+ ", listImages=" + listImages + ", name=" + name + ", favorites=" + favorites + "]";
+	public Integer getOutstanding() {
+		return outstanding;
+	}
+
+	public void setOutstanding(Integer outstanding) {
+		this.outstanding = outstanding;
 	}
 
 }

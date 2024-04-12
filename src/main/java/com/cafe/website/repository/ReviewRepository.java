@@ -27,8 +27,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
 	List<Review> findReviewByProductId(Long productId);
 
-	default List<Review> findWithFilters(String name, Long productId, Long userId, Long ratingId, String createdAt,
-			String updatedAt, Float ratingAverage, Pageable pageable, EntityManager entityManager) {
+	default List<Review> findWithFilters(String name, Long productId, Long userId, Long ratingId, Integer outstanding,
+			String createdAt, String updatedAt, Float ratingAverage, Pageable pageable, EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Review> cq = cb.createQuery(Review.class);
@@ -47,6 +47,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 		}
 		if (productId != null) {
 			predicates.add(cb.equal(review.get("product").get("id"), productId));
+		}
+		if (outstanding != null) {
+			predicates.add(cb.equal(review.get("outstanding"), outstanding));
 		}
 		if (userId != null) {
 			predicates.add(cb.equal(review.get("user").get("id"), userId));
