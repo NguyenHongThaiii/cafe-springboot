@@ -42,10 +42,11 @@ public class ReviewController {
 			@RequestParam(defaultValue = "1") Integer page, @RequestParam(required = false) String name,
 			@RequestParam(required = false) Long ratingId, @RequestParam(required = false) Long productId,
 			@RequestParam(required = false) String createdAt, @RequestParam(required = false) String updatedAt,
-			@RequestParam(required = false) Long userId, @RequestParam(required = false) Float ratingAverage,
+			@RequestParam(required = false) Long userId, @RequestParam(required = false) Integer outstanding,
+			@RequestParam(required = false) Float ratingAverage,
 			@RequestParam(required = false, defaultValue = "null") String sortBy) {
 		List<ReviewDTO> listAreasDto = reviewService.getListReviews(limit, page, name, productId, userId, ratingId,
-				createdAt, updatedAt, ratingAverage, sortBy);
+				outstanding, createdAt, updatedAt, ratingAverage, sortBy);
 		return new ResponseEntity<>(listAreasDto, HttpStatus.OK);
 	}
 
@@ -62,6 +63,7 @@ public class ReviewController {
 		ReviewDTO reviewDto = reviewService.createReview(review, request);
 		return new ResponseEntity<>(reviewDto, HttpStatus.OK);
 	}
+
 	@PatchMapping("/id/{id}")
 	public ResponseEntity<ReviewDTO> updateReviewById(@PathVariable(name = "id") Long id,
 			@Valid @ModelAttribute ReviewUpdateDTO review, HttpServletRequest request) throws IOException {
@@ -69,7 +71,6 @@ public class ReviewController {
 		return new ResponseEntity<>(reviewDto, HttpStatus.OK);
 	}
 
-	
 	@DeleteMapping("/id/{id}")
 	public ResponseEntity<String> delelteReviewById(@PathVariable(name = "id") Long id, HttpServletRequest request)
 			throws IOException {

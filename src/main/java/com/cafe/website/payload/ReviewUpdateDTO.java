@@ -20,7 +20,7 @@ public class ReviewUpdateDTO {
 	private String name;
 
 	private int status;
-
+	private Integer outstanding;
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	private List<FileMetadata> listFileMetadatas = new ArrayList<>();
 
@@ -31,13 +31,14 @@ public class ReviewUpdateDTO {
 	}
 
 	public ReviewUpdateDTO(@NotNull Long userId, Rating rating, List<MultipartFile> listImageFiles, String name,
-			int status, List<FileMetadata> listFileMetadatas) {
+			int status, Integer outstanding, List<FileMetadata> listFileMetadatas) {
 		super();
 		this.userId = userId;
 		this.rating = rating;
 		this.listImageFiles = listImageFiles;
 		this.name = name;
 		this.status = status;
+		this.outstanding = outstanding;
 		this.listFileMetadatas = listFileMetadatas;
 	}
 
@@ -79,6 +80,14 @@ public class ReviewUpdateDTO {
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+
+	public Integer getOutstanding() {
+		return outstanding;
+	}
+
+	public void setOutstanding(Integer outstanding) {
+		this.outstanding = outstanding;
 	}
 
 	public List<FileMetadata> getListFileMetadatas() {
