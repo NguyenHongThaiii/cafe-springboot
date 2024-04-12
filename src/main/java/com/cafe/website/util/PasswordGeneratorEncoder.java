@@ -21,17 +21,17 @@ public class PasswordGeneratorEncoder {
 //		String idPart = lastPart.substring(0, lastPart.lastIndexOf("."));
 //		System.out.print(idPart);
 
-		long secondsSinceMidnight = 28800; // Example: 10 hours * 3600 seconds/hour
-		LocalTime time = LocalTime.ofSecondOfDay(secondsSinceMidnight);
-
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
-		String formattedTime = time.format(formatter);
-
-//		logger.info("Time: " + formattedTime); // Outputs "10:00 AM
-		String uniqueKey = UUID.randomUUID().toString();
-		System.out.println(uniqueKey);
-		Float a = 10f;
-		System.out.println(a / 3);
+//		long secondsSinceMidnight = 28800; // Example: 10 hours * 3600 seconds/hour
+//		LocalTime time = LocalTime.ofSecondOfDay(secondsSinceMidnight);
+//
+//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
+//		String formattedTime = time.format(formatter);
+//
+////		logger.info("Time: " + formattedTime); // Outputs "10:00 AM
+//		String uniqueKey = UUID.randomUUID().toString();
+//		System.out.println(uniqueKey);
+//		Float a = 10f;
+//		System.out.println(a / 3);
 	}
 
 }

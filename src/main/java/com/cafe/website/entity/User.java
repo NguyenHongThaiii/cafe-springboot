@@ -191,4 +191,12 @@ public class User extends BaseEntity {
 
 		return isHasRoleMod;
 	}
+
+	@Override
+	public String toString() {
+		return "User [email=" + email + ", slug=" + slug + ", password=" + password + ", name=" + name + ", address="
+				+ address + ", phone=" + phone + ", avatar=" + avatar + ", roles=" + roles + ", reviews=" + reviews
+				+ ", tokens=" + tokens + ", isWaitingDelete=" + isWaitingDelete + "]";
+	}
+	
 }

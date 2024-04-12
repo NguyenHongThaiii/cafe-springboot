@@ -57,9 +57,9 @@ public class AuthController {
 			@RequestParam(defaultValue = "1") Integer page, @RequestParam(required = false) Integer status,
 			@RequestParam(required = false) String name, @RequestParam(required = false) String email,
 			@RequestParam(required = false) String createdAt, @RequestParam(required = false) String updatedAt,
-
+			@RequestParam(required = false) String slug,
 			@RequestParam(required = false, defaultValue = "") String sortBy) {
-		List<UserDTO> listUserDto = authService.getListUser(status, limit, page, name, email, createdAt, updatedAt,
+		List<UserDTO> listUserDto = authService.getListUser(status, limit, page, name, email,slug, createdAt, updatedAt,
 				sortBy);
 		return ResponseEntity.ok(listUserDto);
 	}
@@ -83,7 +83,7 @@ public class AuthController {
 
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
+//	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@GetMapping("/users/profile/{slug}")
 	public ResponseEntity<UserDTO> getProfile(@Valid @PathVariable(name = "slug") String slug) {
 		UserDTO userDto = authService.getProfile(slug);
@@ -153,8 +153,7 @@ public class AuthController {
 		return ResponseEntity.ok("Ok");
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
-	@PatchMapping("/avatar/{slug}")
+	@PostMapping("/avatar/{slug}")
 	public ResponseEntity<String> updateAvatar(@Valid @ModelAttribute UpdateAvatarDTO avatarDto,
 			@PathVariable(name = "slug") String slug, HttpServletRequest request) {
 		authService.updateProfileImage(slug, avatarDto, request);

@@ -66,6 +66,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.slugify.Slugify;
 
 import io.micrometer.common.util.StringUtils;
+import io.swagger.v3.oas.annotations.info.Info;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -129,7 +130,7 @@ public class AuthServiceImp implements AuthService {
 	public LoginResponseDTO login(LoginDTO loginDto, HttpServletRequest request) {
 		User user = userRepository.findByEmail(loginDto.getEmail())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "email", loginDto.getEmail()));
-		if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword()) || user.getStatus()!=1)
+		if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword()) || user.getStatus() != 1)
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Email or password is not correct.");
 
 		Authentication authentication = authenticationManager
@@ -147,7 +148,7 @@ public class AuthServiceImp implements AuthService {
 			logService.createLog(request, user, "Login SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(loginDto), "Login");
 			lg.setToken(token);
-			
+
 			return lg;
 		} catch (IOException e) {
 			logService.createLog(request, user, MethodUtil.handleSubstringMessage(e.getMessage()),
@@ -210,8 +211,8 @@ public class AuthServiceImp implements AuthService {
 	@Override
 	public RegisterResponse validateRegister(ValidateOtpDTO validateDto, HttpServletRequest request) {
 		String otpCache = otpService.getOtpByEmail(validateDto.getEmail().trim());
-		logger.info("otpCache: "+otpCache);
-		logger.info("otpCache: "+validateDto.getEmail());
+		logger.info("otpCache: " + otpCache);
+		logger.info("otpCache: " + validateDto.getEmail());
 		this.validateOtp(validateDto.getOtp(), otpCache);
 
 		User user = userRepository.findByEmail(validateDto.getEmail())
@@ -359,7 +360,7 @@ public class AuthServiceImp implements AuthService {
 
 		otpService.clearCache("session", reset.getEmail());
 		String passwordEncryt = passwordEncoder.encode(reset.getPassword());
-		
+
 		user.setPassword(passwordEncryt);
 		user.setStatus(1);
 		userRepository.save(user);
@@ -397,15 +398,21 @@ public class AuthServiceImp implements AuthService {
 		Map<String, Object> logData = new HashMap<>();
 
 		try {
-			if (image != null)
+			if (image != null) {
 				cloudinaryService.removeImageFromCloudinary(image.getImage(), path_user);
+			}
 			String avatar = cloudinaryService.uploadImage(profileDto.getAvatar(), path_user, "image");
-			Image imageTemp = new Image();
-			imageTemp.setUser(user);
-			imageTemp.setImage(avatar);
+			if (image != null) {
+				image.setImage(avatar);
+				imageRepository.save(image);
+			} else {
+				Image imageTemp = new Image();
+				imageTemp.setUser(user);
+				imageTemp.setImage(avatar);
+				imageRepository.save(imageTemp);
 
-			user.setAvatar(imageTemp);
-			userRepository.save(user);
+			}
+
 			profileDto.setDataToLogging(profileDto.getAvatar().getOriginalFilename(),
 					profileDto.getAvatar().getContentType(), profileDto.getAvatar().getSize(), () -> {
 						profileDto.setAvatar(null);
@@ -437,6 +444,7 @@ public class AuthServiceImp implements AuthService {
 	@Override
 	public UserDTO getUserById(Long id) {
 		User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+		logger.info(user.toString());
 		UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
 		if (user.getAvatar() != null)
 			userDto.setImage(ImageDTO.generateImageDTO(user.getAvatar()));
@@ -476,8 +484,8 @@ public class AuthServiceImp implements AuthService {
 	}
 
 	@Override
-	public List<UserDTO> getListUser(Integer status, int limit, int page, String name, String email, String createdAt,
-			String updatedAt, String sortBy) {
+	public List<UserDTO> getListUser(Integer status, int limit, int page, String name, String email, String slug,
+			String createdAt, String updatedAt, String sortBy) {
 
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
@@ -508,7 +516,8 @@ public class AuthServiceImp implements AuthService {
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
-		listUser = userRepository.findWithFilters(status, name, email, createdAt, updatedAt, pageable, entityManager);
+		listUser = userRepository.findWithFilters(status, name, email, slug, createdAt, updatedAt, pageable,
+				entityManager);
 
 		listUserDto = listUser.stream().map(user -> {
 			UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);

@@ -82,7 +82,6 @@ public class ProductController {
 
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@PostMapping("")
 	public ResponseEntity<ProductDTO> createProduct(@Valid @ModelAttribute ProductCreateDTO productCreateDto,
 			HttpServletRequest request) throws IOException {
@@ -90,7 +89,6 @@ public class ProductController {
 		return new ResponseEntity<ProductDTO>(product, HttpStatus.CREATED);
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@PatchMapping("/id/{id}")
 	public ResponseEntity<ProductDTO> updateProduct(@PathVariable(name = "id") Long id,
 			@Valid @ModelAttribute ProductUpdateDTO productUpdateDto, HttpServletRequest request) throws IOException {
@@ -98,7 +96,6 @@ public class ProductController {
 		return new ResponseEntity<ProductDTO>(productDto, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("")
 	public ResponseEntity<String> deleteProduct(@Valid @RequestBody ProductDeleteDTO productDeleteDto,
 			HttpServletRequest request) throws IOException {
@@ -112,7 +109,6 @@ public class ProductController {
 		return new ResponseEntity<>(number, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@DeleteMapping("/setDelete")
 	public ResponseEntity<String> setIsWaitingDeleteProduct(@Valid @RequestBody ProductDeleteDTO productDeleteDto,
 			HttpServletRequest request) throws IOException {
