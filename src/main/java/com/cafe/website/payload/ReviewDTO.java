@@ -11,7 +11,7 @@ public class ReviewDTO extends BaseEntityDTO {
 	private Rating rating;
 
 	private String name;
-	private List<ImageDTO> listImages = new ArrayList<>();
+	private List<ImageDTO> listImage = new ArrayList<>();
 
 	private int favorite;
 	private Long productId;
@@ -21,12 +21,12 @@ public class ReviewDTO extends BaseEntityDTO {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ReviewDTO(Rating rating, String name, List<ImageDTO> listImages, int favorite, Long productId,
+	public ReviewDTO(Rating rating, String name, List<ImageDTO> listImage, int favorite, Long productId,
 			UserDTO userDto) {
 		super();
 		this.rating = rating;
 		this.name = name;
-		this.listImages = listImages;
+		this.listImage = listImage;
 		this.favorite = favorite;
 		this.productId = productId;
 		this.userDto = userDto;
@@ -48,12 +48,12 @@ public class ReviewDTO extends BaseEntityDTO {
 		this.name = name;
 	}
 
-	public List<ImageDTO> getListImages() {
-		return listImages;
+	public List<ImageDTO> getListImage() {
+		return listImage;
 	}
 
-	public void setListImages(List<ImageDTO> listImages) {
-		this.listImages = listImages;
+	public void setListImage(List<ImageDTO> listImage) {
+		this.listImage = listImage;
 	}
 
 	public int getFavorite() {
@@ -79,5 +79,7 @@ public class ReviewDTO extends BaseEntityDTO {
 	public void setUserDto(UserDTO userDto) {
 		this.userDto = userDto;
 	}
+
+	
 
 }

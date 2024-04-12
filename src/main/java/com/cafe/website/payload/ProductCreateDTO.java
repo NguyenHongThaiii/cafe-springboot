@@ -29,10 +29,8 @@ public class ProductCreateDTO {
 	@NotNull
 	private String name;
 
-	@NotNull
 	private String slug;
 
-	@NotNull
 	private String phone;
 
 	@Min(value = 0, message = "status should not be less than 0")
@@ -53,9 +51,9 @@ public class ProductCreateDTO {
 	private List<MultipartFile> listMenuFile = new ArrayList<>();
 
 	@NotNull
-	private Integer latitude;
+	private Double latitude;
 	@NotNull
-	private Integer longitude;
+	private Double longitude;
 
 	@NotNull
 	private String description;
@@ -89,7 +87,7 @@ public class ProductCreateDTO {
 			@Min(value = 0, message = "priceMax should not be less than 0") int priceMax,
 			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") int outstanding,
 			@NotEmpty(message = "listMenuFile list cannot be empty") List<MultipartFile> listMenuFile,
-			@NotNull Integer latitude, @NotNull Integer longitude, @NotNull String description,
+			@NotNull Double latitude, @NotNull Double longitude, @NotNull String description,
 			@NotNull String location, String email, String facebook,
 			@NotEmpty(message = "listImageFile list cannot be empty") List<MultipartFile> listImageFile,
 			@NotNull String listScheduleDto, @NotNull Long userId, List<FileMetadata> listFileMetadatas) {
@@ -214,19 +212,19 @@ public class ProductCreateDTO {
 		this.listMenuFile = listMenuFile;
 	}
 
-	public Integer getLatitude() {
+	public Double getLatitude() {
 		return latitude;
 	}
 
-	public void setLatitude(Integer latitude) {
+	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
 
-	public Integer getLongitude() {
+	public Double getLongitude() {
 		return longitude;
 	}
 
-	public void setLongitude(Integer longitude) {
+	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
 

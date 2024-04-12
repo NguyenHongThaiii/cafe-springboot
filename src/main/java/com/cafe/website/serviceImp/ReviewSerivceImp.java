@@ -143,7 +143,7 @@ public class ReviewSerivceImp implements ReviewService {
 				userDto.setImage(ImageDTO.generateImageDTO(user.getAvatar()));
 
 			ReviewDTO reviewDto = MapperUtils.mapToDTO(review, ReviewDTO.class);
-			reviewDto.setListImages(ImageDTO.generateListImageDTO(review.getListImages()));
+			reviewDto.setListImage(ImageDTO.generateListImageDTO(review.getListImages()));
 			reviewDto.setProductId(review.getProduct().getId());
 			reviewDto.setUserDto(userDto);
 
@@ -164,7 +164,7 @@ public class ReviewSerivceImp implements ReviewService {
 		if (user.getAvatar() != null)
 			userDto.setImage(ImageDTO.generateImageDTO(user.getAvatar()));
 
-		reviewDto.setListImages(ImageDTO.generateListImageDTO(review.getListImages()));
+		reviewDto.setListImage(ImageDTO.generateListImageDTO(review.getListImages()));
 		reviewDto.setProductId(review.getProduct().getId());
 		reviewDto.setUserDto(userDto);
 		return reviewDto;
@@ -207,7 +207,7 @@ public class ReviewSerivceImp implements ReviewService {
 
 		ReviewDTO reviewDto = MapperUtils.mapToDTO(review, ReviewDTO.class);
 		if (review.getListImages().size() > 0)
-			reviewDto.setListImages(ImageDTO.generateListImageDTO(review.getListImages()));
+			reviewDto.setListImage(ImageDTO.generateListImageDTO(review.getListImages()));
 		reviewDto.setProductId(review.getProduct().getId());
 		MethodUtil.convertListFileImageToInfo(reviewCreateDto.getListFileMetadatas(),
 				reviewCreateDto.getListImageFiles());
@@ -264,7 +264,7 @@ public class ReviewSerivceImp implements ReviewService {
 		reviewMapper.updateReviewFromDto(reviewDto, review);
 		reviewRepository.save(review);
 
-		reviewDto.setListImages(ImageDTO.generateListImageDTO(review.getListImages()));
+		reviewDto.setListImage(ImageDTO.generateListImageDTO(review.getListImages()));
 		reviewDto.setProductId(review.getProduct().getId());
 		Map<String, Object> logData = new HashMap<>();
 		logData.put("id", id);
@@ -339,7 +339,7 @@ public class ReviewSerivceImp implements ReviewService {
 		List<ReviewDTO> listReviewDto = new ArrayList<>();
 		listReviewDto = reviews.stream().map(review -> {
 			ReviewDTO reviewDto = MapperUtils.mapToDTO(review, ReviewDTO.class);
-			reviewDto.setListImages(ImageDTO.generateListImageDTO(review.getListImages()));
+			reviewDto.setListImage(ImageDTO.generateListImageDTO(review.getListImages()));
 			reviewDto.setProductId(review.getProduct().getId());
 			return reviewDto;
 		}).collect(Collectors.toList());

@@ -82,7 +82,7 @@ public class ProductController {
 
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
+	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@PostMapping("")
 	public ResponseEntity<ProductDTO> createProduct(@Valid @ModelAttribute ProductCreateDTO productCreateDto,
 			HttpServletRequest request) throws IOException {
