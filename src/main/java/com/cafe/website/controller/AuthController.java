@@ -138,9 +138,8 @@ public class AuthController {
 		return ResponseEntity.ok("Ok");
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@PatchMapping("/update/{slug}")
-	public ResponseEntity<UserDTO> updateUser(@Valid @ModelAttribute UserUpdateDTO userUpdateDto,
+	public ResponseEntity<UserDTO> updateUser(@Valid @RequestBody UserUpdateDTO userUpdateDto,
 			@PathVariable(name = "slug") String slug, HttpServletRequest request) {
 		UserDTO userDto = authService.updateUser(slug, userUpdateDto, request);
 		return new ResponseEntity<>(userDto, HttpStatus.CREATED);
