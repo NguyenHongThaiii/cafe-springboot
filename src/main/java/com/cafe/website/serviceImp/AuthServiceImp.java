@@ -281,15 +281,16 @@ public class AuthServiceImp implements AuthService {
 		UserDTO userDto = MapperUtils.mapToDTO(userUpdateDto, UserDTO.class);
 
 		userDto.setId(userCurrent.getId());
-		userDto.setSlug(slugify.slugify(userUpdateDto.getSlug()));
+		if (userUpdateDto.getSlug() != null && userUpdateDto.getSlug().length() > 0)
+			userDto.setSlug(slugify.slugify(userUpdateDto.getSlug()));
 		userDto.setStatus(1);
 		userMapper.updateUserFromDto(userDto, userCurrent);
 
 		if (userUpdateDto.getPassword() != null)
 			userCurrent.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
+	
 
 		userRepository.save(userCurrent);
-		userCurrent.setPassword(null);
 		logData.put("slug", slug);
 		logData.put("userUpdateDto", userUpdateDto);
 		UserDTO res = MapperUtils.mapToDTO(userCurrent, UserDTO.class);
@@ -380,11 +381,9 @@ public class AuthServiceImp implements AuthService {
 	public UserDTO getProfile(String slug) {
 		User user = userRepository.findBySlug(slug)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "name", slug));
-		user.setPassword(null);
-		user.setRoles(null);
+		
 
 		UserDTO res = MapperUtils.mapToDTO(user, UserDTO.class);
-
 		if (user.getAvatar() != null)
 			res.setImage(ImageDTO.generateImageDTO(user.getAvatar()));
 		return res;
@@ -587,11 +586,11 @@ public class AuthServiceImp implements AuthService {
 			user.setPassword(passwordEncoder.encode(reset.getPassword()));
 
 			userRepository.save(user);
-			user.setPassword(null);
+		
 			logService.createLog(request, user, "Create User SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(reset), "Create User");
 		} catch (Exception e) {
-			user.setPassword(null);
+		
 			logService.createLog(request, this.getUserFromHeader(request),
 					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
 					"Set Waiting Delete User");
