@@ -50,9 +50,7 @@ public class ProductCreateDTO {
 	@NotEmpty(message = "listMenuFile list cannot be empty")
 	private List<MultipartFile> listMenuFile = new ArrayList<>();
 
-	@NotNull
 	private Double latitude;
-	@NotNull
 	private Double longitude;
 
 	@NotNull

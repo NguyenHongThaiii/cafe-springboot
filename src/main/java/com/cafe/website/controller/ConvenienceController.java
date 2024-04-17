@@ -57,7 +57,6 @@ public class ConvenienceController {
 		return new ResponseEntity<>(convenienceDto, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PostMapping("")
 	public ResponseEntity<ConvenienceDTO> createConvenience(
 			@Valid @ModelAttribute ConvenienceCreateDTO convenienceCreateDto, HttpServletRequest request)
@@ -67,7 +66,6 @@ public class ConvenienceController {
 		return new ResponseEntity<>(convenienceDto, HttpStatus.CREATED);
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PatchMapping("/id/{id}")
 	public ResponseEntity<ConvenienceDTO> updateConvenience(
 			@Valid @ModelAttribute ConvenienceUpdateDTO convenienceUpdateDto, @PathVariable(name = "id") Long id,
@@ -76,7 +74,6 @@ public class ConvenienceController {
 		return new ResponseEntity<>(convenienceDto, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@DeleteMapping("/id/{id}")
 	public ResponseEntity<String> deleteConvenience(@PathVariable(name = "id") Long id, HttpServletRequest request)
 			throws IOException {

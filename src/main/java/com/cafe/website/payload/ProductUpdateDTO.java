@@ -27,7 +27,6 @@ public class ProductUpdateDTO {
 	@NotNull
 	private String name;
 
-	@NotNull
 	private String slug;
 
 	private String phone;
@@ -58,8 +57,8 @@ public class ProductUpdateDTO {
 	private Integer longitude;
 	private String email;
 	private String facebook;
-
 	private String listScheduleDto;
+	@NotNull
 	private Long userId;
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	private List<FileMetadata> listFileMetadatas = new ArrayList<>();

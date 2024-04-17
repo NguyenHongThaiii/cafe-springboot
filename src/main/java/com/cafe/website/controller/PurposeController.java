@@ -56,7 +56,6 @@ public class PurposeController {
 		return new ResponseEntity<>(PurposeDto, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PostMapping("")
 	public ResponseEntity<PurposeDTO> createPurpose(@Valid @ModelAttribute PurposeCreateDTO purposeCreateDto,
 			HttpServletRequest request) throws IOException {
@@ -65,7 +64,6 @@ public class PurposeController {
 		return new ResponseEntity<>(newPurposeDto, HttpStatus.CREATED);
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PatchMapping("/id/{id}")
 	public ResponseEntity<PurposeDTO> updatePurpose(@Valid @ModelAttribute PurposeUpdateDTO purposeDto,
 			@PathVariable(name = "id") Long id, HttpServletRequest request) throws IOException {
@@ -73,7 +71,6 @@ public class PurposeController {
 		return new ResponseEntity<>(newPurposeDto, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@DeleteMapping("/id/{id}")
 	public ResponseEntity<String> deletePurpose(@PathVariable(name = "id") Long id, HttpServletRequest request)
 			throws IOException {
