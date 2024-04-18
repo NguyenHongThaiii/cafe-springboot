@@ -55,7 +55,6 @@ public class KindController {
 		return new ResponseEntity<>(kindDto, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PostMapping("")
 	public ResponseEntity<KindDTO> createKind(@Valid @ModelAttribute KindCreateDTO kindCreateDto,
 			HttpServletRequest request) throws IOException {
@@ -64,7 +63,6 @@ public class KindController {
 		return new ResponseEntity<>(newKindDto, HttpStatus.CREATED);
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@PatchMapping("/id/{id}")
 	public ResponseEntity<KindDTO> updateKind(@Valid @ModelAttribute KindUpdateDTO kindDto,
 			@PathVariable(name = "id") Long id, HttpServletRequest request) throws IOException {
@@ -72,7 +70,6 @@ public class KindController {
 		return new ResponseEntity<>(newKindDto, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN','MOD')")
 	@DeleteMapping("/id/{id}")
 	public ResponseEntity<String> deleteKind(@PathVariable(name = "id") Long id, HttpServletRequest request)
 			throws IOException {

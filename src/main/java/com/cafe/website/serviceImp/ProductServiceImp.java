@@ -339,9 +339,7 @@ public class ProductServiceImp implements ProductService {
 			throws IOException {
 		User user = userRepository.findById(productUpdateDto.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", productUpdateDto.getUserId()));
-		if (!productRepository.existsByIdAndUserId(id, user.getId()) && !user.isHasRoleAdmin(user.getRoles())
-				&& !user.isHasRoleMod(user.getRoles()))
-
+		if (!productRepository.existsByIdAndUserId(id, user.getId()))
 			throw new CafeAPIException(HttpStatus.UNAUTHORIZED, "Access denied");
 
 		ProductDTO pdto = this.getProductById(id);
@@ -454,7 +452,6 @@ public class ProductServiceImp implements ProductService {
 			product.setPurposes(listPurposes);
 		if (listSchedule.size() > 0)
 			product.setSchedules(listSchedule);
-
 		productRepository.save(product);
 
 		List<ProductScheduleDTO> listSchedulesDto = new ArrayList<>();

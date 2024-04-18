@@ -102,14 +102,12 @@ public class AuthController {
 		return ResponseEntity.ok(userDto);
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN')")
 	@DeleteMapping("/users/id/{id}")
 	public ResponseEntity<String> deleteUserById(@PathVariable(name = "id") Long id) throws java.io.IOException {
 		authService.deleteUserById(id);
 		return ResponseEntity.ok("Delete Successfully");
 	}
 
-	@PreAuthorize("hasAnyRole('ADMIN')")
 	@DeleteMapping("/users/{slug}")
 	public ResponseEntity<String> deleteUserBySlug(@PathVariable(name = "slug") String slug)
 			throws java.io.IOException {
@@ -172,7 +170,6 @@ public class AuthController {
 	@SecurityRequirement(name = "jwt")
 	@Operation(summary = "Change password user")
 	@ApiResponse(responseCode = "200", description = "Http status 200 OK")
-	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 	@PostMapping("/changePassword")
 	public ResponseEntity<String> changePassword(@Valid @RequestBody(required = true) ChangePasswordDTO reset,
 			HttpServletRequest request) {
