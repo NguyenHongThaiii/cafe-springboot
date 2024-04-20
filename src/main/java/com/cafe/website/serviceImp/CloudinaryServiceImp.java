@@ -20,9 +20,9 @@ import io.micrometer.common.util.StringUtils;
 @Service
 public class CloudinaryServiceImp implements CloudinaryService {
 	private final Cloudinary cloudinary;
-	private final String CLOUD_NAME = System.getenv("CLOUD_NAME");
-	private final String API_KEY = System.getenv("API_KEY");
-	private final String API_SECRET = System.getenv("API_SECRET");
+	private final String CLOUD_NAME = "th-i-nguy-n";
+	private final String API_KEY ="979385842436938";
+	private final String API_SECRET = "gHEh8vqsRSEZJ9YWmIsYMEK4_70";
 	private static final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 	ObjectMapper objMapper = new ObjectMapper();
 
