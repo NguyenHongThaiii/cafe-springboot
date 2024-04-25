@@ -130,6 +130,8 @@ public class ReviewSerivceImp implements ReviewService {
 				}
 			}
 		}
+//		if (!sortOrders.isEmpty() && page == 0)
+//			pageable = PageRequest.of(1, Integer.MAX_VALUE, Sort.by(sortOrders));
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
@@ -309,17 +311,17 @@ public class ReviewSerivceImp implements ReviewService {
 	}
 
 	@Override
-	public Float getRatingByReviewId(Long productId) {
+	public Double getRatingByReviewId(Long productId) {
 		Product product = productRepository.findById(productId).orElse(null);
 
 		List<Review> listReviews = reviewRepository.findReviewByProductId(productId);
 		if (listReviews == null || product == null || listReviews.size() == 0)
-			return 0f;
-		float total = 0f;
+			return 0.0;
+		Double total = 0.0;
 		for (Review review : listReviews) {
 			total += review.getAverageRating();
 		}
-		Float res = (total / listReviews.size());
+		Double res = (total / listReviews.size());
 		return res;
 	}
 

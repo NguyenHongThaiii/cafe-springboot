@@ -54,7 +54,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 	default List<Product> findWithFilters(String name, Integer status, String slugArea, String slugConvenience,
 			String slugKind, String slugPurpose, Boolean isWatingDelete, Double latitude, Double longitude, Long userId,
 			Float ratingsAverage, Integer outstanding, String createdAt, String updatedAt, String timeStatus,
-			Pageable pageable, EntityManager entityManager) {
+			Integer priceMax, Pageable pageable, EntityManager entityManager) {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Product> cq = cb.createQuery(Product.class);
@@ -99,6 +99,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 		if (status != null) {
 			predicates.add(cb.equal(product.get("status"), status));
 
+		}
+		if (priceMax != null && priceMax >= 0) {
+			predicates.add(cb.lessThanOrEqualTo(product.get("priceMax"), priceMax));
 		}
 		if (outstanding != null) {
 			predicates.add(cb.equal(product.get("outstanding"), outstanding));
