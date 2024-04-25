@@ -23,11 +23,13 @@ public interface ProductService {
 	String setIsWaitingDeleteProduct(ProductDeleteDTO productDeleteDto, HttpServletRequest request) throws IOException;
 
 	Float getRateReviewByProduct(Long productId);
+
 	Long getCountProduct(Integer status);
+
 	List<ProductDTO> getListProducts(int limit, int page, Integer status, String rating, Boolean isWatingDelete,
 			String name, String slugArea, String slugConvenience, String slugKind, String slugPurpose, Double latitude,
-			Double longitude, Long userId, Float ratingsAverage, Integer outstanding ,String createdAt, String updatedAt, String timeStatus, 
-			String sortBy);
+			Double longitude, Long userId, Float ratingsAverage, Integer outstanding, String createdAt,
+			String updatedAt, String timeStatus, Integer priceMax, String sortBy);
 
 	void deleteProduct(ProductDeleteDTO productDeleteDto, HttpServletRequest request) throws IOException;
 }

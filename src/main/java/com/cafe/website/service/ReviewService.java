@@ -27,6 +27,6 @@ public interface ReviewService {
 
 	void deleteReview(Long id, HttpServletRequest request) throws IOException;
 
-	Float getRatingByReviewId(Long id);
+	Double getRatingByReviewId(Long id);
 
 }
