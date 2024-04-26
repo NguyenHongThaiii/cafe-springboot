@@ -26,6 +26,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -116,26 +117,25 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 			Expression<Number> calculatedAverage = cb.quot(sumOfRatings, 5.0f);
 			predicates.add(cb.equal(calculatedAverage, ratingsAverage));
 		}
+
 		if (timeStatus != null && !timeStatus.isEmpty()) {
 			Join<Product, ProductSchedule> productScheduleJoin = product.join("schedules");
 
-			int currentDayOfWeek = LocalDate.now().getDayOfWeek().getValue();
 			int currentTimeInSeconds = LocalTime.now().toSecondOfDay();
 
 			if ("open".equals(timeStatus)) {
-				Predicate isOpenNow = cb.and(cb.equal(productScheduleJoin.get("dayOfWeek"), currentDayOfWeek),
+				Predicate isOpenNow = cb.and(
 						cb.lessThanOrEqualTo(productScheduleJoin.get("startTime").as(Integer.class),
 								currentTimeInSeconds),
 						cb.greaterThanOrEqualTo(productScheduleJoin.get("endTime").as(Integer.class),
 								currentTimeInSeconds));
 				predicates.add(isOpenNow);
 			} else if ("close".equals(timeStatus)) {
-				Predicate isClosedNow = cb.or(cb.notEqual(productScheduleJoin.get("dayOfWeek"), currentDayOfWeek),
+				Predicate isClosedNow = cb.or(
 						cb.lessThan(productScheduleJoin.get("endTime").as(Integer.class), currentTimeInSeconds),
 						cb.greaterThan(productScheduleJoin.get("startTime").as(Integer.class), currentTimeInSeconds));
 				predicates.add(isClosedNow);
-				logger.info("timeStatus Time Seconds: " + currentTimeInSeconds);
-				logger.info("timeStatus Day: " + currentDayOfWeek);
+
 			}
 		}
 		if (pageable != null && pageable.getSort() != null) {
