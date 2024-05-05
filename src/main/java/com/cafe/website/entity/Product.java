@@ -64,6 +64,7 @@ public class Product extends BaseEntity {
 	private String facebook;
 	private Double latitude;
 	private Double longitude;
+	@Column(length = 500)
 	private String description;
 	private String location;
 
