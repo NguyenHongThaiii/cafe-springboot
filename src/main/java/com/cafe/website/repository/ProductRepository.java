@@ -125,9 +125,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 			if ("open".equals(timeStatus)) {
 				Predicate isOpenNow = cb.and(
-						cb.lessThanOrEqualTo(productScheduleJoin.get("startTime").as(Integer.class),
+						cb.lessThan(productScheduleJoin.get("startTime").as(Integer.class),
 								currentTimeInSeconds),
-						cb.greaterThanOrEqualTo(productScheduleJoin.get("endTime").as(Integer.class),
+						cb.greaterThan(productScheduleJoin.get("endTime").as(Integer.class),
 								currentTimeInSeconds));
 				predicates.add(isOpenNow);
 			} else if ("close".equals(timeStatus)) {
