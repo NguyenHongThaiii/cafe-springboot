@@ -61,4 +61,5 @@ public interface AuthService {
 	User getUserFromHeader(HttpServletRequest request);
 
 	void changePassword(ChangePasswordDTO reset, HttpServletRequest request);
+//	boolean checkOldPassword(String password)
 }

@@ -38,7 +38,6 @@ public class ImageDTO extends BaseImage {
 		if (image == null)
 			return null;
 		
-		logger.info("ID: " +image.getId() );
 		ImageDTO i = MapperUtils.mapToDTO(image, ImageDTO.class);
 		i.setUrl(image.getImage());
 		i.setCreatedAt(image.getCreatedAt());

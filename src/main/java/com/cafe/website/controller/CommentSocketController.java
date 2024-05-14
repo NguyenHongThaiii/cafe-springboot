@@ -98,9 +98,8 @@ public class CommentSocketController {
 	}
 
 //	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
-
 	@DeleteMapping("")
-	public String delteCommentById(@RequestBody CommentDeleteDTO deleteDTO, HttpServletRequest request) {
+	public String delteCommentById(@Valid @RequestBody CommentDeleteDTO deleteDTO, HttpServletRequest request) {
 		commentService.deleteComment(deleteDTO.getId(), request);
 		return "Delete successfuly";
 	}
@@ -108,7 +107,7 @@ public class CommentSocketController {
 //	@PreAuthorize("hasAnyRole('ADMIN','MOD','USER')")
 
 	@DeleteMapping("/admin/deleteComment")
-	public String delteCommentByIdAdmin(@RequestBody AttributeIdDTO deleteDTO, HttpServletRequest request) {
+	public String delteCommentByIdAdmin(@Valid @RequestBody AttributeIdDTO deleteDTO, HttpServletRequest request) {
 		commentService.deleteComment(deleteDTO.getId(), request);
 		return "Delete successfuly";
 	}

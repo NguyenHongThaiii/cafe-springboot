@@ -272,7 +272,6 @@ public class ProductServiceImp implements ProductService {
 		images.forEach(image -> {
 			Image imageItem = new Image();
 			imageItem.setImage(image);
-			logger.info("ProductID: " + product.getId());
 			imageItem.setProduct(product);
 			listImages.add(imageItem);
 		});
@@ -472,8 +471,6 @@ public class ProductServiceImp implements ProductService {
 		pdto.setAvgRating(reviewService.getRatingByReviewId(product.getId()));
 
 		Map<String, Object> logData = new HashMap<>();
-		logData.put("id", id);
-		logData.put("productUpdateDto", productUpdateDto);
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Update Product SUCCESSFULY",
 					StatusLog.SUCCESSFULLY.toString(),
@@ -650,6 +647,51 @@ public class ProductServiceImp implements ProductService {
 			return 0L;
 		productRepository.countByStatus(status);
 		return productRepository.countByStatus(status);
+	}
+
+	@Override
+	public Integer getCountProducts(int limit, int page, Integer status, String rating, Boolean isWatingDelete,
+			String name, String slugArea, String slugConvenience, String slugKind, String slugPurpose, Double latitude,
+			Double longitude, Long userId, Float ratingsAverage, Integer outstanding, String createdAt,
+			String updatedAt, String timeStatus, Integer priceMax, String sortBy) {
+		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.PRICEMIN,
+				SortField.PRICEMAX, SortField.UPDATEDAT, SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC,
+				SortField.PRICEMINDESC, SortField.PRICEMAXDESC, SortField.UPDATEDATDESC, SortField.CREATEDATDESC);
+
+		List<String> sortByList = new ArrayList<String>();
+		List<Product> productList = null;
+		List<Sort.Order> sortOrders = new ArrayList<>();
+		List<ProductDTO> listProductDto;
+		Pageable pageable = null;
+
+		if (page != 0) {
+			pageable = PageRequest.of(page - 1, limit);
+			if (!StringUtils.isEmpty(sortBy))
+				sortByList = Arrays.asList(sortBy.split(","));
+
+			for (String sb : sortByList) {
+				boolean isDescending = sb.endsWith("Desc");
+
+				if (isDescending && !StringUtils.isEmpty(sortBy))
+					sb = sb.substring(0, sb.length() - 4).trim();
+
+				for (SortField sortField : validSortFields) {
+					if (sortField.toString().equals(sb.trim())) {
+						sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
+						break;
+					}
+				}
+			}
+
+			if (!sortOrders.isEmpty())
+				pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
+		}
+
+		productList = productRepository.findWithFilters(name, status, slugArea, slugConvenience, slugKind, slugPurpose,
+				isWatingDelete, latitude, longitude, userId, ratingsAverage, outstanding, createdAt, updatedAt,
+				timeStatus,priceMax ,pageable, entityManager);
+		
+		return productList.size();
 	}
 
 }

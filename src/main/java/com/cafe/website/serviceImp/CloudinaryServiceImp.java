@@ -73,7 +73,6 @@ public class CloudinaryServiceImp implements CloudinaryService {
 					String lastPart = parts[parts.length - 1];
 					String idPart = path + lastPart.substring(0, lastPart.lastIndexOf("."));
 					this.deleteImage(idPart);
-					logger.info(idPart);
 				}
 			}
 		}

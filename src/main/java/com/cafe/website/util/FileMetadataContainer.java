@@ -38,7 +38,6 @@ public class FileMetadataContainer {
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			String jsonString = objectMapper.writeValueAsString(container);
-			System.out.println(jsonString);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}

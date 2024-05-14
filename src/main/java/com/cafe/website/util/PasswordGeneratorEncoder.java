@@ -27,7 +27,6 @@ public class PasswordGeneratorEncoder {
 //		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
 //		String formattedTime = time.format(formatter);
 //
-////		logger.info("Time: " + formattedTime); // Outputs "10:00 AM
 //		String uniqueKey = UUID.randomUUID().toString();
 //		System.out.println(uniqueKey);
 //		Float a = 10f;
