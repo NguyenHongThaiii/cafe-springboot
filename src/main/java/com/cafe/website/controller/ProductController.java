@@ -59,6 +59,25 @@ public class ProductController {
 		return new ResponseEntity<>(listproducts, HttpStatus.OK);
 	}
 
+	@GetMapping("/count")
+	public ResponseEntity<Integer> getCountProducts(@RequestParam(defaultValue = "5") Integer limit,
+			@RequestParam(defaultValue = "1") Integer page, @RequestParam(required = false) Integer status,
+			@RequestParam(required = false) Long userId, @RequestParam(required = false) String rating,
+			@RequestParam(required = false) Boolean isWaitingDelete, @RequestParam(required = false) Double latitude,
+			@RequestParam(required = false) Double longitude, @RequestParam(required = false) String name,
+			@RequestParam(required = false) String slugArea, @RequestParam(required = false) String slugKind,
+			@RequestParam(required = false) String slugConvenience, @RequestParam(required = false) String slugPurpose,
+			@RequestParam(required = false) String createdAt, @RequestParam(required = false) String updatedAt,
+			@RequestParam(required = false) Float ratingsAverage, @RequestParam(required = false) String timeStatus,
+			@RequestParam(required = false) Integer outstanding, @RequestParam(required = false) Integer priceMax,
+
+			@RequestParam(required = false, defaultValue = "") String sortBy) {
+		Integer listproducts = productService.getCountProducts(limit, page, status, rating, isWaitingDelete, name,
+				slugArea, slugConvenience, slugKind, slugPurpose, latitude, longitude, userId, ratingsAverage,
+				outstanding, createdAt, updatedAt, timeStatus, priceMax, sortBy);
+		return new ResponseEntity<>(listproducts, HttpStatus.OK);
+	}
+
 	@GetMapping("/id/{id}")
 	public ResponseEntity<ProductDTO> getProductById(@PathVariable(name = "id") Long id) {
 		ProductDTO product = productService.getProductById(id);

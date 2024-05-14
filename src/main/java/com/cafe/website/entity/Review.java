@@ -37,7 +37,7 @@ public class Review extends BaseEntity {
 
 	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Image> listImages = new ArrayList<>();
-	@Column(length = 1000)
+	@Column(length = 2000)
 	private String name;
 	private Integer outstanding;
 

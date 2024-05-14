@@ -211,8 +211,6 @@ public class AuthServiceImp implements AuthService {
 	@Override
 	public RegisterResponse validateRegister(ValidateOtpDTO validateDto, HttpServletRequest request) {
 		String otpCache = otpService.getOtpByEmail(validateDto.getEmail().trim());
-		logger.info("otpCache: " + otpCache);
-		logger.info("otpCache: " + validateDto.getEmail());
 		this.validateOtp(validateDto.getOtp(), otpCache);
 
 		User user = userRepository.findByEmail(validateDto.getEmail())
@@ -443,7 +441,6 @@ public class AuthServiceImp implements AuthService {
 	@Override
 	public UserDTO getUserById(Long id) {
 		User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
-		logger.info(user.toString());
 		UserDTO userDto = MapperUtils.mapToDTO(user, UserDTO.class);
 		if (user.getAvatar() != null)
 			userDto.setImage(ImageDTO.generateImageDTO(user.getAvatar()));

@@ -22,8 +22,8 @@ public class ProductDTO extends BaseEntityDTO {
 	private int priceMin;
 	private int priceMax;
 	private int outstanding;
-	private Integer latitude;
-	private Integer longitude;
+	private Double latitude;
+	private Double longitude;
 	private String email;
 	private String facebook;
 	private String description;
@@ -41,7 +41,7 @@ public class ProductDTO extends BaseEntityDTO {
 	public ProductDTO(Long id, Integer status, String createdAt, String updatedAt, List<PurposeDTO> purposes,
 			List<AreaDTO> areas, List<KindDTO> kinds, List<ConvenienceDTO> conveniences,
 			List<ProductScheduleDTO> schedules, String name, String slug, String phone, int priceMin, int priceMax,
-			int outstanding, Integer latitude, Integer longitude, String email, String facebook, String description,
+			int outstanding, Double latitude, Double longitude, String email, String facebook, String description,
 			String location, List<ImageDTO> listImage, List<MenuDTO> listMenu, UserDTO owner, Boolean isWaitingDelete,
 			Double avgRating) {
 		super(id, status, createdAt, updatedAt);
@@ -157,19 +157,19 @@ public class ProductDTO extends BaseEntityDTO {
 		this.outstanding = outstanding;
 	}
 
-	public Integer getLatitude() {
+	public Double getLatitude() {
 		return latitude;
 	}
 
-	public void setLatitude(Integer latitude) {
+	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
 
-	public Integer getLongitude() {
+	public Double getLongitude() {
 		return longitude;
 	}
 
-	public void setLongitude(Integer longitude) {
+	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
 

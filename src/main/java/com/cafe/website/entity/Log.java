@@ -17,9 +17,9 @@ public class Log extends BaseEntity {
 	private String message;
 	private String agent;
 	private String result;
-	@Column(length = 1000)
+	@Column(length = 2000)
 	private String params;
-	@Column(length = 1000)
+	@Column(length = 2000)
 	private String body;
 	private String endpoint;
 	private String method;

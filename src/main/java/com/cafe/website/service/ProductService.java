@@ -30,6 +30,10 @@ public interface ProductService {
 			String name, String slugArea, String slugConvenience, String slugKind, String slugPurpose, Double latitude,
 			Double longitude, Long userId, Float ratingsAverage, Integer outstanding, String createdAt,
 			String updatedAt, String timeStatus, Integer priceMax, String sortBy);
+	Integer getCountProducts(int limit, int page, Integer status, String rating, Boolean isWatingDelete,
+			String name, String slugArea, String slugConvenience, String slugKind, String slugPurpose, Double latitude,
+			Double longitude, Long userId, Float ratingsAverage, Integer outstanding, String createdAt,
+			String updatedAt, String timeStatus, Integer priceMax, String sortBy);
 
 	void deleteProduct(ProductDeleteDTO productDeleteDto, HttpServletRequest request) throws IOException;
 }
