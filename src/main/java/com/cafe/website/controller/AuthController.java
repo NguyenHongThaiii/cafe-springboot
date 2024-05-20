@@ -72,6 +72,14 @@ public class AuthController {
 //		jwtAuthResponse.setAccessToken(token.getToken());
 		return ResponseEntity.ok(lg);
 	}
+	@PostMapping(value = { "/admin/login", "/admin/signin" })
+	public ResponseEntity<LoginResponseDTO> loginAdmin(@Valid @RequestBody LoginDTO loginDto, HttpServletRequest request) {
+		LoginResponseDTO lg = authService.loginAdmin(loginDto, request);
+
+//		JWTAuthResponse jwtAuthResponse = new JWTAuthResponse();
+//		jwtAuthResponse.setAccessToken(token.getToken());
+		return ResponseEntity.ok(lg);
+	}
 
 	@PostMapping(value = { "/register", "/signup" })
 	public ResponseEntity<RegisterResponse> createUser(@Valid @RequestBody RegisterDTO regsiterDto,

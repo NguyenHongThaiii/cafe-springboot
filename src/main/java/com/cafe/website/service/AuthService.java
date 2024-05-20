@@ -27,6 +27,7 @@ public interface AuthService {
 			String updatedAt, String sortBy);
 
 	LoginResponseDTO login(LoginDTO loginDto, HttpServletRequest request);
+	LoginResponseDTO loginAdmin(LoginDTO loginDto, HttpServletRequest request);
 
 	String refreshToken(HttpServletRequest request, HttpServletResponse response);
 

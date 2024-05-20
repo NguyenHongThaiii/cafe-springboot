@@ -26,6 +26,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.cafe.website.constant.RoleType;
 import com.cafe.website.constant.SortField;
 import com.cafe.website.constant.StatusLog;
 import com.cafe.website.constant.TokenType;
@@ -131,6 +132,46 @@ public class AuthServiceImp implements AuthService {
 		User user = userRepository.findByEmail(loginDto.getEmail())
 				.orElseThrow(() -> new ResourceNotFoundException("User", "email", loginDto.getEmail()));
 		if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword()) || user.getStatus() != 1)
+			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Email or password is not correct.");
+		Authentication authentication = authenticationManager
+				.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
+		LoginResponseDTO lg = MapperUtils.mapToDTO(user, LoginResponseDTO.class);
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		String token = jwtTokenProvider.generateToken(authentication);
+		revokeAllUserTokens(user);
+		saveUserToken(user, token);
+		if (user.getAvatar() != null) {
+			lg.setImage(ImageDTO.generateImageDTO(user.getAvatar()));
+		}
+		try {
+			loginDto.setPassword("");
+			logService.createLog(request, user, "Login SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
+					objectMapper.writeValueAsString(loginDto), "Login");
+			lg.setToken(token);
+
+			return lg;
+		} catch (IOException e) {
+			logService.createLog(request, user, MethodUtil.handleSubstringMessage(e.getMessage()),
+					StatusLog.FAILED.toString(), "Login");
+			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
+					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
+		}
+
+	}
+
+	@Override
+	public LoginResponseDTO loginAdmin(LoginDTO loginDto, HttpServletRequest request) {
+		User user = userRepository.findByEmail(loginDto.getEmail())
+				.orElseThrow(() -> new ResourceNotFoundException("User", "email", loginDto.getEmail()));
+		boolean isAdmin = false;
+		if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword()) || user.getStatus() != 1)
+			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Email or password is not correct.");
+
+		for (Role role : user.getRoles()) {
+			if (role.getName().equals(RoleType.ROLE_ADMIN.toString()))
+				isAdmin = true;
+		}
+		if (!isAdmin)
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Email or password is not correct.");
 
 		Authentication authentication = authenticationManager
@@ -286,7 +327,6 @@ public class AuthServiceImp implements AuthService {
 
 		if (userUpdateDto.getPassword() != null)
 			userCurrent.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
-	
 
 		userRepository.save(userCurrent);
 		logData.put("slug", slug);
@@ -379,7 +419,6 @@ public class AuthServiceImp implements AuthService {
 	public UserDTO getProfile(String slug) {
 		User user = userRepository.findBySlug(slug)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "name", slug));
-		
 
 		UserDTO res = MapperUtils.mapToDTO(user, UserDTO.class);
 		if (user.getAvatar() != null)
@@ -486,32 +525,34 @@ public class AuthServiceImp implements AuthService {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
 				SortField.CREATEDATDESC);
-		Pageable pageable = PageRequest.of(page - 1, limit);
 		List<String> sortByList = new ArrayList<String>();
 		List<UserDTO> listUserDto;
 		List<User> listUser;
 		List<Sort.Order> sortOrders = new ArrayList<>();
+		Pageable pageable = null;
 
-		if (!StringUtils.isEmpty(sortBy))
-			sortByList = Arrays.asList(sortBy.split(","));
+		if (page != 0) {
+			pageable = PageRequest.of(page - 1, limit);
+			if (!StringUtils.isEmpty(sortBy))
+				sortByList = Arrays.asList(sortBy.split(","));
 
-		for (String sb : sortByList) {
-			boolean isDescending = sb.endsWith("Desc");
+			for (String sb : sortByList) {
+				boolean isDescending = sb.endsWith("Desc");
 
-			if (isDescending && !StringUtils.isEmpty(sortBy))
-				sb = sb.substring(0, sb.length() - 4).trim();
+				if (isDescending && !StringUtils.isEmpty(sortBy))
+					sb = sb.substring(0, sb.length() - 4).trim();
 
-			for (SortField sortField : validSortFields) {
-				if (sortField.toString().equals(sb.trim())) {
-					sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
-					break;
+				for (SortField sortField : validSortFields) {
+					if (sortField.toString().equals(sb.trim())) {
+						sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
+						break;
+					}
 				}
 			}
+
+			if (!sortOrders.isEmpty())
+				pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 		}
-
-		if (!sortOrders.isEmpty())
-			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
-
 		listUser = userRepository.findWithFilters(status, name, email, slug, createdAt, updatedAt, pageable,
 				entityManager);
 
@@ -583,11 +624,11 @@ public class AuthServiceImp implements AuthService {
 			user.setPassword(passwordEncoder.encode(reset.getPassword()));
 
 			userRepository.save(user);
-		
+
 			logService.createLog(request, user, "Create User SUCCESSFULY", StatusLog.SUCCESSFULLY.toString(),
 					objectMapper.writeValueAsString(reset), "Create User");
 		} catch (Exception e) {
-		
+
 			logService.createLog(request, this.getUserFromHeader(request),
 					MethodUtil.handleSubstringMessage(e.getMessage()), StatusLog.FAILED.toString(),
 					"Set Waiting Delete User");
@@ -596,4 +637,5 @@ public class AuthServiceImp implements AuthService {
 		}
 
 	}
+
 }

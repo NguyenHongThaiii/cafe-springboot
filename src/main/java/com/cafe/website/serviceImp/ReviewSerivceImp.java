@@ -109,7 +109,6 @@ public class ReviewSerivceImp implements ReviewService {
 		List<Review> listReview;
 		List<Sort.Order> sortOrders = new ArrayList<>();
 
-		// sort
 		if (page != 0) {
 			pageable = PageRequest.of(page - 1, limit);
 
@@ -130,8 +129,6 @@ public class ReviewSerivceImp implements ReviewService {
 				}
 			}
 		}
-//		if (!sortOrders.isEmpty() && page == 0)
-//			pageable = PageRequest.of(1, Integer.MAX_VALUE, Sort.by(sortOrders));
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
