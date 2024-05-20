@@ -29,7 +29,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(User.class);
-
+		List<Order> orders = new ArrayList<>();
 		Root<User> user = cq.from(User.class);
 		List<Predicate> predicates = new ArrayList<>();
 
@@ -52,18 +52,20 @@ public interface UserRepository extends JpaRepository<User, Long> {
 		if (status != null) {
 			predicates.add(cb.equal(user.get("status"), status));
 		}
-		if (pageable.getSort() != null) {
-			List<Order> orders = new ArrayList<>();
+		if (pageable != null && pageable.getSort() != null) {
 			for (Sort.Order order : pageable.getSort()) {
+
 				orders.add(order.isAscending() ? cb.asc(user.get(order.getProperty()))
 						: cb.desc(user.get(order.getProperty())));
 			}
 			cq.orderBy(orders);
 		}
 		cq.where(predicates.toArray(new Predicate[0]));
-
-		return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
-				.setMaxResults(pageable.getPageSize()).getResultList();
+		if (pageable != null)
+			return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
+					.setMaxResults(pageable.getPageSize()).getResultList();
+		else
+			return entityManager.createQuery(cq).setFirstResult(0).getResultList();
 	}
 
 	Slice<Area> findByNameContainingIgnoreCase(String name, Pageable pageable);
