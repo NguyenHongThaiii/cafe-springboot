@@ -191,7 +191,8 @@ public class ConvenienceServiceImp implements ConvenienceService {
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
 		Map<String, Object> logData = new HashMap<>();
 
-		Convenience convenience = convenienceMapper.dtoToEntity(newDto);
+		Convenience convenience = convenienceRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Convenience", "id", id));
 		ConvenienceDTO convenienceDTO = MapperUtils.mapToDTO(convenienceUpdateDto, ConvenienceDTO.class);
 		if (convenienceUpdateDto.getImageFile() != null) {
 			String url = cloudinaryService.uploadImage(convenienceUpdateDto.getImageFile(), path_category, "image");

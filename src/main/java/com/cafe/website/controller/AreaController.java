@@ -44,6 +44,16 @@ public class AreaController {
 		return new ResponseEntity<>(listAreasDto, HttpStatus.OK);
 	}
 
+	@GetMapping("/count")
+	public ResponseEntity<Integer> getCountAreas(@RequestParam(defaultValue = "5") Integer limit,
+			@RequestParam(defaultValue = "1") Integer page, @RequestParam(required = false) Integer status,
+			@RequestParam(required = false) String name, @RequestParam(required = false) String slug,
+			@RequestParam(required = false) String createdAt, @RequestParam(required = false) String updatedAt,
+			@RequestParam(required = false, defaultValue = "") String sortBy) {
+		Integer count = areaService.getCountAreas(limit, page, status, name, slug, createdAt, updatedAt, sortBy);
+		return new ResponseEntity<>(count, HttpStatus.OK);
+	}
+
 	@GetMapping("/id/{id}")
 	public ResponseEntity<AreaDTO> getAreaById(@PathVariable(name = "id") Long id) {
 		AreaDTO areaDto = areaService.getAreaById(id);

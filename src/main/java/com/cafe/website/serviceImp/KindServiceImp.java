@@ -184,7 +184,7 @@ public class KindServiceImp implements KindService {
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
 		Map<String, Object> logData = new HashMap<>();
 
-		Kind kind = kindMapper.dtoToEntity(newDto);
+		Kind kind = kindRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("kind", "id", id + ""));
 		KindDTO kindDto = MapperUtils.mapToDTO(kindUpdateDto, KindDTO.class);
 		if (kindUpdateDto.getImageFile() != null) {
 			String url = cloudinaryService.uploadImage(kindUpdateDto.getImageFile(), path_category, "image");

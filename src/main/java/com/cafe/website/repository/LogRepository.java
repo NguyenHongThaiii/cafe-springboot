@@ -70,7 +70,7 @@ public interface LogRepository extends JpaRepository<Log, Long> {
 			predicates.add(cb.like(cb.lower(logger.get("updatedAt")), "%" + updatedAt.toLowerCase() + "%"));
 
 		}
-		if (pageable.getSort() != null) {
+		if (pageable != null && pageable.getSort() != null) {
 			for (Sort.Order order : pageable.getSort()) {
 
 				orders.add(order.isAscending() ? cb.asc(logger.get(order.getProperty()))
@@ -79,8 +79,10 @@ public interface LogRepository extends JpaRepository<Log, Long> {
 			cq.orderBy(orders);
 		}
 		cq.where(predicates.toArray(new Predicate[0]));
-
-		return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
-				.setMaxResults(pageable.getPageSize()).getResultList();
+		if (pageable != null)
+			return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
+					.setMaxResults(pageable.getPageSize()).getResultList();
+		else
+			return entityManager.createQuery(cq).setFirstResult(0).getResultList();
 	}
 }

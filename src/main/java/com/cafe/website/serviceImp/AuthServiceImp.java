@@ -324,10 +324,19 @@ public class AuthServiceImp implements AuthService {
 			userDto.setSlug(slugify.slugify(userUpdateDto.getSlug()));
 		userDto.setStatus(1);
 		userMapper.updateUserFromDto(userDto, userCurrent);
-
+		
 		if (userUpdateDto.getPassword() != null)
 			userCurrent.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
+		List<Role> resultList = new ArrayList<>();
+		if (userUpdateDto.getRoles() != null)
 
+			userUpdateDto.getRoles().forEach(id -> {
+				Role entity = roleRepository.findById(id).orElse(null);
+				if (entity != null)
+					resultList.add(entity);
+			});
+		
+		userCurrent.setRoles(resultList);
 		userRepository.save(userCurrent);
 		logData.put("slug", slug);
 		logData.put("userUpdateDto", userUpdateDto);
@@ -636,6 +645,44 @@ public class AuthServiceImp implements AuthService {
 					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
 
+	}
+
+	@Override
+	public Integer getCountUser(Integer status, int limit, int page, String name, String email, String slug,
+			String createdAt, String updatedAt, String sortBy) {
+		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
+				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
+				SortField.CREATEDATDESC);
+		List<String> sortByList = new ArrayList<String>();
+		List<User> listUser;
+		List<Sort.Order> sortOrders = new ArrayList<>();
+		Pageable pageable = null;
+
+		if (page != 0) {
+			pageable = PageRequest.of(page - 1, limit);
+			if (!StringUtils.isEmpty(sortBy))
+				sortByList = Arrays.asList(sortBy.split(","));
+
+			for (String sb : sortByList) {
+				boolean isDescending = sb.endsWith("Desc");
+
+				if (isDescending && !StringUtils.isEmpty(sortBy))
+					sb = sb.substring(0, sb.length() - 4).trim();
+
+				for (SortField sortField : validSortFields) {
+					if (sortField.toString().equals(sb.trim())) {
+						sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
+						break;
+					}
+				}
+			}
+
+			if (!sortOrders.isEmpty())
+				pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
+		}
+		listUser = userRepository.findWithFilters(status, name, email, slug, createdAt, updatedAt, pageable,
+				entityManager);
+		return listUser.size();
 	}
 
 }

@@ -6,16 +6,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.WebSocketSession;
 
 import com.cafe.website.constant.SortField;
 import com.cafe.website.constant.StatusLog;
@@ -35,9 +30,7 @@ import com.cafe.website.repository.UserRepository;
 import com.cafe.website.service.AuthService;
 import com.cafe.website.service.CommentService;
 import com.cafe.website.service.LogService;
-import com.cafe.website.util.JsonConverter;
 import com.cafe.website.util.MapperUtils;
-import com.cafe.website.util.MethodUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

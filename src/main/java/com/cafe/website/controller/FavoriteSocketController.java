@@ -4,10 +4,6 @@ import java.io.IOException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,11 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cafe.website.payload.AttributeIdDTO;
 import com.cafe.website.payload.FavoriteCommentCreateDTO;
 import com.cafe.website.payload.FavoriteReviewCreateDTO;
 import com.cafe.website.service.FavoriteService;
-import com.cafe.website.service.ReviewService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

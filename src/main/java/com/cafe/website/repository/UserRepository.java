@@ -61,6 +61,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			cq.orderBy(orders);
 		}
 		cq.where(predicates.toArray(new Predicate[0]));
+		if (pageable != null && pageable.getSort() != null) {
+			for (Sort.Order order : pageable.getSort()) {
+
+				orders.add(order.isAscending() ? cb.asc(user.get(order.getProperty()))
+						: cb.desc(user.get(order.getProperty())));
+			}
+			cq.orderBy(orders);
+		}
+		cq.where(predicates.toArray(new Predicate[0]));
 		if (pageable != null)
 			return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
 					.setMaxResults(pageable.getPageSize()).getResultList();

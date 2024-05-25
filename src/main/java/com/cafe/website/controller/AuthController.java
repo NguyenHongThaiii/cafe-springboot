@@ -63,6 +63,17 @@ public class AuthController {
 				sortBy);
 		return ResponseEntity.ok(listUserDto);
 	}
+	@GetMapping("/users/count")
+	public ResponseEntity<Integer> getCountUsers(@RequestParam(defaultValue = "5") Integer limit,
+			@RequestParam(defaultValue = "1") Integer page, @RequestParam(required = false) Integer status,
+			@RequestParam(required = false) String name, @RequestParam(required = false) String email,
+			@RequestParam(required = false) String createdAt, @RequestParam(required = false) String updatedAt,
+			@RequestParam(required = false) String slug,
+			@RequestParam(required = false, defaultValue = "") String sortBy) {
+		Integer listUserDto = authService.getCountUser(status, limit, page, name, email,slug, createdAt, updatedAt,
+				sortBy);
+		return ResponseEntity.ok(listUserDto);
+	}
 
 	@PostMapping(value = { "/login", "/signin" })
 	public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginDTO loginDto, HttpServletRequest request) {

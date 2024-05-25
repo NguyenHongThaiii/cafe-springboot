@@ -28,7 +28,7 @@ public interface AreaRepository extends JpaRepository<Area, Long> {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Area> cq = cb.createQuery(Area.class);
-
+		List<Order> orders = new ArrayList<>();
 		Root<Area> area = cq.from(Area.class);
 		List<Predicate> predicates = new ArrayList<>();
 
@@ -48,18 +48,20 @@ public interface AreaRepository extends JpaRepository<Area, Long> {
 			predicates.add(cb.equal(area.get("status"), status));
 		}
 
-		if (pageable.getSort() != null) {
-			List<Order> orders = new ArrayList<>();
+		if (pageable != null && pageable.getSort() != null) {
 			for (Sort.Order order : pageable.getSort()) {
+
 				orders.add(order.isAscending() ? cb.asc(area.get(order.getProperty()))
 						: cb.desc(area.get(order.getProperty())));
 			}
 			cq.orderBy(orders);
 		}
 		cq.where(predicates.toArray(new Predicate[0]));
-
-		return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
-				.setMaxResults(pageable.getPageSize()).getResultList();
+		if (pageable != null)
+			return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
+					.setMaxResults(pageable.getPageSize()).getResultList();
+		else
+			return entityManager.createQuery(cq).setFirstResult(0).getResultList();
 	}
 
 	Boolean existsBySlugAndIdNot(String slug, Long id);

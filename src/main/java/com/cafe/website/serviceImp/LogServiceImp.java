@@ -54,29 +54,32 @@ public class LogServiceImp implements LogService {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
 				SortField.CREATEDATDESC);
-		Pageable pageable = PageRequest.of(page - 1, limit);
+		Pageable pageable = null;
 		List<String> sortByList = new ArrayList<String>();
 		List<Log> loggerList = null;
 		List<Sort.Order> sortOrders = new ArrayList<>();
 		List<LogDTO> listLogDto;
 
-		if (!StringUtils.isEmpty(sortBy))
-			sortByList = Arrays.asList(sortBy.split(","));
+		if (page != 0) {
+			pageable = PageRequest.of(page - 1, limit);
+			if (!StringUtils.isEmpty(sortBy))
+				sortByList = Arrays.asList(sortBy.split(","));
 
-		for (String sb : sortByList) {
-			boolean isDescending = sb.endsWith("Desc");
+			for (String sb : sortByList) {
+				boolean isDescending = sb.endsWith("Desc");
 
-			if (isDescending && !StringUtils.isEmpty(sortBy))
-				sb = sb.substring(0, sb.length() - 4).trim();
+				if (isDescending && !StringUtils.isEmpty(sortBy))
+					sb = sb.substring(0, sb.length() - 4).trim();
 
-			for (SortField sortField : validSortFields) {
-				if (sortField.toString().equals(sb)) {
-					sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
-					break;
+				for (SortField sortField : validSortFields) {
+					if (sortField.toString().equals(sb)) {
+						sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
+						break;
+					}
 				}
 			}
-		}
 
+		}
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
@@ -176,6 +179,46 @@ public class LogServiceImp implements LogService {
 		log.setAction(action);
 
 		logRepository.save(log);
+	}
+
+	@Override
+	public Integer getCountLogs(Integer limit, Integer page, Integer status, String method, Long userId, String message,
+			String agent, String result, String params, String body, String endpoint, String action, String createdAt,
+			String updatedAt, String sortBy) {
+		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
+				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
+				SortField.CREATEDATDESC);
+		Pageable pageable = null;
+		List<String> sortByList = new ArrayList<String>();
+		List<Log> loggerList = null;
+		List<Sort.Order> sortOrders = new ArrayList<>();
+
+		if (page != 0) {
+			pageable = PageRequest.of(page - 1, limit);
+			if (!StringUtils.isEmpty(sortBy))
+				sortByList = Arrays.asList(sortBy.split(","));
+
+			for (String sb : sortByList) {
+				boolean isDescending = sb.endsWith("Desc");
+
+				if (isDescending && !StringUtils.isEmpty(sortBy))
+					sb = sb.substring(0, sb.length() - 4).trim();
+
+				for (SortField sortField : validSortFields) {
+					if (sortField.toString().equals(sb)) {
+						sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
+						break;
+					}
+				}
+			}
+
+		}
+		if (!sortOrders.isEmpty())
+			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
+
+		loggerList = logRepository.findWithFilters(status, method, userId, message, agent, result, params, body,
+				endpoint, action, createdAt, updatedAt, pageable, entityManager);
+		return loggerList.size();
 	}
 
 }
