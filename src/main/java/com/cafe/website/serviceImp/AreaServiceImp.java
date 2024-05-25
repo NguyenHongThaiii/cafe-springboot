@@ -85,29 +85,33 @@ public class AreaServiceImp implements AreaService {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
 				SortField.CREATEDATDESC);
-		Pageable pageable = PageRequest.of(page - 1, limit);
 		List<String> sortByList = new ArrayList<String>();
 		List<AreaDTO> listAreaDto;
 		List<Area> listArea;
 		List<Sort.Order> sortOrders = new ArrayList<>();
 
-		if (!StringUtils.isEmpty(sortBy))
-			sortByList = Arrays.asList(sortBy.split(","));
+		Pageable pageable = null;
 
-		for (String sb : sortByList) {
-			boolean isDescending = sb.endsWith("Desc");
+		if (page != 0) {
+			pageable = PageRequest.of(page - 1, limit);
+			if (!StringUtils.isEmpty(sortBy))
+				sortByList = Arrays.asList(sortBy.split(","));
 
-			if (isDescending && !StringUtils.isEmpty(sortBy))
-				sb = sb.substring(0, sb.length() - 4).trim();
+			for (String sb : sortByList) {
+				boolean isDescending = sb.endsWith("Desc");
 
-			for (SortField sortField : validSortFields) {
-				if (sortField.toString().equals(sb.trim())) {
-					sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
-					break;
+				if (isDescending && !StringUtils.isEmpty(sortBy))
+					sb = sb.substring(0, sb.length() - 4).trim();
+
+				for (SortField sortField : validSortFields) {
+					if (sortField.toString().equals(sb.trim())) {
+						sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
+						break;
+					}
 				}
 			}
-		}
 
+		}
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
@@ -148,7 +152,7 @@ public class AreaServiceImp implements AreaService {
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
 
 		Area area = MapperUtils.mapToEntity(areaCreateDto, Area.class);
-		area.setSlug(slugify.slugify(areaCreateDto.getSlug()));
+		area.setSlug(slugify.slugify(areaCreateDto.getName()));
 		String url = cloudinaryService.uploadImage(areaCreateDto.getImageFile(), path_category, "image");
 		Image image = new Image();
 		image.setArea(area);
@@ -188,9 +192,9 @@ public class AreaServiceImp implements AreaService {
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
 		Map<String, Object> logData = new HashMap<>();
 
-		Area area = areaMapper.dtoToEntity(newdto);
+		Area area = areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area", "id", id + ""));
 		AreaDTO areaDto = MapperUtils.mapToDTO(areaUpdateDto, AreaDTO.class);
-		if (areaUpdateDto.getImageFile() != null) {
+		if (areaUpdateDto.getImageFile() != null && !areaUpdateDto.getImageFile().isEmpty()) {
 			String url = cloudinaryService.uploadImage(areaUpdateDto.getImageFile(), path_category, "image");
 			Image image = new Image();
 			image.setArea(area);
@@ -243,6 +247,46 @@ public class AreaServiceImp implements AreaService {
 			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
 					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
+	}
+
+	@Override
+	public Integer getCountAreas(int limit, int page, Integer status, String name, String slug, String createdAt,
+			String updatedAt, String sortBy) {
+		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
+				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
+				SortField.CREATEDATDESC);
+		List<String> sortByList = new ArrayList<String>();
+		List<AreaDTO> listAreaDto;
+		List<Area> listArea;
+		List<Sort.Order> sortOrders = new ArrayList<>();
+
+		Pageable pageable = null;
+
+		if (page != 0) {
+			pageable = PageRequest.of(page - 1, limit);
+			if (!StringUtils.isEmpty(sortBy))
+				sortByList = Arrays.asList(sortBy.split(","));
+
+			for (String sb : sortByList) {
+				boolean isDescending = sb.endsWith("Desc");
+
+				if (isDescending && !StringUtils.isEmpty(sortBy))
+					sb = sb.substring(0, sb.length() - 4).trim();
+
+				for (SortField sortField : validSortFields) {
+					if (sortField.toString().equals(sb.trim())) {
+						sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
+						break;
+					}
+				}
+			}
+
+		}
+		if (!sortOrders.isEmpty())
+			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
+
+		listArea = areaRepository.findWithFilters(status, name, slug, createdAt, updatedAt, pageable, entityManager);
+		return listArea.size();
 	}
 
 }

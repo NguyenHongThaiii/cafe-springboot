@@ -18,7 +18,6 @@ public class BaseCatCreateDTO extends FileMetadata {
 	@Size(min = 5, max = 50)
 	private String name;
 	@Size(min = 5, max = 50)
-	@NotNull(message = "Slug should not be null or empty")
 	private String slug;
 
 	@NotNull(message = "Image should not be null or empty")

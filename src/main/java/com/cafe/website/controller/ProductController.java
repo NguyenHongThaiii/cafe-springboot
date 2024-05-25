@@ -61,7 +61,7 @@ public class ProductController {
 
 	@GetMapping("/count")
 	public ResponseEntity<Integer> getCountProducts(@RequestParam(defaultValue = "5") Integer limit,
-			@RequestParam(defaultValue = "1") Integer page, @RequestParam(required = false) Integer status,
+			@RequestParam(defaultValue = "0") Integer page, @RequestParam(required = false) Integer status,
 			@RequestParam(required = false) Long userId, @RequestParam(required = false) String rating,
 			@RequestParam(required = false) Boolean isWaitingDelete, @RequestParam(required = false) Double latitude,
 			@RequestParam(required = false) Double longitude, @RequestParam(required = false) String name,

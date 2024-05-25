@@ -16,7 +16,7 @@ public class UserUpdateDTO {
 	private int status;
 	private String slug;
 	private List<Product> listProductSaved = new ArrayList<>();
-	private List<Role> roles;
+	private List<Long> roles;
 
 	public UserUpdateDTO() {
 		// TODO Auto-generated constructor stub
@@ -25,7 +25,7 @@ public class UserUpdateDTO {
 	}
 
 	public UserUpdateDTO(String password, String name, String address, String phone, int status, String slug,
-			List<Product> listProductSaved, List<Role> roles) {
+			List<Product> listProductSaved, List<Long> roles) {
 		super();
 		this.password = password;
 		this.name = name;
@@ -93,11 +93,11 @@ public class UserUpdateDTO {
 		this.listProductSaved = listProductSaved;
 	}
 
-	public List<Role> getRoles() {
+	public List<Long> getRoles() {
 		return roles;
 	}
 
-	public void setRoles(List<Role> roles) {
+	public void setRoles(List<Long> roles) {
 		this.roles = roles;
 	}
 

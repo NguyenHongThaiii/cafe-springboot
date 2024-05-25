@@ -2,9 +2,6 @@ package com.cafe.website.service;
 
 import java.util.List;
 
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-
 import com.cafe.website.payload.CommentCreateDTO;
 import com.cafe.website.payload.CommentDTO;
 import com.cafe.website.payload.CommentUpdateDTO;

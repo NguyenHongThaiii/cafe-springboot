@@ -25,7 +25,8 @@ import jakarta.servlet.http.HttpServletResponse;
 public interface AuthService {
 	List<UserDTO> getListUser(Integer status, int limit, int page, String name, String email,String slug, String createdAt,
 			String updatedAt, String sortBy);
-
+	Integer getCountUser(Integer status, int limit, int page, String name, String email,String slug, String createdAt,
+			String updatedAt, String sortBy);
 	LoginResponseDTO login(LoginDTO loginDto, HttpServletRequest request);
 	LoginResponseDTO loginAdmin(LoginDTO loginDto, HttpServletRequest request);
 

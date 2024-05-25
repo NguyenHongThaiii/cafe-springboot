@@ -191,7 +191,8 @@ public class PurposeServiceImp implements PurposeService {
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
 		Map<String, Object> logData = new HashMap<>();
 
-		Purpose purpose = purposeMapper.dtoToEntity(newDto);
+		Purpose purpose = purposeRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Purpose", "id", id + ""));
 		PurposeDTO purposeDTO = MapperUtils.mapToDTO(purposeUpdateDto, PurposeDTO.class);
 		if (purposeUpdateDto.getImageFile() != null) {
 			String url = cloudinaryService.uploadImage(purposeUpdateDto.getImageFile(), path_category, "image");

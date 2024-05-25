@@ -12,7 +12,8 @@ import jakarta.servlet.http.HttpServletRequest;
 public interface AreaService {
 	List<AreaDTO> getListAreas(int limit, int page, Integer status, String name, String slug, String createdAt,
 			String updatedAt, String sortBy);
-
+	Integer getCountAreas(int limit, int page, Integer status, String name, String slug, String createdAt,
+			String updatedAt, String sortBy);
 	AreaDTO getAreaById(Long id);
 
 	AreaDTO getAreaBySlug(String slug);
