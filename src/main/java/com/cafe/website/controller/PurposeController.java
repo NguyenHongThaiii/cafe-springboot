@@ -44,6 +44,17 @@ public class PurposeController {
 		return new ResponseEntity<>(listPurposesDto, HttpStatus.OK);
 	}
 
+	@GetMapping("/count")
+	public ResponseEntity<Integer> getCountPurposes(@RequestParam(defaultValue = "5") Integer limit,
+			@RequestParam(defaultValue = "1") Integer page, @RequestParam(required = false) String name,
+			@RequestParam(defaultValue = "0") String createdAt, @RequestParam(required = false) String updatedAt,
+			@RequestParam(required = false) String slug,
+			@RequestParam(required = false, defaultValue = "") String sortBy) {
+		Integer listPurposesDto = purposeService.getCountPurposes(limit, page, name, slug, createdAt, updatedAt,
+				sortBy);
+		return new ResponseEntity<>(listPurposesDto, HttpStatus.OK);
+	}
+
 	@GetMapping("/id/{id}")
 	public ResponseEntity<PurposeDTO> getPurposeById(@PathVariable(name = "id") Long id) {
 		PurposeDTO PurposeDto = purposeService.getPurposeById(id);

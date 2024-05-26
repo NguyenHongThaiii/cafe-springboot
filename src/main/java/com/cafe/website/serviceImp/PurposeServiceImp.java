@@ -87,28 +87,32 @@ public class PurposeServiceImp implements PurposeService {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
 				SortField.CREATEDATDESC);
-		Pageable pageable = PageRequest.of(page - 1, limit);
 		List<String> sortByList = new ArrayList<String>();
 		List<PurposeDTO> listPurposeDto;
 		List<Purpose> listPurpose;
 		List<Sort.Order> sortOrders = new ArrayList<>();
-		if (!StringUtils.isEmpty(sortBy))
-			sortByList = Arrays.asList(sortBy.split(","));
+		Pageable pageable = null;
 
-		for (String sb : sortByList) {
-			boolean isDescending = sb.endsWith("Desc");
+		if (page != 0) {
+			pageable = PageRequest.of(page - 1, limit);
+			if (!StringUtils.isEmpty(sortBy))
+				sortByList = Arrays.asList(sortBy.split(","));
 
-			if (isDescending && !StringUtils.isEmpty(sortBy))
-				sb = sb.substring(0, sb.length() - 4).trim();
+			for (String sb : sortByList) {
+				boolean isDescending = sb.endsWith("Desc");
 
-			for (SortField sortField : validSortFields) {
-				if (sortField.toString().equals(sb.trim())) {
-					sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
-					break;
+				if (isDescending && !StringUtils.isEmpty(sortBy))
+					sb = sb.substring(0, sb.length() - 4).trim();
+
+				for (SortField sortField : validSortFields) {
+					if (sortField.toString().equals(sb.trim())) {
+						sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
+						break;
+					}
 				}
 			}
-		}
 
+		}
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
@@ -152,7 +156,7 @@ public class PurposeServiceImp implements PurposeService {
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
 
 		Purpose purpose = MapperUtils.mapToEntity(purposeCreateDto, Purpose.class);
-		purpose.setSlug(slugify.slugify(purposeCreateDto.getSlug()));
+		purpose.setSlug(slugify.slugify(purposeCreateDto.getName()));
 
 		String url = cloudinaryService.uploadImage(purposeCreateDto.getImageFile(), path_category, "image");
 		Image image = new Image();
@@ -248,6 +252,44 @@ public class PurposeServiceImp implements PurposeService {
 			e.printStackTrace();
 		}
 
+	}
+
+	@Override
+	public Integer getCountPurposes(int limit, int page, String name, String slug, String createdAt, String updatedAt,
+			String sortBy) {
+		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
+				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
+				SortField.CREATEDATDESC);
+		List<String> sortByList = new ArrayList<String>();
+		List<Purpose> listPurpose;
+		List<Sort.Order> sortOrders = new ArrayList<>();
+		Pageable pageable = null;
+
+		if (page != 0) {
+			pageable = PageRequest.of(page - 1, limit);
+			if (!StringUtils.isEmpty(sortBy))
+				sortByList = Arrays.asList(sortBy.split(","));
+
+			for (String sb : sortByList) {
+				boolean isDescending = sb.endsWith("Desc");
+
+				if (isDescending && !StringUtils.isEmpty(sortBy))
+					sb = sb.substring(0, sb.length() - 4).trim();
+
+				for (SortField sortField : validSortFields) {
+					if (sortField.toString().equals(sb.trim())) {
+						sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
+						break;
+					}
+				}
+			}
+
+		}
+		if (!sortOrders.isEmpty())
+			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
+
+		listPurpose = purposeRepository.findWithFilters(name, slug, createdAt, updatedAt, pageable, entityManager);
+		return listPurpose.size();
 	}
 
 }

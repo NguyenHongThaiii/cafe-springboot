@@ -45,6 +45,18 @@ public class ConvenienceController {
 		return new ResponseEntity<>(listConveniencesDto, HttpStatus.OK);
 	}
 
+	@GetMapping("/count")
+	public ResponseEntity<Integer> getCountConveniences(@RequestParam(defaultValue = "5") Integer limit,
+			@RequestParam(defaultValue = "0") Integer page, @RequestParam(required = false) String name,
+			@RequestParam(required = false) String slug, @RequestParam(required = false) String createdAt,
+			@RequestParam(required = false) String updatedAt,
+
+			@RequestParam(required = false, defaultValue = "") String sortBy) {
+		Integer listConveniencesDto = convenienceService.getCountConveniences(limit, page, name, slug, createdAt,
+				updatedAt, sortBy);
+		return new ResponseEntity<>(listConveniencesDto, HttpStatus.OK);
+	}
+
 	@GetMapping("/id/{id}")
 	public ResponseEntity<ConvenienceDTO> getConvenienceById(@PathVariable(name = "id") Long id) {
 		ConvenienceDTO convenienceDto = convenienceService.getConvenienceById(id);

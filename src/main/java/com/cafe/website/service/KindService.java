@@ -23,4 +23,6 @@ public interface KindService {
 
 	List<KindDTO> getListKinds(int limit, int page, String name, String slug, String createdAt, String updatedAt,
 			String sortBy);
+	Integer getCountKinds(int limit, int page, String name, String slug, String createdAt, String updatedAt,
+			String sortBy);
 }

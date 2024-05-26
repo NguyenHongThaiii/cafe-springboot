@@ -102,6 +102,13 @@ public class ProductController {
 
 	}
 
+	@GetMapping("/{slug}/status/{status}")
+	public ResponseEntity<ProductDTO> getProductBySlugAndStatus(@PathVariable(name = "slug") String slug) {
+		ProductDTO product = productService.getProductBySlugAndStatus(slug);
+		return new ResponseEntity<>(product, HttpStatus.OK);
+
+	}
+
 	@PostMapping("")
 	public ResponseEntity<ProductDTO> createProduct(@Valid @ModelAttribute ProductCreateDTO productCreateDto,
 			HttpServletRequest request) throws IOException {

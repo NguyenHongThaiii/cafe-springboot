@@ -13,6 +13,9 @@ public interface ConvenienceService {
 	List<ConvenienceDTO> getListConveniences(int limit, int page, String name, String slug, String createdAt,
 			String updatedAt, String sortBy);
 
+	Integer getCountConveniences(int limit, int page, String name, String slug, String createdAt, String updatedAt,
+			String sortBy);
+
 	ConvenienceDTO getConvenienceById(Long id);
 
 	ConvenienceDTO getConvenienceBySlug(String slug);

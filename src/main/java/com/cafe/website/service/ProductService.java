@@ -20,6 +20,8 @@ public interface ProductService {
 
 	ProductDTO getProductBySlug(String slug);
 
+	ProductDTO getProductBySlugAndStatus(String slug);
+
 	String setIsWaitingDeleteProduct(ProductDeleteDTO productDeleteDto, HttpServletRequest request) throws IOException;
 
 	Float getRateReviewByProduct(Long productId);
@@ -30,8 +32,9 @@ public interface ProductService {
 			String name, String slugArea, String slugConvenience, String slugKind, String slugPurpose, Double latitude,
 			Double longitude, Long userId, Float ratingsAverage, Integer outstanding, String createdAt,
 			String updatedAt, String timeStatus, Integer priceMax, String sortBy);
-	Integer getCountProducts(int limit, int page, Integer status, String rating, Boolean isWatingDelete,
-			String name, String slugArea, String slugConvenience, String slugKind, String slugPurpose, Double latitude,
+
+	Integer getCountProducts(int limit, int page, Integer status, String rating, Boolean isWatingDelete, String name,
+			String slugArea, String slugConvenience, String slugKind, String slugPurpose, Double latitude,
 			Double longitude, Long userId, Float ratingsAverage, Integer outstanding, String createdAt,
 			String updatedAt, String timeStatus, Integer priceMax, String sortBy);
 

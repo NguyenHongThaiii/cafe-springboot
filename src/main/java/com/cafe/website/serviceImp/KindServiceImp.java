@@ -19,10 +19,12 @@ import org.springframework.stereotype.Service;
 
 import com.cafe.website.constant.SortField;
 import com.cafe.website.constant.StatusLog;
+import com.cafe.website.entity.Area;
 import com.cafe.website.entity.Image;
 import com.cafe.website.entity.Kind;
 import com.cafe.website.exception.CafeAPIException;
 import com.cafe.website.exception.ResourceNotFoundException;
+import com.cafe.website.payload.AreaDTO;
 import com.cafe.website.payload.ImageDTO;
 import com.cafe.website.payload.KindCreateDTO;
 import com.cafe.website.payload.KindDTO;
@@ -84,28 +86,32 @@ public class KindServiceImp implements KindService {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
 				SortField.CREATEDATDESC);
-		Pageable pageable = PageRequest.of(page - 1, limit);
 		List<String> sortByList = new ArrayList<String>();
 		List<KindDTO> listKindDto;
 		List<Kind> listKind;
 		List<Sort.Order> sortOrders = new ArrayList<>();
-		if (!StringUtils.isEmpty(sortBy))
-			sortByList = Arrays.asList(sortBy.split(","));
+		Pageable pageable = null;
 
-		for (String sb : sortByList) {
-			boolean isDescending = sb.endsWith("Desc");
+		if (page != 0) {
+			pageable = PageRequest.of(page - 1, limit);
+			if (!StringUtils.isEmpty(sortBy))
+				sortByList = Arrays.asList(sortBy.split(","));
 
-			if (isDescending && !StringUtils.isEmpty(sortBy))
-				sb = sb.substring(0, sb.length() - 4).trim();
+			for (String sb : sortByList) {
+				boolean isDescending = sb.endsWith("Desc");
 
-			for (SortField sortField : validSortFields) {
-				if (sortField.toString().equals(sb.trim())) {
-					sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
-					break;
+				if (isDescending && !StringUtils.isEmpty(sortBy))
+					sb = sb.substring(0, sb.length() - 4).trim();
+
+				for (SortField sortField : validSortFields) {
+					if (sortField.toString().equals(sb.trim())) {
+						sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
+						break;
+					}
 				}
 			}
-		}
 
+		}
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
@@ -146,7 +152,7 @@ public class KindServiceImp implements KindService {
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
 
 		Kind kind = MapperUtils.mapToEntity(kindCreateDto, Kind.class);
-		kind.setSlug(slugify.slugify(kindCreateDto.getSlug()));
+		kind.setSlug(slugify.slugify(kindCreateDto.getName()));
 		String url = cloudinaryService.uploadImage(kindCreateDto.getImageFile(), path_category, "image");
 
 		Image image = new Image();
@@ -238,6 +244,44 @@ public class KindServiceImp implements KindService {
 			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
 					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
+	}
+
+	@Override
+	public Integer getCountKinds(int limit, int page, String name, String slug, String createdAt, String updatedAt,
+			String sortBy) {
+		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
+				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
+				SortField.CREATEDATDESC);
+		List<String> sortByList = new ArrayList<String>();
+		List<Kind> listKind;
+		List<Sort.Order> sortOrders = new ArrayList<>();
+		Pageable pageable = null;
+
+		if (page != 0) {
+			pageable = PageRequest.of(page - 1, limit);
+			if (!StringUtils.isEmpty(sortBy))
+				sortByList = Arrays.asList(sortBy.split(","));
+
+			for (String sb : sortByList) {
+				boolean isDescending = sb.endsWith("Desc");
+
+				if (isDescending && !StringUtils.isEmpty(sortBy))
+					sb = sb.substring(0, sb.length() - 4).trim();
+
+				for (SortField sortField : validSortFields) {
+					if (sortField.toString().equals(sb.trim())) {
+						sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
+						break;
+					}
+				}
+			}
+
+		}
+		if (!sortOrders.isEmpty())
+			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
+
+		listKind = kindRepository.findWithFilters(name, slug, createdAt, updatedAt, pageable, entityManager);
+		return listKind.size();
 	}
 
 }

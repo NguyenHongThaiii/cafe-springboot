@@ -40,7 +40,7 @@ public interface KindRepository extends JpaRepository<Kind, Long> {
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Kind> cq = cb.createQuery(Kind.class);
-
+		List<Order> orders = new ArrayList<>();
 		Root<Kind> kind = cq.from(Kind.class);
 		List<Predicate> predicates = new ArrayList<>();
 
@@ -56,17 +56,19 @@ public interface KindRepository extends JpaRepository<Kind, Long> {
 		if (slug != null) {
 			predicates.add(cb.equal(kind.get("slug"), slug));
 		}
-		if (pageable.getSort() != null) {
-			List<Order> orders = new ArrayList<>();
+		if (pageable != null && pageable.getSort() != null) {
 			for (Sort.Order order : pageable.getSort()) {
+
 				orders.add(order.isAscending() ? cb.asc(kind.get(order.getProperty()))
 						: cb.desc(kind.get(order.getProperty())));
 			}
 			cq.orderBy(orders);
 		}
 		cq.where(predicates.toArray(new Predicate[0]));
-
-		return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
-				.setMaxResults(pageable.getPageSize()).getResultList();
+		if (pageable != null)
+			return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
+					.setMaxResults(pageable.getPageSize()).getResultList();
+		else
+			return entityManager.createQuery(cq).setFirstResult(0).getResultList();
 	}
 }
