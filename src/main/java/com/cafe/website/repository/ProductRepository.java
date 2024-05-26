@@ -36,6 +36,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 	static final Logger logger = LoggerFactory.getLogger(ProductRepository.class);
 
 	Optional<Product> findBySlugOrName(String slug, String name);
+	Optional<Product> findBySlugAndStatus(String slug, Integer status);
 
 	Optional<Product> findByIdAndUserId(Long productId, Long userId);
 

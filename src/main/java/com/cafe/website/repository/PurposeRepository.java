@@ -40,7 +40,7 @@ public interface PurposeRepository extends JpaRepository<Purpose, Long> {
 			Pageable pageable, EntityManager entityManager) {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Purpose> cq = cb.createQuery(Purpose.class);
-
+		List<Order> orders = new ArrayList<>();
 		Root<Purpose> kind = cq.from(Purpose.class);
 		List<Predicate> predicates = new ArrayList<>();
 
@@ -56,17 +56,19 @@ public interface PurposeRepository extends JpaRepository<Purpose, Long> {
 		if (slug != null) {
 			predicates.add(cb.equal(kind.get("slug"), slug));
 		}
-		if (pageable.getSort() != null) {
-			List<Order> orders = new ArrayList<>();
+		if (pageable != null && pageable.getSort() != null) {
 			for (Sort.Order order : pageable.getSort()) {
+
 				orders.add(order.isAscending() ? cb.asc(kind.get(order.getProperty()))
 						: cb.desc(kind.get(order.getProperty())));
 			}
 			cq.orderBy(orders);
 		}
 		cq.where(predicates.toArray(new Predicate[0]));
-
-		return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
-				.setMaxResults(pageable.getPageSize()).getResultList();
+		if (pageable != null)
+			return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
+					.setMaxResults(pageable.getPageSize()).getResultList();
+		else
+			return entityManager.createQuery(cq).setFirstResult(0).getResultList();
 	}
 }

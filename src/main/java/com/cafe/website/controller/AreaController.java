@@ -46,7 +46,7 @@ public class AreaController {
 
 	@GetMapping("/count")
 	public ResponseEntity<Integer> getCountAreas(@RequestParam(defaultValue = "5") Integer limit,
-			@RequestParam(defaultValue = "1") Integer page, @RequestParam(required = false) Integer status,
+			@RequestParam(defaultValue = "0") Integer page, @RequestParam(required = false) Integer status,
 			@RequestParam(required = false) String name, @RequestParam(required = false) String slug,
 			@RequestParam(required = false) String createdAt, @RequestParam(required = false) String updatedAt,
 			@RequestParam(required = false, defaultValue = "") String sortBy) {

@@ -38,7 +38,7 @@ public interface ConvenienceRepository extends JpaRepository<Convenience, Long> 
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Convenience> cq = cb.createQuery(Convenience.class);
-
+		List<Order> orders = new ArrayList<>();
 		Root<Convenience> convenience = cq.from(Convenience.class);
 		List<Predicate> predicates = new ArrayList<>();
 
@@ -54,17 +54,19 @@ public interface ConvenienceRepository extends JpaRepository<Convenience, Long> 
 		if (slug != null) {
 			predicates.add(cb.equal(convenience.get("slug"), slug));
 		}
-		if (pageable.getSort() != null) {
-			List<Order> orders = new ArrayList<>();
+		if (pageable != null && pageable.getSort() != null) {
 			for (Sort.Order order : pageable.getSort()) {
+
 				orders.add(order.isAscending() ? cb.asc(convenience.get(order.getProperty()))
 						: cb.desc(convenience.get(order.getProperty())));
 			}
 			cq.orderBy(orders);
 		}
 		cq.where(predicates.toArray(new Predicate[0]));
-
-		return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
-				.setMaxResults(pageable.getPageSize()).getResultList();
+		if (pageable != null)
+			return entityManager.createQuery(cq).setFirstResult((int) pageable.getOffset())
+					.setMaxResults(pageable.getPageSize()).getResultList();
+		else
+			return entityManager.createQuery(cq).setFirstResult(0).getResultList();
 	}
 }

@@ -690,4 +690,36 @@ public class ProductServiceImp implements ProductService {
 		return productList.size();
 	}
 
+	@Override
+	public ProductDTO getProductBySlugAndStatus(String slug) {
+		Product product = productRepository.findBySlugAndStatus(slug, 1)
+				.orElseThrow(() -> new ResourceNotFoundException("Product", "slug", slug));
+
+		ProductDTO productDto = MapperUtils.mapToDTO(product, ProductDTO.class);
+		List<Image> listEntityImages = imageRepository.findAllImageByProductId(product.getId());
+		List<AreaDTO> listArea = MapperUtils.loppMapToDTO(product.getAreas(), AreaDTO.class);
+		List<PurposeDTO> listPurpose = MapperUtils.loppMapToDTO(product.getPurposes(), PurposeDTO.class);
+		List<KindDTO> listKind = MapperUtils.loppMapToDTO(product.getKinds(), KindDTO.class);
+		List<ConvenienceDTO> listCon = MapperUtils.loppMapToDTO(product.getConveniences(), ConvenienceDTO.class);
+		List<ProductScheduleDTO> listScheduleDto = new ArrayList<>();
+
+		productDto.setListImage(ImageDTO.generateListImageDTO(listEntityImages));
+		productDto.setAvgRating(reviewService.getRatingByReviewId(product.getId()));
+		for (ProductSchedule schedule : product.getSchedules()) {
+			ProductScheduleDTO scheduleDto = MapperUtils.mapToDTO(schedule, ProductScheduleDTO.class);
+			listScheduleDto.add(scheduleDto);
+		}
+		// more
+		productDto.setAreas(listArea);
+		productDto.setConveniences(listCon);
+		productDto.setKinds(listKind);
+		productDto.setPurposes(listPurpose);
+		productDto.setSchedules(listScheduleDto);
+		productDto.setOwner(MapperUtils.mapToDTO(product.getUser(), UserDTO.class));
+		productDto.setAvgRating(reviewService.getRatingByReviewId(product.getId()));
+		productDto.setListMenu(MenuDTO.generateListMenuDTO(product.getListMenus()));
+
+		return productDto;
+	}
+
 }

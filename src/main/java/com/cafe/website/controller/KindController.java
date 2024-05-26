@@ -43,6 +43,16 @@ public class KindController {
 		return new ResponseEntity<>(listKindsDto, HttpStatus.OK);
 	}
 
+	@GetMapping("/count")
+	public ResponseEntity<Integer> getCountKinds(@RequestParam(defaultValue = "5") Integer limit,
+			@RequestParam(defaultValue = "0") Integer page, @RequestParam(required = false) String name,
+			@RequestParam(required = false) String slug, @RequestParam(required = false) String createdAt,
+			@RequestParam(required = false) String updatedAt,
+			@RequestParam(required = false, defaultValue = "") String sortBy) {
+		Integer listKindsDto = kindService.getCountKinds(limit, page, name, slug, createdAt, updatedAt, sortBy);
+		return new ResponseEntity<>(listKindsDto, HttpStatus.OK);
+	}
+
 	@GetMapping("/id/{id}")
 	public ResponseEntity<KindDTO> getKindById(@PathVariable(name = "id") Long id) {
 		KindDTO kindDto = kindService.getKindById(id);

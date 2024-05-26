@@ -85,28 +85,32 @@ public class ConvenienceServiceImp implements ConvenienceService {
 		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
 				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
 				SortField.CREATEDATDESC);
-		Pageable pageable = PageRequest.of(page - 1, limit);
 		List<String> sortByList = new ArrayList<String>();
 		List<ConvenienceDTO> listConvenienceDto;
 		List<Convenience> listConvenience;
 		List<Sort.Order> sortOrders = new ArrayList<>();
-		if (!StringUtils.isEmpty(sortBy))
-			sortByList = Arrays.asList(sortBy.split(","));
+		Pageable pageable = null;
 
-		for (String sb : sortByList) {
-			boolean isDescending = sb.endsWith("Desc");
+		if (page != 0) {
+			pageable = PageRequest.of(page - 1, limit);
+			if (!StringUtils.isEmpty(sortBy))
+				sortByList = Arrays.asList(sortBy.split(","));
 
-			if (isDescending && !StringUtils.isEmpty(sortBy))
-				sb = sb.substring(0, sb.length() - 4).trim();
+			for (String sb : sortByList) {
+				boolean isDescending = sb.endsWith("Desc");
 
-			for (SortField sortField : validSortFields) {
-				if (sortField.toString().equals(sb.trim())) {
-					sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
-					break;
+				if (isDescending && !StringUtils.isEmpty(sortBy))
+					sb = sb.substring(0, sb.length() - 4).trim();
+
+				for (SortField sortField : validSortFields) {
+					if (sortField.toString().equals(sb.trim())) {
+						sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
+						break;
+					}
 				}
 			}
-		}
 
+		}
 		if (!sortOrders.isEmpty())
 			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
 
@@ -149,7 +153,7 @@ public class ConvenienceServiceImp implements ConvenienceService {
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Name is already exists!");
 
 		Convenience convenience = MapperUtils.mapToEntity(convenienceCreateDto, Convenience.class);
-		convenience.setSlug(slugify.slugify(convenienceCreateDto.getSlug()));
+		convenience.setSlug(slugify.slugify(convenienceCreateDto.getName()));
 
 		String url = cloudinaryService.uploadImage(convenienceCreateDto.getImageFile(), path_category, "image");
 		Image image = new Image();
@@ -251,6 +255,46 @@ public class ConvenienceServiceImp implements ConvenienceService {
 			throw new CafeAPIException(HttpStatus.INTERNAL_SERVER_ERROR,
 					e.getMessage().length() > 100 ? e.getMessage().substring(0, 100) : e.getMessage());
 		}
+	}
+
+	@Override
+	public Integer getCountConveniences(int limit, int page, String name, String slug, String createdAt,
+			String updatedAt, String sortBy) {
+		List<SortField> validSortFields = Arrays.asList(SortField.ID, SortField.NAME, SortField.UPDATEDAT,
+				SortField.CREATEDAT, SortField.IDDESC, SortField.NAMEDESC, SortField.UPDATEDATDESC,
+				SortField.CREATEDATDESC);
+		List<String> sortByList = new ArrayList<String>();
+		List<ConvenienceDTO> listConvenienceDto;
+		List<Convenience> listConvenience;
+		List<Sort.Order> sortOrders = new ArrayList<>();
+		Pageable pageable = null;
+
+		if (page != 0) {
+			pageable = PageRequest.of(page - 1, limit);
+			if (!StringUtils.isEmpty(sortBy))
+				sortByList = Arrays.asList(sortBy.split(","));
+
+			for (String sb : sortByList) {
+				boolean isDescending = sb.endsWith("Desc");
+
+				if (isDescending && !StringUtils.isEmpty(sortBy))
+					sb = sb.substring(0, sb.length() - 4).trim();
+
+				for (SortField sortField : validSortFields) {
+					if (sortField.toString().equals(sb.trim())) {
+						sortOrders.add(isDescending ? Sort.Order.desc(sb) : Sort.Order.asc(sb));
+						break;
+					}
+				}
+			}
+
+		}
+		if (!sortOrders.isEmpty())
+			pageable = PageRequest.of(page - 1, limit, Sort.by(sortOrders));
+
+		listConvenience = convenienceRepository.findWithFilters(name, slug, createdAt, updatedAt, pageable,
+				entityManager);
+		return listConvenience.size();
 	}
 
 }

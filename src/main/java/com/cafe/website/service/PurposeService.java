@@ -23,4 +23,7 @@ public interface PurposeService {
 
 	List<PurposeDTO> getListPurposes(int limit, int page, String name, String slug, String createdAt, String updatedAt,
 			String sortBy);
+
+	Integer getCountPurposes(int limit, int page, String name, String slug, String createdAt, String updatedAt,
+			String sortBy);
 }
