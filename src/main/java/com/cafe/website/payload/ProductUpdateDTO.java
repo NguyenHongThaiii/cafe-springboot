@@ -53,8 +53,8 @@ public class ProductUpdateDTO {
 
 	@NotNull
 	private String location;
-	private Integer latitude;
-	private Integer longitude;
+	private Double latitude;
+	private Double longitude;
 	private String email;
 	private String facebook;
 	private String listScheduleDto;
@@ -75,7 +75,7 @@ public class ProductUpdateDTO {
 			@Min(value = 0, message = "priceMax should not be less than 0") int priceMax,
 			@Min(value = 0, message = "status should not be less than 0") @Max(value = 1, message = "status should not be greater than 1") int outstanding,
 			List<MultipartFile> listMenuFile, List<MultipartFile> listImageFile, @NotNull String description,
-			@NotNull String location, Integer latitude, Integer longitude, String email, String facebook,
+			@NotNull String location,Double latitude, Double longitude, String email, String facebook,
 			String listScheduleDto, Long userId, List<FileMetadata> listFileMetadatas) {
 		super();
 		this.area_id = area_id;
@@ -222,19 +222,19 @@ public class ProductUpdateDTO {
 		this.location = location;
 	}
 
-	public Integer getLatitude() {
+	public Double getLatitude() {
 		return latitude;
 	}
 
-	public void setLatitude(Integer latitude) {
+	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
 
-	public Integer getLongitude() {
+	public Double getLongitude() {
 		return longitude;
 	}
 
-	public void setLongitude(Integer longitude) {
+	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
 
