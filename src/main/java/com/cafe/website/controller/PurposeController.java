@@ -36,7 +36,7 @@ public class PurposeController {
 	@GetMapping("")
 	public ResponseEntity<List<PurposeDTO>> getListPurposes(@RequestParam(defaultValue = "5") Integer limit,
 			@RequestParam(defaultValue = "1") Integer page, @RequestParam(required = false) String name,
-			@RequestParam(defaultValue = "1") String createdAt, @RequestParam(required = false) String updatedAt,
+			@RequestParam(required = false) String createdAt, @RequestParam(required = false) String updatedAt,
 			@RequestParam(required = false) String slug,
 			@RequestParam(required = false, defaultValue = "") String sortBy) {
 		List<PurposeDTO> listPurposesDto = purposeService.getListPurposes(limit, page, name, slug, createdAt, updatedAt,
@@ -47,7 +47,7 @@ public class PurposeController {
 	@GetMapping("/count")
 	public ResponseEntity<Integer> getCountPurposes(@RequestParam(defaultValue = "5") Integer limit,
 			@RequestParam(defaultValue = "1") Integer page, @RequestParam(required = false) String name,
-			@RequestParam(defaultValue = "0") String createdAt, @RequestParam(required = false) String updatedAt,
+			@RequestParam(required = false) String createdAt, @RequestParam(required = false) String updatedAt,
 			@RequestParam(required = false) String slug,
 			@RequestParam(required = false, defaultValue = "") String sortBy) {
 		Integer listPurposesDto = purposeService.getCountPurposes(limit, page, name, slug, createdAt, updatedAt,

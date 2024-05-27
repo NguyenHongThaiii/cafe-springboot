@@ -48,6 +48,7 @@ import com.cafe.website.payload.UserDTO;
 import com.cafe.website.payload.UserUpdateDTO;
 import com.cafe.website.payload.ValidateOtpDTO;
 import com.cafe.website.repository.ImageRepository;
+import com.cafe.website.repository.LogRepository;
 import com.cafe.website.repository.ProductRepository;
 import com.cafe.website.repository.RoleRepository;
 import com.cafe.website.repository.TokenRepository;
@@ -94,6 +95,8 @@ public class AuthServiceImp implements AuthService {
 	private CloudinaryService cloudinaryService;
 	private ScheduledExecutorService scheduler;
 	private LogService logService;
+	private LogRepository logRepository;
+
 	private ObjectMapper objectMapper;
 	@Value("${app.path-user}")
 	private String path_user;
@@ -107,7 +110,7 @@ public class AuthServiceImp implements AuthService {
 			PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, TokenRepository tokenRepository,
 			ImageRepository imageRepository, EmailService emailService, OTPService otpService, UserMapper userMapper,
 			CloudinaryService cloudinaryService, ScheduledExecutorService scheduler, LogService logService,
-			ObjectMapper objectMapper) {
+			LogRepository logRepository, ObjectMapper objectMapper) {
 		super();
 		this.entityManager = entityManager;
 		this.authenticationManager = authenticationManager;
@@ -124,6 +127,7 @@ public class AuthServiceImp implements AuthService {
 		this.cloudinaryService = cloudinaryService;
 		this.scheduler = scheduler;
 		this.logService = logService;
+		this.logRepository = logRepository;
 		this.objectMapper = objectMapper;
 	}
 
@@ -324,7 +328,7 @@ public class AuthServiceImp implements AuthService {
 			userDto.setSlug(slugify.slugify(userUpdateDto.getSlug()));
 		userDto.setStatus(1);
 		userMapper.updateUserFromDto(userDto, userCurrent);
-		
+
 		if (userUpdateDto.getPassword() != null)
 			userCurrent.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
 		List<Role> resultList = new ArrayList<>();
@@ -335,7 +339,7 @@ public class AuthServiceImp implements AuthService {
 				if (entity != null)
 					resultList.add(entity);
 			});
-		
+
 		userCurrent.setRoles(resultList);
 		userRepository.save(userCurrent);
 		logData.put("slug", slug);
@@ -507,8 +511,10 @@ public class AuthServiceImp implements AuthService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteUserById(Long id) throws IOException {
-		this.getUserById(id);
+		User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+		logRepository.deleteByUserId(id);
 		Image image = imageRepository.findImageByUserId(id).orElse(null);
 		if (image != null)
 			cloudinaryService.removeImageFromCloudinary(image.getImage(), path_user);
@@ -579,7 +585,9 @@ public class AuthServiceImp implements AuthService {
 	public String setIsWaitingDeleteUser(Long userId, HttpServletRequest request) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
-
+		logRepository.deleteByUserId(userId);
+		user.setRoles(null);
+		userRepository.saveAndFlush(user);
 		user.setIsWaitingDelete(true);
 		userRepository.save(user);
 		this.excuteDeleteUser(userId);

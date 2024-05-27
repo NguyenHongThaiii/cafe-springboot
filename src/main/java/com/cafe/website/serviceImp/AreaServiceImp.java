@@ -234,10 +234,10 @@ public class AreaServiceImp implements AreaService {
 
 		Image image = imageRepository.findImageByAreaId(id).orElse(null);
 		if (image != null) {
-//			this.cloudinaryService.removeImageFromCloudinary(image.getImage(), path_category);
+			this.cloudinaryService.removeImageFromCloudinary(image.getImage(), path_category);
 
 		}
-//		areaRepository.deleteById(id);
+		areaRepository.deleteById(id);
 		try {
 			logService.createLog(request, authService.getUserFromHeader(request), "Delete Area SUCCESSFULY",
 					StatusLog.SUCCESSFULLY.toString(), JsonConverter.convertToJSON("id", id), "Delete Area");
