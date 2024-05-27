@@ -121,11 +121,16 @@ public class AuthController {
 	}
 
 	@DeleteMapping("/users/id/{id}")
-	public ResponseEntity<String> deleteUserById(@PathVariable(name = "id") Long id) throws java.io.IOException {
+	public ResponseEntity<String> deleteUserById(@PathVariable(name = "id") Long id) throws java.io.IOException  {
 		authService.deleteUserById(id);
 		return ResponseEntity.ok("Delete Successfully");
 	}
 
+	@DeleteMapping("/users/wait/{id}")
+	public ResponseEntity<String> deleteUserByIdAndTime(@PathVariable(name = "id") Long id,HttpServletRequest request) throws java.io.IOException  {
+		authService.setIsWaitingDeleteUser(id,request);
+		return ResponseEntity.ok("Delete Successfully");
+	}
 	@DeleteMapping("/users/{slug}")
 	public ResponseEntity<String> deleteUserBySlug(@PathVariable(name = "slug") String slug)
 			throws java.io.IOException {
