@@ -66,7 +66,7 @@ public class CloudinaryServiceImp implements CloudinaryService {
 
 			if (listImages.size() > 0) {
 				for (String image : listImages) {
-					if (!image.contains(System.getenv("ROOT_CLOUDINARY")) || !image.contains(path))
+					if (!image.contains("res.cloudinary.com/th-i-nguy-n/image/upload/") || !image.contains(path))
 						continue;
 
 					String[] parts = image.split("/");
@@ -80,7 +80,7 @@ public class CloudinaryServiceImp implements CloudinaryService {
 
 	@Override
 	public void removeImageFromCloudinary(String image, String path) throws IOException {
-		if (image == null || !image.contains(System.getenv("ROOT_CLOUDINARY")) || !image.contains(path))
+		if (image == null || !image.contains("res.cloudinary.com/th-i-nguy-n/image/upload/") || !image.contains(path))
 			return;
 		String[] parts = image.split("/");
 		String lastPart = parts[parts.length - 1];
