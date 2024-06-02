@@ -258,7 +258,7 @@ public class ProductServiceImp implements ProductService {
 		productMapper.updateProductFromDto(pdto, product);
 
 		product.setUser(user);
-		product.setStatus(0);
+		product.setStatus(productCreateDto.getStatus());
 		product.setIsWaitingDelete(false);
 		product.setAreas(listAreas);
 		product.setConveniences(listCon);
