@@ -194,12 +194,20 @@ public class AreaServiceImp implements AreaService {
 
 		Area area = areaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Area", "id", id + ""));
 		AreaDTO areaDto = MapperUtils.mapToDTO(areaUpdateDto, AreaDTO.class);
+
 		if (areaUpdateDto.getImageFile() != null && !areaUpdateDto.getImageFile().isEmpty()) {
 			String url = cloudinaryService.uploadImage(areaUpdateDto.getImageFile(), path_category, "image");
-			Image image = new Image();
-			image.setArea(area);
-			image.setImage(url);
-			area.setImage(image);
+			Image imageEntity = imageRepository.findImageByAreaId(id).orElse(null);
+			if (imageEntity != null) {
+				this.cloudinaryService.removeImageFromCloudinary(imageEntity.getImage(), path_category);
+				imageEntity.setImage(url);
+				area.setImage(imageEntity);
+			} else {
+				Image image = new Image();
+				image.setArea(area);
+				image.setImage(url);
+				area.setImage(image);
+			}
 			areaUpdateDto.setDataToLogging(areaUpdateDto.getImageFile().getOriginalFilename(),
 					areaUpdateDto.getImageFile().getContentType(), areaUpdateDto.getImageFile().getSize(), () -> {
 						areaUpdateDto.setImageFile(null);

@@ -35,7 +35,7 @@ public class ProductCreateDTO {
 
 	@Min(value = 0, message = "status should not be less than 0")
 	@Max(value = 1, message = "status should not be greater than 1")
-	private int status ;
+	private int status;
 
 	@Min(value = 0, message = "priceMin should not be less than 0")
 	private int priceMin;

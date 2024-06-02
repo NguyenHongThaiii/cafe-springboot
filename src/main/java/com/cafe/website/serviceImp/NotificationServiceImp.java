@@ -1,5 +1,4 @@
 package com.cafe.website.serviceImp;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,7 +39,6 @@ import jakarta.transaction.Transactional;
 @Transactional
 @Service
 public class NotificationServiceImp implements NotificationService {
-
 	@PersistenceContext
 	private EntityManager entityManager;
 	private NotificationRepository notificationRepository;
