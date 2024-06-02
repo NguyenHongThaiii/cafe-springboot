@@ -195,7 +195,6 @@ public class ProductServiceImp implements ProductService {
 				ProductScheduleDTO scheduleDto = MapperUtils.mapToDTO(schedule, ProductScheduleDTO.class);
 				listScheduleDto.add(scheduleDto);
 			}
-
 			pdto.setAreas(listArea);
 			pdto.setPurposes(listPurpose);
 			pdto.setKinds(listKind);
@@ -375,19 +374,28 @@ public class ProductServiceImp implements ProductService {
 			List<String> menus = new ArrayList<>();
 			List<Menu> listMenus = new ArrayList<>();
 			List<Menu> listEntityMenus = menuRepository.findAllMenuByProductId(id);
-
+			for (Menu menu : listEntityMenus) {
+				logger.info("RUNNNNNNNN");
+				logger.info(menu.getId() + " Menu Id");
+				imageRepository.deleteImageByMenuId(menu.getId());
+			}
+			menuRepository.deleteAllMenuByProductId(id);
 			if (listEntityMenus != null)
 				for (Menu menu : listEntityMenus)
 					cloudinaryService.removeImageFromCloudinary(menu.getImage().getImage(), path_menu);
 
 			cloudinaryService.uploadImages(menus, productUpdateDto.getListMenuFile(), path_menu, "image");
 			menus.forEach(menuTemp -> {
+
+				Image imageItem = new Image();
 				Menu menuItem = new Menu();
-//				menuItem.setImage(menuTemp);
+				imageItem.setImage(menuTemp);
+				imageItem.setMenu(menuItem);
+				menuItem.setImage(imageItem);
 				menuItem.setProduct(product);
 				listMenus.add(menuItem);
 			});
-			menuRepository.deleteAllMenuByProductId(id);
+			menuRepository.saveAll(listMenus);
 			product.setListMenus(listMenus);
 			MethodUtil.convertListFileImageToInfo(productUpdateDto.getListFileMetadatas(),
 					productUpdateDto.getListMenuFile());
