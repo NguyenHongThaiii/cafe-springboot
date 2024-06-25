@@ -192,12 +192,21 @@ public class KindServiceImp implements KindService {
 
 		Kind kind = kindRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("kind", "id", id + ""));
 		KindDTO kindDto = MapperUtils.mapToDTO(kindUpdateDto, KindDTO.class);
+
 		if (kindUpdateDto.getImageFile() != null) {
 			String url = cloudinaryService.uploadImage(kindUpdateDto.getImageFile(), path_category, "image");
-			Image image = new Image();
-			image.setKind(kind);
-			image.setImage(url);
-			kind.setImage(image);
+			Image imageEntity = imageRepository.findImageByKindId(id).orElse(null);
+			if (imageEntity != null) {
+				this.cloudinaryService.removeImageFromCloudinary(imageEntity.getImage(), path_category);
+				imageEntity.setImage(url);
+				kind.setImage(imageEntity);
+			} else {
+
+				Image image = new Image();
+				image.setKind(kind);
+				image.setImage(url);
+				kind.setImage(image);
+			}
 			kindUpdateDto.setDataToLogging(kindUpdateDto.getImageFile().getOriginalFilename(),
 					kindUpdateDto.getImageFile().getContentType(), kindUpdateDto.getImageFile().getSize(), () -> {
 						kindUpdateDto.setImageFile(null);

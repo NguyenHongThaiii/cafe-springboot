@@ -85,8 +85,8 @@ public class ConvenienceController {
 		ConvenienceDTO convenienceDto = convenienceService.updateConvenience(id, convenienceUpdateDto, request);
 		return new ResponseEntity<>(convenienceDto, HttpStatus.OK);
 	}
-
 	@DeleteMapping("/id/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	public ResponseEntity<String> deleteConvenience(@PathVariable(name = "id") Long id, HttpServletRequest request)
 			throws IOException {
 		convenienceService.deleteConvenience(id, request);

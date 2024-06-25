@@ -33,6 +33,11 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 
 	@Transactional
 	@Modifying
+	@Query("DELETE FROM Image i WHERE i.menu.id = :menuId")
+	void deleteImageByMenuId(Long menuId);
+
+	@Transactional
+	@Modifying
 	@Query("DELETE FROM Image i WHERE i.review.id = :reviewId")
 	void deleteAllImageByReviewId(Long reviewId);
 

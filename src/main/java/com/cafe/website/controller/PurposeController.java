@@ -83,6 +83,7 @@ public class PurposeController {
 	}
 
 	@DeleteMapping("/id/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	public ResponseEntity<String> deletePurpose(@PathVariable(name = "id") Long id, HttpServletRequest request)
 			throws IOException {
 		purposeService.deletePurpose(id, request);

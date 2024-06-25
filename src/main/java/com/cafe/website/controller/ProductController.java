@@ -124,6 +124,8 @@ public class ProductController {
 	}
 
 	@DeleteMapping("")
+	@PreAuthorize("hasAnyRole('ADMIN')")
+
 	public ResponseEntity<String> deleteProduct(@Valid @RequestBody ProductDeleteDTO productDeleteDto,
 			HttpServletRequest request) throws IOException {
 		productService.deleteProduct(productDeleteDto, request);

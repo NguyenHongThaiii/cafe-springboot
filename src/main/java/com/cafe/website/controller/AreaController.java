@@ -80,8 +80,8 @@ public class AreaController {
 		AreaDTO newAreaDto = areaService.updateArea(id, areaDto, request);
 		return new ResponseEntity<>(newAreaDto, HttpStatus.OK);
 	}
-
 	@DeleteMapping("/id/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	public ResponseEntity<String> deleteArea(@PathVariable(name = "id") Long id, HttpServletRequest request)
 			throws IOException {
 		areaService.deleteArea(id, request);

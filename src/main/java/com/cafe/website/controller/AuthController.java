@@ -127,6 +127,8 @@ public class AuthController {
 	}
 
 	@DeleteMapping("/users/wait/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN')")
+
 	public ResponseEntity<String> deleteUserByIdAndTime(@PathVariable(name = "id") Long id,HttpServletRequest request) throws java.io.IOException  {
 		authService.setIsWaitingDeleteUser(id,request);
 		return ResponseEntity.ok("Delete Successfully");

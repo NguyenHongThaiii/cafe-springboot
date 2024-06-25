@@ -200,10 +200,17 @@ public class PurposeServiceImp implements PurposeService {
 		PurposeDTO purposeDTO = MapperUtils.mapToDTO(purposeUpdateDto, PurposeDTO.class);
 		if (purposeUpdateDto.getImageFile() != null) {
 			String url = cloudinaryService.uploadImage(purposeUpdateDto.getImageFile(), path_category, "image");
-			Image image = new Image();
-			image.setPurpose(purpose);
-			image.setImage(url);
-			purpose.setImage(image);
+			Image imageEntity = imageRepository.findImageByPurposeId(id).orElse(null);
+			if (imageEntity != null) {
+				this.cloudinaryService.removeImageFromCloudinary(imageEntity.getImage(), path_category);
+				imageEntity.setImage(url);
+				purpose.setImage(imageEntity);
+			} else {
+				Image image = new Image();
+				image.setPurpose(purpose);
+				image.setImage(url);
+				purpose.setImage(image);
+			}
 			purposeUpdateDto.setDataToLogging(purposeUpdateDto.getImageFile().getOriginalFilename(),
 					purposeUpdateDto.getImageFile().getContentType(), purposeUpdateDto.getImageFile().getSize(), () -> {
 						purposeUpdateDto.setImageFile(null);

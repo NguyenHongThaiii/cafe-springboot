@@ -81,6 +81,7 @@ public class KindController {
 	}
 
 	@DeleteMapping("/id/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	public ResponseEntity<String> deleteKind(@PathVariable(name = "id") Long id, HttpServletRequest request)
 			throws IOException {
 		kindService.deleteKind(id, request);

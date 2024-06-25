@@ -187,7 +187,6 @@ public class ConvenienceServiceImp implements ConvenienceService {
 	public ConvenienceDTO updateConvenience(Long id, ConvenienceUpdateDTO convenienceUpdateDto,
 			HttpServletRequest request) throws IOException {
 		ConvenienceDTO newDto = this.getConvenienceById(id);
-		Image image = new Image();
 
 		if (convenienceRepository.existsBySlugAndIdNot(slugify.slugify(convenienceUpdateDto.getSlug()), newDto.getId()))
 			throw new CafeAPIException(HttpStatus.BAD_REQUEST, "Slug is already exists!");
@@ -200,9 +199,17 @@ public class ConvenienceServiceImp implements ConvenienceService {
 		ConvenienceDTO convenienceDTO = MapperUtils.mapToDTO(convenienceUpdateDto, ConvenienceDTO.class);
 		if (convenienceUpdateDto.getImageFile() != null) {
 			String url = cloudinaryService.uploadImage(convenienceUpdateDto.getImageFile(), path_category, "image");
-			image.setConvenience(convenience);
-			image.setImage(url);
-			convenience.setImage(image);
+			Image imageEntity = imageRepository.findImageByConvenienceId(id).orElse(null);
+			if (imageEntity != null) {
+				this.cloudinaryService.removeImageFromCloudinary(imageEntity.getImage(), path_category);
+				imageEntity.setImage(url);
+				convenience.setImage(imageEntity);
+			} else {
+				Image image = new Image();
+				image.setConvenience(convenience);
+				image.setImage(url);
+				convenience.setImage(image);
+			}
 			convenienceUpdateDto.setDataToLogging(convenienceUpdateDto.getImageFile().getOriginalFilename(),
 					convenienceUpdateDto.getImageFile().getContentType(), convenienceUpdateDto.getImageFile().getSize(),
 					() -> {
